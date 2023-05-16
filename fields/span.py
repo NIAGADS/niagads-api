@@ -7,7 +7,6 @@ adds 'chr' if missing
 substitutes MT with M
 """
 
-
 import re
 from marshmallow import fields, ValidationError
 
@@ -21,7 +20,7 @@ class SpanField(fields.Field):
     additional validation checks start < end
     """
 
-    def _validateChrm(self, chrm, value):
+    def _validateChrm(self, chrm):
         """ validate the chromosome
              
         Keyword arguments:
@@ -48,10 +47,12 @@ class SpanField(fields.Field):
         # check against regexp
         if bool(re.match(PATTERN, value)) == False:
             raise ValueError("for a chromosome, N, please specify as chrN:start-end or N:start-end")
+        
         # split on :
         [chrm, span] = value.split(':')
+        
         # validate chr
-        chrm = self._validateChr(chrm, value)
+        chrm = self._validateChr(chrm)
         
         # validate start < end
         [start, end] = span.split('-')
