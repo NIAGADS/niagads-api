@@ -20,7 +20,7 @@ app.config.update({
 })
 
 docs = FlaskApiSpec(app)
-docs.register(get_pets, blueprint="genomics")
+# docs.register(get_pets, blueprint="genomics")
 
 if __name__ == "__main__":
     app.run()
