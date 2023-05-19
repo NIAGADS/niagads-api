@@ -6,7 +6,7 @@ from apis.genomics.entities import dataset_api
 api = Api(
     title='NIAGADS API',
     version='1.0',
-    description='A description',
+    description='API for accessing NIAGADS resources',
     # All API metadatas
 )
 

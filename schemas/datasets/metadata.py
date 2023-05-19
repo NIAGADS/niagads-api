@@ -11,6 +11,11 @@ filer = {'assay': fields.String(required=True, description="assay type"),
         }
 
 genomicsdb = {
-    'covariates': fields.String(description="GWAS covariates or other adjustments made to a meta-analysis", example="NULL"),
+    'attribution': fields.String(required=True, description="submitter or first author and date of publication", example="Wang et al. 2021"),
+    'publication': fields.String("PubMED ID or DOI for primary publication", example="PMID:34122051")
+}
+
+genomicsdb_track = {
+    'covariates': fields.String(description="GWAS covariates or other adjustments made to a meta-analysis", example="coming soon"),
     'phenotypes': fields.String(desciption="phenotypes", example="coming soon")
 }
