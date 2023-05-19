@@ -1,1 +1,1 @@
-from models.base import api_root_information
+from schemas.base import api_root_information

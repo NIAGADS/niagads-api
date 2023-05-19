@@ -1,5 +1,8 @@
 from flask_restx import Namespace, Resource, fields
-from models import api_root_information
+from schemas import api_root_information
+from .entities import dataset_api
+
+CHILD_APIS = [dataset_api]
 
 api = Namespace(
     'genomics', description="API Calls for accessing the NIAGADS Alzheimer's Genomics Database")
