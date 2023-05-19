@@ -7,7 +7,7 @@ genomics_bp = Blueprint('genomics', __name__, url_prefix='/genomics')
 genomics_bp.register_blueprint(dataset_bp)
 genomics_bp.register_blueprint(variant_bp)
 
-@genomics_bp.route('/')
+@genomics_bp.route('/', methods=['GET'])
 def hello():
     return {'message': "SUCCESS: You've reached the the Genomics API -- link to documentation"}
 
