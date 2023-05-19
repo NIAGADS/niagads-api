@@ -1,0 +1,1 @@
+from blueprints.genomics.base import genomics_bp
