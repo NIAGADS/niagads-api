@@ -1,7 +1,6 @@
 from flask_restx import Api
 
-from apis.genomics.base import api as genomics_api, CHILD_APIS as genomics_api_children
-# from apis.genomics.entities import dataset_api
+from genomics import genomics_api as genomics_api, genomics_api_children
 
 api = Api(
     title='NIAGADS API',

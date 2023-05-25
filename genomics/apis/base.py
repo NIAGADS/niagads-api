@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
-from schemas import api_root_information
-from .entities import dataset_api
+from base.schemas.about import api_root_information
+
+# local import
+from genomics.apis import dataset_api
 
 CHILD_APIS = [dataset_api]
 
@@ -9,7 +11,7 @@ api = Namespace(
 
 model = api.model('BaseInfo', api_root_information)
 
-@api.route('/about')
+@api.route('/')
 class Genomics(Resource):
     @api.marshal_with(model, envelope='genomics')
     def get(self):
