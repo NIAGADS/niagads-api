@@ -9,15 +9,15 @@ api = Namespace(
     'genomics/dataset', description="Retrieve dataset (set of one or more tracks from the NIAGADS repository; a NIAGADS accession) metadata and track listing")
 
 # create response schema from the base metadata schema
-metadata_model = api.model('Dataset', metadata)
+metadata_schema = api.model('Dataset', metadata)
 # extend w/GenomicsDB - only fields
-genomicsdb_metadata_model = api.clone(
-    'GenomicsDB Dataset', metadata_model, genomicsdb_metadata)
+genomicsdb_metadata_schema = api.clone(
+    'GenomicsDB Dataset', metadata_schema, genomicsdb_metadata)
 
 
 @api.route('/<id>', doc={"description": "Get meta-data for specified dataset"})
 class Genomics(Resource):
-    @api.marshal_with(genomicsdb_metadata_model, envelope="dataset")
+    @api.marshal_with(genomicsdb_metadata_schema, envelope="dataset", skip_none=True)
     @api.doc(params={'id': 'unique dataset identifier or accession number in original datasource'})
     def get(self, id):
         dataset = genomicsdb.one_or_404(
