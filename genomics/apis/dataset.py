@@ -1,7 +1,6 @@
 ''' api to retrieve all tracks associated with a dataset '''
 from db import genomicsdb
 from flask_restx import Namespace, Resource, fields
-from flask_parameter_validation import ValidateParameters, Route, Json, Query
 from base.schemas.dataset import metadata
 from genomics.schemas.dataset import metadata as genomicsdb_metadata, phenotype
 from genomics.models.tables import Dataset, Dataset_GRCh37
