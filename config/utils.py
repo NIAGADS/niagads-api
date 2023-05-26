@@ -21,6 +21,5 @@ def set_app_config():
         }
     }
 
-    print(genomicsdb_config)
     app_config.update(genomicsdb_config)    
     return app_config
