@@ -9,7 +9,7 @@ CHILD_APIS = [dataset_api]
 api = Namespace(
     'genomics', description="API Calls for accessing the NIAGADS Alzheimer's Genomics Database")
 
-model = api.model('BaseInfo', api_root_information)
+model = api.model('About this API', api_root_information)
 
 @api.route('/')
 class Genomics(Resource):

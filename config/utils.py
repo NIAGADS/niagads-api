@@ -11,7 +11,16 @@ def set_app_config():
     app_config = dict(dotenv_values(path.join(basedir, ".env")))
  
     # genomicsdb.env
-    genomicsdb_config = dict(dotenv_values(path.join(basedir, "genomicsdb.env")))
-    app_config.update(genomicsdb_config)
-    
+    # genomicsdb_config = dict(dotenv_values(path.join(basedir, "genomicsdb.env")))
+
+    connection_str = dict(dotenv_values(path.join(basedir, "genomicsdb.env")))['SQLALCHEMY_DATABASE_URI']
+    genomicsdb_config = {
+        'SQLALCHEMY_BINDS' : {
+                'GRCh38' : connection_str.format('genomicsdb'),
+                'GRCh37' : connection_str.format('genomicsdb37')
+        }
+    }
+
+    print(genomicsdb_config)
+    app_config.update(genomicsdb_config)    
     return app_config

@@ -15,7 +15,7 @@ RS_PATTERN = 'rs\d+' # rsN
 LOCUS_PATTERN = '^.+:\d+:(A|C|G|T)+(:|_|\/)(A|C|G|T)+'
 VALID_CHROMOSOMES = list(range(1,22)) + [ 'X', 'Y', 'M', 'MT']
 
-class VariantField(fields.Field):
+class Variant(fields.Field):
     """Field that captures a variant by its refSNP ID or position/
     allelic identifier
     where chr may be a single alphanumeric N or 'chr'+N
