@@ -1,1 +1,1 @@
-from genomics.models.tables.dataset import Dataset, Dataset_GRCh37
+from genomics.models.tables.dataset import Dataset

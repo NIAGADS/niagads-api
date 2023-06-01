@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from base.schemas.about import api_root_information
+from shared_resources.schemas.about import api_root_information
 
 # local import
 from genomics.apis import dataset_api

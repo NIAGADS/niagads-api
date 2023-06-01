@@ -1,0 +1,1 @@
+from shared_resources.api import api as niagads_api

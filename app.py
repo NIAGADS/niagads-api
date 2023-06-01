@@ -2,7 +2,7 @@ from flask import Flask
 
 # local imports
 from db import genomicsdb
-from base import niagads_api as api
+from shared_resources import niagads_api as api
 from config import set_app_config
 
 app = Flask(__name__)

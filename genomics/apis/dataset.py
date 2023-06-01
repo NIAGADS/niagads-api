@@ -2,10 +2,10 @@
 from db import genomicsdb
 from flask_restx import Namespace, Resource, fields
 from flask_parameter_validation import ValidateParameters, Route, Json, Query
-from base.schemas.dataset import metadata
+from shared_resources.schemas.dataset import metadata
 from genomics.schemas.dataset import metadata as genomicsdb_metadata, phenotype
-from genomics.models.tables import Dataset, Dataset_GRCh37
-from base.fields import GenomeBuild
+from genomics.models.tables import Dataset
+from shared_resources.fields import GenomeBuild
 
 api = Namespace(
     'genomics/dataset', description="Retrieve dataset (set of one or more tracks from the NIAGADS repository; a NIAGADS accession) metadata and track listing")
@@ -34,7 +34,7 @@ class Genomics(Resource):
    
     def get(self, id, genome_build): # genome_build:str = Route(default="GRCh38", pattern="GRCh(38|37)")):
         bind_db = GenomeBuild().deserialize(genome_build)
-        table = Dataset if bind_db == 'GRCh38' else Dataset_GRCh37
+        table = Dataset
         print(table)
         dataset = genomicsdb.one_or_404(
             statement=genomicsdb.select(table).filter_by(accession=id),
