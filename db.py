@@ -1,4 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.declarative import declarative_base
+from session import createSessionFactory
+from config import get_genomicsdb_binds
 
-genomicsdb = SQLAlchemy()
-# genomicsdb37 = MySQLA
+Sessions = { bind: createSessionFactory(connectionStr) for bind, connectionStr in get_genomicsdb_binds().items() }
+Base = declarative_base()
+

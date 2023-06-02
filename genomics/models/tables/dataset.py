@@ -1,12 +1,15 @@
 ''' GenomicsdB dataset (accession) data model '''
-from db import genomicsdb as gdb
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import synonym
 
-class Dataset(gdb.Model):
-    __abstract__ = True
+from db import Base
+
+class Dataset(Base):
     __tablename__ = 'datasetattributes'
     __table_args__ = {'schema': 'niagads'}
-    accession = gdb.Column(gdb.String, primary_key=True)
-    id = gdb.synonym('accession')
-    name = gdb.Column(gdb.String)
-    description = gdb.Column(gdb.String)
-    attribution = gdb.Column(gdb.String)
+    
+    accession = Column(String, primary_key=True)
+    id = synonym('accession')
+    name = Column(String)
+    description = Column(String)
+    attribution = Column(String)
