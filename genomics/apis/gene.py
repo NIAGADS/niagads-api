@@ -12,7 +12,7 @@ api = Namespace(
 # create response schema from the base metadata schema
 gene_schema = api.model('Gene', gene_model)
 
-@api.route('/<genome_build>/<id>', doc={"description": "get identifying annotation for the specified gene"})
+@api.route('/<string:genome_build>/<string:id>', doc={"description": "get identifying annotation for the specified gene"})
 class Genomics(Resource):
     @api.marshal_with(gene_schema, skip_none=True)
     @api.doc(params={
