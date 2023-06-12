@@ -7,7 +7,7 @@ from genomics.models.tables import Dataset_GRCh37, Dataset_GRCh38
 from shared_resources.fields import GenomeBuild
 
 api = Namespace(
-    'genomics/dataset', description="Retrieve dataset (set of one or more tracks from the NIAGADS repository; a NIAGADS accession) metadata and track listing")
+    'genomics/dataset', description="Retrieve dataset metadata (dataset = set of one or more tracks from the NIAGADS repository; a NIAGADS accession)")
 
 # create response schema from the base metadata schema
 metadata_schema = api.model('Dataset', metadata)
@@ -34,7 +34,7 @@ class Genomics(Resource):
     def get(self, id, genome_build): # genome_build:str = Route(default="GRCh38", pattern="GRCh(38|37)")):
         bind_db = GenomeBuild().deserialize(genome_build)
         table = Dataset_GRCh38 if bind_db == 'GRCh38' else Dataset_GRCh37
-        print(table)
+      
         dataset = genomicsdb.one_or_404(
             statement=genomicsdb.select(table).filter_by(accession=id),
             description=f"No database with accession # {id} found in the NIAGADS GenomicsDB."

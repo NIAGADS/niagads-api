@@ -2,9 +2,9 @@ from flask_restx import Namespace, Resource, fields
 from shared_resources.schemas.about import api_root_information
 
 # local import
-from genomics.apis import dataset_api
+from genomics.apis import dataset_api, gene_api
 
-CHILD_APIS = [dataset_api]
+CHILD_APIS = [dataset_api, gene_api]
 
 api = Namespace(
     'genomics', description="API Calls for accessing the NIAGADS Alzheimer's Genomics Database")
