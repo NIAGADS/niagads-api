@@ -1,6 +1,7 @@
 ''' GenomicsdB gene data model '''
 from db import genomicsdb as gdb
 from sqlalchemy.dialects import postgresql
+from sqlalchemy import text
 from shared_resources.fields import GenomeBuild
 
 def table(genomeBuild):
@@ -19,7 +20,6 @@ class GeneMixin:
     transcript_count = gdb.Column(gdb.Integer)
     exon_count = gdb.Column(gdb.Integer)
     annotation = gdb.Column(postgresql.JSONB)
-    
 
 class Gene_GRCh38(GeneMixin, gdb.Model):
     __bind_key__ = 'GRCh38'

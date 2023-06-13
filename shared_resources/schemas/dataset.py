@@ -12,10 +12,5 @@ metadata = {
             example="NIAGADS"),
     'id': fields.String(required=True, 
             description="accession number in original data source", 
-            example="NG00115")}
-
-
-input_id = {
-    'id': fields.String(required=True, 
-        description="unique dataset identifier or accession number in original datasource"),
+            example="NG00115")
 }
