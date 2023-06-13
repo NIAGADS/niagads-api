@@ -1,5 +1,11 @@
 ''' GenomicsdB dataset (accession) data model '''
 from db import genomicsdb as gdb
+from shared_resources.fields import GenomeBuild
+
+def table(genomeBuild):
+    """determine bind_db --> table based on genome_build route param"""
+    bind_db = GenomeBuild().deserialize(genomeBuild)
+    return Dataset_GRCh38 if bind_db == 'GRCh38' else Dataset_GRCh37
 
 class DatasetMixin:
     accession = gdb.Column(gdb.String, primary_key=True)

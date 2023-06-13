@@ -1,6 +1,12 @@
 ''' GenomicsdB gene data model '''
 from db import genomicsdb as gdb
 from sqlalchemy.dialects import postgresql
+from shared_resources.fields import GenomeBuild
+
+def table(genomeBuild):
+    """determine bind_db --> table based on genome_build route param"""
+    bind_db = GenomeBuild().deserialize(genomeBuild)
+    return Gene_GRCh38 if bind_db == 'GRCh38' else Gene_GRCh37
 
 class GeneMixin:
     source_id = gdb.Column(gdb.String, primary_key=True)
