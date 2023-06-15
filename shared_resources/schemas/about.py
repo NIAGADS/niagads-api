@@ -8,4 +8,3 @@ api_root_information = {
                         'endpoint': fields.String(required=True, description="Root endpoint for the resouce API"),
                         'version': fields.String(description="tagged release version of the resource API")
                         }
-

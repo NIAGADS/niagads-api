@@ -13,7 +13,7 @@ from marshmallow import fields, ValidationError
 PATTERN = '.+:\d+-\d+' # chr:start-enddddd
 VALID_CHROMOSOMES = list(range(1,22)) + [ 'X', 'Y', 'M', 'MT']
 
-class Span(fields.Field):
+class Span(fields.Raw):
     """Field that captures a span as chr:start-end,
     where chr may be a single alphanumeric N or 'chr'+N
     where N = 1..22, X,Y,M,or MT

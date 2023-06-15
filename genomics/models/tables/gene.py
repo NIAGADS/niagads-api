@@ -1,8 +1,11 @@
 ''' GenomicsdB gene data model '''
 from db import genomicsdb as gdb
+from sqlalchemy import text, select
 from sqlalchemy.dialects import postgresql
-from sqlalchemy import text
+from sqlalchemy.orm import column_property
 from shared_resources.fields import GenomeBuild
+from shared_resources.utils import extract_json_value
+
 
 def table(genomeBuild):
     """determine bind_db --> table based on genome_build route param"""
@@ -21,6 +24,30 @@ class GeneMixin:
     exon_count = gdb.Column(gdb.Integer)
     annotation = gdb.Column(postgresql.JSONB)
 
+    @property
+    def name(self):
+        return extract_json_value(self.annotation, 'name')
+    
+    @property
+    def locus(self):
+        return extract_json_value(self.annotation, 'location')
+    
+    @property 
+    def strand(self):
+        return '-' if self.is_reversed else '+'
+    
+    @property
+    def synonyms(self):
+        if self.annotation is None:
+            return None
+
+        fields = ['prev_symbol', 'alias_symbol']
+        aliases = '|'.join([a for a in [extract_json_value(self.annotation, f) for f in fields] if a is not None])
+        
+        return aliases.split('|')
+
+    
+
 class Gene_GRCh38(GeneMixin, gdb.Model):
     __bind_key__ = 'GRCh38'
     __tablename__ = 'geneattributes'
@@ -30,6 +57,7 @@ class Gene_GRCh38(GeneMixin, gdb.Model):
     symbol = gdb.synonym('gene_symbol')
     start = gdb.synonym('location_start')
     end = gdb.synonym('location_end')
+
     
  
 class Gene_GRCh37(GeneMixin, gdb.Model):
