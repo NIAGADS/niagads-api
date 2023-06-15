@@ -1,9 +1,11 @@
 ''' api to retrieve all tracks associated with a dataset '''
 from db import genomicsdb
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, reqparse
 from shared_resources.schemas.gene_features import feature_properties, gene_properties
+from shared_resources.parsers import parser
 from genomics.schemas.gene import gene_extended_properties
 from genomics.models.tables.gene import table
+
 
 api = Namespace('genomics/gene', description="retrieve gene annotations from the NIAGADS GenomicsDB")
 
@@ -28,9 +30,23 @@ class Gene(Resource):
         gene = genomicsdb.one_or_404(statement=genomicsdb.select(queryTable, ("gene").label("feature_type"))
                 .filter((queryTable.gene_symbol == id) | (queryTable.source_id == id) | (queryTable.annotation['entrez_id'] == id)),
                 description=f"No gene with identifier {id} found in the NIAGADS GenomicsDB for {genome_build}.")
-
         return gene
+    
 
+
+
+@api.route('/<string:genome_build>', doc={"description": "get basic identifying annotation for a list of genes"})
+@api.expect(parser.enum_id)
+class GeneList(Resource):
+    @api.marshal_list_with(genomicsdb_gene_schema, skip_none=True)
+    def get(self, genome_build):
+        args = parser.enum_id.parse_args()
+        queryTable = table(genome_build)
+        genes = genomicsdb.select(queryTable, ("gene").label("feature_type")) \
+                .filter(queryTable.gene_symbol.in_(args.id) | queryTable.source_id.in_(args['id']) | queryTable.annotation['entrez_id'].in_(args['id'])) 
+        return genes
+    
+    
 # /gene/genome_build?ids=
 # /gene/genome_build?ids=
 # /gene/genome_build/id/function
@@ -42,7 +58,3 @@ class Gene(Resource):
 
 # /gene/genome_build/overlap/(span=|chr-start-end)&featureType=all/exon/intron/cds/utr&geneType --> all genes and gene subfeatures in a span
 
-# /genome_build/ids=?
-# @api.route('/<string:genome_build>/<string:id>',
-#        doc={"description": "get basic identifying annotation for the specified gene"})
-# class GeneList(Resource):

@@ -15,9 +15,10 @@ gene_properties = {
 }
 
 exon_properties = {
-   
+   'number': fields.Integer(description="exon number", required=True)
 }
 
 tanscript_properties = {
-    'name': fields.String(description="transcript name", required=True)
+    'name': fields.String(description="transcript name", required=True),
+    'canonical': fields.Boolean(description="flag indicating whether this is the canonical transcript for the gene")
 }

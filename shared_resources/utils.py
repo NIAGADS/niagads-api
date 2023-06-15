@@ -11,3 +11,4 @@ def extract_json_value(attribute, field):
         return None
     
     return attribute[field] if field in attribute else None
+
