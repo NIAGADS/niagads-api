@@ -12,3 +12,6 @@ def extract_json_value(attribute, field):
     
     return attribute[field] if field in attribute else None
 
+def extract_result_data(queryResult):
+    return  [ r._data[0] for r in queryResult ]
+

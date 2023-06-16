@@ -6,9 +6,12 @@ def set_app_config():
         key/value config values such as db connection info'''
         
     basedir = path.abspath(path.dirname(__file__))
+    
+    x = "True" in ["True", "False"]
 
     #. env
     app_config = dict(dotenv_values(path.join(basedir, ".env")))
+    app_config = { k : bool(v) if v in ["True", "False"] else v  for k, v in app_config.items()}
  
     # genomicsdb.env
     # genomicsdb_config = dict(dotenv_values(path.join(basedir, "genomicsdb.env")))

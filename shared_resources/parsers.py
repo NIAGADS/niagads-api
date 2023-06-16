@@ -1,10 +1,9 @@
 """ common parsers """
 from flask_restx import reqparse 
 from types import SimpleNamespace
+
 from shared_resources.fields import Span
-
-CHROMOSOMES = [*range(1,22)] + ['X', 'Y', 'N']
-
+from shared_resources.constants import CHROMOSOMES, DATASET_TYPES
 _parsers = {}
 
 _parsers['id'] = reqparse.RequestParser()
@@ -20,6 +19,13 @@ _parsers['span'].add_argument('start', type=int, help="start location for the in
 _parsers['span'].add_argument('end', type=int, help="start location for the interval of interest")
 
 _parsers['track'] = _parsers['span'].copy()
+
+_parsers['filters'] = reqparse.RequestParser()
+_parsers['filters'].add_argument('type', help="type of dataset or track; what kind of information")
+
+_parsers['extended_filters'] = _parsers['filters'].copy()
+_parsers['extended_filters'].add_argument('source', help="original source of the data; e.g., NIAGADS, ENCODE, FANTOM5")
+_parsers['extended_filters'].add_argument('assay', help="assay type")
 
 
 # for inheritence, use parser.copy(), .replace_argument, .remove_argument, see 

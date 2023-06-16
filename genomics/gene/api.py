@@ -1,11 +1,14 @@
-''' api to retrieve all tracks associated with a dataset '''
-from db import genomicsdb
+''' api to retrieve all tracks associated with a gene or gene subfeature '''
 from flask_restx import Namespace, Resource, fields, reqparse
 from sqlalchemy import literal
+
+from shared_resources.db import genomicsdb
 from shared_resources.schemas.gene_features import feature_properties, gene_properties
 from shared_resources.parsers import parser
-from genomics.schemas.gene import gene_extended_properties
-from genomics.models.tables.gene import table
+from shared_resources.utils import extract_result_data
+
+from genomics.gene.schemas import gene_extended_properties
+from genomics.gene.models import table
 
 
 api = Namespace('genomics/<string:genome_build>/gene', description="retrieve gene annotations from the NIAGADS GenomicsDB")
@@ -35,17 +38,18 @@ class Gene(Resource):
     
 
 
-
-@api.route('/', doc={"description": "get basic identifying annotation for a list of genes"})
+@api.route('/', doc={"description": "get basic identifying annotation for a list one or more genes"})
 @api.expect(parser.id_enum)
 class GeneList(Resource):
     @api.marshal_with(genomicsdb_gene_schema, skip_none=True, as_list=True)
     def get(self, genome_build):
         args = parser.id_enum.parse_args()
         queryTable = table(genome_build)
-        genes = genomicsdb.select(queryTable, literal("gene").label("feature_type")) \
-                .filter(queryTable.gene_symbol.in_(args.id) | queryTable.source_id.in_(args['id']) | queryTable.annotation['entrez_id'].astext.in_(args['id']))
-        return genes
+        genes = genomicsdb.session.execute(genomicsdb.select(queryTable, literal("gene").label("feature_type"))
+                .filter(queryTable.gene_symbol.in_(args.id) 
+                        | queryTable.source_id.in_(args['id']) 
+                        | queryTable.annotation['entrez_id'].astext.in_(args['id'])).order_by(queryTable.source_id))
+        return extract_result_data(genes)
     
     
 # /gene/genome_build?ids=
