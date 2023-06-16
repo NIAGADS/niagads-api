@@ -33,3 +33,9 @@ class GenomeBuild(fields.Raw):
             return value
         else:
             raise BadRequest("Invalid genome build in route: '" + value + "'; Genome Build should be one of: GRCh37, GRCh38")
+        
+    def format(self, value):
+        return value
+    
+    def output(self, key, obj, **kwargs):
+        return getattr(obj, key)

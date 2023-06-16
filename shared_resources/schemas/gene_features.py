@@ -1,4 +1,5 @@
 from flask_restx import fields
+from shared_resources.fields import GenomeBuild
 
 feature_properties = {
     'feature_type': fields.String(description="feature type", required=True, example="gene"),
@@ -6,6 +7,8 @@ feature_properties = {
     'start': fields.Integer(description="start coordinate for gene", required=True, example=45409011),
     'end': fields.Integer(description="end coordinate for gene", required=True, example=45412650),
     'chromosome': fields.String(description="chromosome on which gene is located", required=True, example="chr19"),
+    # 'assembly': GenomeBuild(description="reference genome build", required=True, example="GRCh38")
+    'assembly': fields.String(description="reference genome build", required=True, example="GRCh38")
 }
 
 gene_properties = {

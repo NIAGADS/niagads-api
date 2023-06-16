@@ -2,9 +2,20 @@
 from flask_restx import reqparse 
 from types import SimpleNamespace
 
-from shared_resources.fields import Span
-from shared_resources.constants import CHROMOSOMES, DATASET_TYPES
+from shared_resources.fields import Span, GenomeBuild
+from shared_resources.constants import CHROMOSOMES, DATASET_TYPES, GENOME_BUILDS
+
+def merge_parsers(parser1, parser2):
+    """ merge two parsers """
+    newParser = parser1.copy()
+    newParser.args = newParser.args + parser2.args
+    return newParser
+
 _parsers = {}
+
+_parsers['genome_build'] = reqparse.RequestParser()
+_parsers['genome_build'].add_argument('assembly', help="reference genome build",
+        default="GRCh38", choices=GENOME_BUILDS)
 
 _parsers['id'] = reqparse.RequestParser()
 _parsers['id'].add_argument('id', help="comma separated list of one or more identifiers", required=True)
@@ -28,8 +39,9 @@ _parsers['extended_filters'].add_argument('source', help="original source of the
 _parsers['extended_filters'].add_argument('assay', help="assay type")
 
 
-# for inheritence, use parser.copy(), .replace_argument, .remove_argument, see 
+
+# for inheritence, use parsers.copy(), .replace_argument, .remove_argument, see 
 # https://flask-restx.readthedocs.io/en/latest/parsing.html#parser-inheritance
 
 
-parser = SimpleNamespace(**_parsers)
+parsers = SimpleNamespace(**_parsers)

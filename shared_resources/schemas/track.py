@@ -11,7 +11,4 @@ metadata = {
             description="source repository or data collection", 
             example="NIAGADS"),
     'type': fields.String(required=True, description="type of dataset or track", example="GWAS_sumstats"),
-    'id': fields.String(required=True, 
-            description="accession number in original data source", 
-            example="NG00115")
 }
