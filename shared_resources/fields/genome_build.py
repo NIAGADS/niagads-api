@@ -38,4 +38,9 @@ class GenomeBuild(fields.Raw):
         return value
     
     def output(self, key, obj, **kwargs):
-        return getattr(obj, key)
+        value = getattr(obj, key)
+        if value == 'hg19':
+            return 'GRCh37' 
+        if value == 'hg38': 
+            return 'GRCh38'
+        return value
