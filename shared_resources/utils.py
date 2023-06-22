@@ -28,3 +28,45 @@ def extract_row_data(queryResultRow):
 def extract_result_data(queryResult):
     return [ extract_row_data(r) for r in queryResult ]
 
+
+def is_number(value):
+    return is_integer(value) or is_float(value)
+
+
+def is_integer(value):
+    if isinstance(value, (float, bool)):
+        return False
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def is_float(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+def is_non_numeric(value):
+    if True in [char.isdigit() for char in value]:
+        return False
+    return True
+
+
+def to_numeric(value):
+    ''' convert string to appropriate numeric '''
+    try:
+        return int(value)
+    except ValueError:
+        return float(value) # raises ValueError again that will be thrown
+
+
+def is_null(value, includeNA=False):
+    if value is None:
+        return True
+    if includeNA and value in ['NA', 'not applicable', 'Not applicable', '.']:
+        return True
+    return False
