@@ -5,7 +5,7 @@ from sqlalchemy import not_
 
 from shared_resources.constants import ADSP_VARIANTS_ACCESSION
 from shared_resources.db import genomicsdb
-from shared_resources.parsers import parsers, merge_parsers
+from shared_resources.parsers import arg_parsers as parsers, merge_parsers
 
 from shared_resources.utils import extract_result_data
 

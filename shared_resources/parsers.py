@@ -44,4 +44,4 @@ _parsers['extended_filters'].add_argument('assay', help="assay type")
 # https://flask-restx.readthedocs.io/en/latest/parsing.html#parser-inheritance
 
 
-parsers = SimpleNamespace(**_parsers)
+arg_parsers = SimpleNamespace(**_parsers)

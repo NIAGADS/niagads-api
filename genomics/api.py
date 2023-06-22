@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields
 
 from shared_resources.schemas.about import api_root_information
 from shared_resources.fields.genome_build import GenomeBuild
-from shared_resources.parsers import parsers
+from shared_resources.parsers import arg_parsers as parsers
 
 # child APIs
 from genomics.gene.api import api as gene_api

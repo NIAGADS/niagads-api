@@ -4,7 +4,7 @@ from sqlalchemy import literal
 
 from shared_resources.db import genomicsdb
 from shared_resources.schemas.gene_features import feature_properties, gene_properties
-from shared_resources.parsers import parsers, merge_parsers
+from shared_resources.parsers import arg_parsers as parsers, merge_parsers
 from shared_resources.utils import extract_result_data
 
 from genomics.gene.schemas import gene_extended_properties
