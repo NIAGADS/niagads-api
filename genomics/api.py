@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from shared_resources.schemas.about import api_root_information
 from shared_resources.fields.genome_build import GenomeBuild
 from shared_resources.parsers import arg_parsers as parsers
+from shared_resources.urls import external as urls
 
 # child APIs
 from genomics.gene.api import api as gene_api
@@ -27,7 +28,7 @@ class Genomics(Resource):
         resourceEndpoint = "genomics" if genomeBuild == 'GRCh38' else "genomics37"
         apiEndpoint = "/genomics" if genomeBuild == 'GRCh38' else "/genomics/?assembly=GRCh37"
         return {"endpoint": apiEndpoint,
-                "resource_url": "https://www.niagads.org/" + resourceEndpoint,
+                "resource_url": urls.niagads + resourceEndpoint,
                 "organization": "NIAGADS", 
-                "organization_url": "https://www.niagads.org", 
+                "organization_url": urls.niagads,
                 "description": "API Calls for accessing the NIAGADS Alzheimer's Genomics Database (" + genomeBuild + ")"}
