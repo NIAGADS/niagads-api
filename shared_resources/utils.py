@@ -83,3 +83,11 @@ def to_snake_case(key):
 
 def regex_replace(pattern, replacement, value):
     return re.sub(pattern, replacement, value)
+
+
+def regex_extract(pattern, value):
+    ''' assumes one extract subset only '''
+    result = re.search(pattern, value)
+    if result is not None:
+        return result.group(1)
+    return None
