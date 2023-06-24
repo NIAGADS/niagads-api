@@ -1,9 +1,22 @@
-from shared_resources.utils import is_number, is_non_numeric, is_null, to_snake_case
+import logging
+from shared_resources import utils
+from shared_resources.constants import URLS
+
+logger = logging.getLogger(__name__)
 
 def metadata_parser(metadata):
     ''' iterate over list of one or more raw metadata 
     objects from FILER API and standardize'''
     return { FILERMetadataParser(m).parse() for m in metadata }
+
+def split_replicates(replicates):
+    if utils.is_null(replicates, True):
+        return None
+    
+    if utils.is_non_numeric(replicates) and ',' in replicates:
+        return replicates.replace(' ', '').split(',')
+    
+    return [str(replicates)] # covert to list of 1 string
 
 
 class FILERMetadataParser:
@@ -33,6 +46,17 @@ class FILERMetadataParser:
         self.metadata = data
 
 
+    def __parse_value(self, value):
+        ''' catch numbers, booleans, and nulls '''
+        if utils.is_null(value, naIsNull=True):
+            return None
+        
+        if utils.is_number(value):
+            return utils.to_numeric(value)
+            
+        return value
+
+
     def __parse_feature_type(self):
         featureType = self.metadata['assay'].split(" ")[0]
         return 1
@@ -46,77 +70,122 @@ class FILERMetadataParser:
         return 1
 
 
-    def __split_replicates(self, replicates):
-        if is_null(replicates, True):
-            return None
+    def __parse_data_source(self):
+        source, version = self.metadata('data_source').split('_', 1)
+        if source == 'FANTOM5_Enhancers'and 'slide' in self.metadata['link_out_url']:
+            version = 'SlideBase'
+        if 'INFERNO' in source: # don't split on the _
+            source = self.metadata['data_source']
         
-        if is_non_numeric(replicates) and ',' in replicates:
-            return replicates.replace(' ', '').split(',')
-        
-        return [str(replicates)] # covert to list of 1 string
-
-
-    def __parse_replicates(self):
-        biological = self.__split_replicates(self.metadata['biological_replicates'])
-        technical = self.__split_replicates(self.metadata['technical_replicate'])
-        
-        if biological is None: 
-            if technical is None: return None
-            return { "technical": technical}
-        if technical is None:
-            return { "biological": biological}
-        
-        return { "technical": technical, "biological": biological}
-
-
-    def __parse_datasource(self):
-        dsInfo = { 
-                "name": self.metadata['data_source'],
-                "url": self.metadata['link_out_url'],
-                "experiment_id": self.metadata['encode_experiment_id'],
-                }
-    
-        # project (strip from trackName)
-        return dsInfo
+        self.metadata.update( {
+                "data_source": source,
+                "data_source_version": version
+        })
     
     
     def __parse_file(self):
         return 1
+    
+    
+    def __parse_generic_url(self, url):
+        ''' handle common fixes to all URL fields '''
+        if 'wget' in url:
+            url = url.split(' ')[1]
+            
+        return url
+    
+    
+    def __parse_internal_url(self, url):
+        ''' correct domain and other formatting issues
+        ''' 
+        url = self.__parse_generic_url(url)           
+        return utils.regex_replace('^[^GADB]*', URLS.filer_downloads, url)
+    
+    
+    def __parse_urls(self):
+        self.metadata.update({
+                "url": self.__parse_internal_url(self.metadata['processed_file_download_url']),
+                "raw_file_url": self.__parse_internal_url(self.metadata['raw_file_download']),
+                "download_url": self.__parse_generic_url(self.metadata['raw_file_url'])
+        })
+        
+        
+    def __parse_genome_build(self):
+        if 'hg38' in self.metadata['genome_build']:
+            self.metadata['genome_build'] = 'GRCh38'
+        else:
+            self.metadata['genome_build'] = 'GRCh37'
+    
+    
+    def __parse_is_lifted(self):
+        lifted = None
+        if 'lifted' in self.metadata['genome_build'] or 'lifted' in self.metadata['data_source']:
+            lifted = True
+        self.metadata.update({"is_lifted": lifted})
 
 
     def __rename_key(self, key):
         match key:
+            case 'track_description':
+                return 'description'
             case 'antibody':
                 return 'antibody_target'
-            case 'tabix_file_url':
-                return 'indexURL' # for IGV consistency
+            case 'downloaded_date':
+                return 'download_date'
+            case 'processed_file_md5':
+                return 'md5sum'
+            case 'raw_file_md5':
+                return 'raw_file_md5sum'
+            case 'technical_replicate': # for consistency
+                return 'technical_replicates'
             case _:
                 return key
             
 
     def __transform_key(self, key):
         # camel -> snake + lower case
-        tValue = to_snake_case(key)
+        tValue = utils.to_snake_case(key)
         tValue = tValue.replace(" ", "_")
         tValue = tValue.replace("(s)", "s")
         return self.__rename_key(tValue)
         
         
-    def __transform_keys(self):
-        self.metadata = { self.__transform_key(key): value for key, value in self.metadata.items()}
+    def __transform_key_values(self):
+        ''' transform keys and since iterating over 
+            the metadata anyway, catch nulls, numbers and convert from string
+        '''
+        self.metadata = { self.__transform_key(key): self.__parse_value(value) for key, value in self.metadata.items()}
 
 
+    def __remove_internal_attributes(self):
+        ''' remove internal attributes '''
+        internalKeys = ['link_out_url', 'date_added_to_filer', 'processed_file_download_url', 
+                'wget_command', 'tabix_index_download']
+        [self.metadata.pop(key) for key in internalKeys]
+ 
+        
     def parse(self):
         ''' parse the FILER metadata & transform/clean up 
         returns parsed / transformed metadata '''
         
-        # standardize keys
-        self.__transform_keys()
+        # standardize keys & convert nulls & numbers from string
+        self.__transform_key_values()
         
-        # build data_source object
+        # parse concatenated data points into separate attributes
+        # standardize others (e.g., urls, data sources)
+        self.__parse_is_lifted()
+        self.__parse_genome_build()
+        self.__parse_data_source()
+        self.__parse_urls()
+          
+        # remove private info
+        self.__remove_internal_attributes()
+        
         
         # return the 
         return self.metadata
+
+
 
         
 
@@ -155,3 +224,6 @@ class FILERMetadataParser:
         "tabixFileUrl": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz.tbi"
     }
     ]
+    
+# https://lisanwanglab.org/GADB/Annotationtracks/DASHRv2/Small_RNA-Seq/hg19/DASHR1_GEO_hg19/adipose1_GSE45159_peaks_annot_hg19.bed.gz.tbi
+# https://lisanwanglab.org/GADB/Annotationtracks/DASHRv2/Small_RNA-Seq/hg19/DASHR1_GEO_hg19/adipose1_GSE45159_peaks_annot_hg19.bed.gz

@@ -9,8 +9,32 @@ ADSP_VARIANTS_ACCESSION = "NG00067"
 __urls = ({
         'pubmed': 'https://pubmed.ncbi.nlm.nih.gov', 
         'niagads': 'https://www.niagads.org', 
-        'filer': 'https://tf.lisanwanglab.org/FILER',
-        'gadb_metadata': 'https://tf.lisanwanglab.org/GADB/metadata'
+        'filer_api': 'https://tf.lisanwanglab.org/FILER',
+        'filer_downloads': 'https://tf.lisanwanglab.org/GADB'
 })
 
+__datasource_urls = ({
+        'DASHR2': 'http://dashr2.lisanwanglab.org/index.php',
+        'DASHR2|small_RNA_Genes': 'http://dashr2.lisanwanglab.org/index.php',
+        'ENCODE': 'https://www.encodeproject.org',
+        'EpiMap': 'https://personal.broadinstitute.org/cboix/epimap/ChromHMM/',
+        'FANTOM5': 'http://fantom.gsc.riken.jp/5/',
+        'FANTOM5_Enhancers|SlideBase': 'http://slidebase.binf.ku.dk/',
+        'FANTOM5_Enhancers': 'https://fantom.gsc.riken.jp/5/',
+        'FactorBook': 'https://genome.ucsc.edu/index.html',
+        'FactorBook|lifted': 'https://genome.ucsc.edu/index.html',
+        'INFERNO_genomic_partition': 'http://inferno.lisanwanglab.org/index.php',
+        'GTEx|v7': 'https://gtexportal.org/home/',
+        'GTEx|v8': 'https://gtexportal.org/home/',
+        'HOMER' : 'http://homer.ucsd.edu/homer/',
+        'ROADMAP': 'http://www.roadmapepigenomics.org/',
+        'ROADMAP_Enhancers' : 'http://www.roadmapepigenomics.org/',
+        'ROADMAP|lifted': 'http://www.roadmapepigenomics.org/',
+        'Repeats' : 'http://genome.ucsc.edu/cgi-bin/hgTables',
+        'TargetScan|v7p2': 'http://www.targetscan.org/vert_72/',
+        'TargetScan|v7p2-lifted': 'http://www.targetscan.org/vert_72/' 
+})
+
+
 URLS = SimpleNamespace(**__urls)
+DATASOURCE_URLS = SimpleNamespace(**__urls)

@@ -52,6 +52,7 @@ def is_float(value):
         return True
     except ValueError:
         return False
+    
 
 def is_non_numeric(value):
     if True in [char.isdigit() for char in value]:
@@ -78,3 +79,7 @@ def is_null(value, naIsNull=False):
 def to_snake_case(key):
     ''' from https://stackoverflow.com/a/1176023 / advanced cases'''
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', key).lower()
+
+
+def regex_replace(pattern, replacement, value):
+    return re.sub(pattern, replacement, value)

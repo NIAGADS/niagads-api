@@ -1,6 +1,6 @@
 ''' GenomicsdB dataset (accession) data model '''
 from sqlalchemy.orm import column_property
-from shared_resources.db import db as gdb
+from shared_resources.db import db
 from shared_resources.fields import GenomeBuild
 
 def table(genomeBuild):
@@ -9,10 +9,10 @@ def table(genomeBuild):
     return Dataset_GRCh38 if bind_db == 'GRCh38' else Dataset_GRCh37
 
 class DatasetMixin:
-    accession = gdb.Column(gdb.String, primary_key=True)
-    name = gdb.Column(gdb.String)
-    description = gdb.Column(gdb.String)
-    attribution = gdb.Column(gdb.String)
+    accession = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String)
+    description = db.Column(db.String)
+    attribution = db.Column(db.String)
     
     @property
     def data_source(self):
@@ -32,15 +32,15 @@ class DatasetMixin:
         return self.attribution.split('|')[1] if '|' in self.attribution else None
     
    
-class Dataset_GRCh38(DatasetMixin, gdb.Model):
+class Dataset_GRCh38(DatasetMixin, db.Model):
     __bind_key__ = 'GRCh38'
     __tablename__ = 'datasetattributes'
     __table_args__ = {'schema': 'niagads', 'extend_existing':True}
-    id = gdb.synonym('accession')
+    id = db.synonym('accession')
  
-class Dataset_GRCh37(DatasetMixin, gdb.Model):
+class Dataset_GRCh37(DatasetMixin, db.Model):
     __bind_key__ = 'GRCh37'
     __tablename__ = 'datasetattributes'
     __table_args__ = {'schema': 'niagads', 'extend_existing':True}
-    id = gdb.synonym('accession')
+    id = db.synonym('accession')
  

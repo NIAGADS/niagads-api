@@ -15,7 +15,7 @@ def initialize_FILER_metadata_cache(metadataFileName, debug):
     
     try:
         # fetch the template file 
-        requestUrl = URLS.gadb_metadata + '/' + metadataFileName
+        requestUrl = URLS.filer_downloads + '/metada/' + metadataFileName
         if debug:
             logger.debug("Fetching FILER metadata from " + requestUrl)
         response = get(requestUrl)
