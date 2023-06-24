@@ -81,6 +81,8 @@ def to_snake_case(key):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', key).lower()
 
 
+# regex wrappers to re calls to reduce re imports
+# =================================================
 def regex_replace(pattern, replacement, value):
     return re.sub(pattern, replacement, value)
 
