@@ -19,8 +19,8 @@ __datasource_urls = ({
         'ENCODE': 'https://www.encodeproject.org',
         'EpiMap': 'https://personal.broadinstitute.org/cboix/epimap/ChromHMM/',
         'FANTOM5': 'http://fantom.gsc.riken.jp/5/',
-        'FANTOM5_Enhancers|SlideBase': 'http://slidebase.binf.ku.dk/',
-        'FANTOM5_Enhancers': 'https://fantom.gsc.riken.jp/5/',
+        'FANTOM5|Enhancers_SlideBase': 'http://slidebase.binf.ku.dk/',
+        'FANTOM5|Enhancers': 'https://fantom.gsc.riken.jp/5/',
         'FactorBook': 'https://genome.ucsc.edu/index.html',
         'FactorBook|lifted': 'https://genome.ucsc.edu/index.html',
         'INFERNO_genomic_partition': 'http://inferno.lisanwanglab.org/index.php',
@@ -28,7 +28,7 @@ __datasource_urls = ({
         'GTEx|v8': 'https://gtexportal.org/home/',
         'HOMER' : 'http://homer.ucsd.edu/homer/',
         'ROADMAP': 'http://www.roadmapepigenomics.org/',
-        'ROADMAP_Enhancers' : 'http://www.roadmapepigenomics.org/',
+        'ROADMAP|Enhancers' : 'http://www.roadmapepigenomics.org/',
         'ROADMAP|lifted': 'http://www.roadmapepigenomics.org/',
         'Repeats' : 'http://genome.ucsc.edu/cgi-bin/hgTables',
         'TargetScan|v7p2': 'http://www.targetscan.org/vert_72/',
@@ -37,4 +37,4 @@ __datasource_urls = ({
 
 
 URLS = SimpleNamespace(**__urls)
-DATASOURCE_URLS = SimpleNamespace(**__urls)
+DATASOURCE_URLS = SimpleNamespace(**__datasource_urls)

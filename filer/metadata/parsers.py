@@ -72,8 +72,8 @@ class FILERMetadataParser:
 
     def __parse_data_source(self):
         source, version = self.metadata('data_source').split('_', 1)
-        if source == 'FANTOM5_Enhancers'and 'slide' in self.metadata['link_out_url']:
-            version = 'SlideBase'
+        if source == 'FANTOM5'and 'slide' in self.metadata['link_out_url']:
+            version = version + '_SlideBase'
         if 'INFERNO' in source: # don't split on the _
             source = self.metadata['data_source']
         
