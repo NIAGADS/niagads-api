@@ -5,18 +5,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "NIAGADS API",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "app.py",
+                "FLASK_APP": "app:create_app(None)",
                 "FLASK_DEBUG": "1"
             },
             "args": [
                 "run",
                 "--no-debugger",
-                "--no-reload"
+                //"--no-reload",
+            ],
+            "jinja": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Initialize Cache",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app:create_app(initCacheDB='all')",
+                "FLASK_DEBUG": "1",
+                "FLASK_ENV": "development"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                //"--no-reload",
             ],
             "jinja": true,
             "justMyCode": false

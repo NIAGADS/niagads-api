@@ -1,38 +1,33 @@
 """
 Custom Parameter Type: GenomeBuild 
 GRCh37 or GRCh38
-
 """
 
 import re
 from marshmallow import fields
 from werkzeug.exceptions import BadRequest
 
-PATTERN = 'GRCh(37|38)'
+PATTERN = re.compile('GRCh(37|38)') # saves a little time
 
 class GenomeBuild(fields.Raw):
     """Field that captures the genome build
     """
-
-    def _validate(self, value):
-        """validate value and fix case
-        
-        Keyword arguments:
-        value -- field value
-        Return: throw error or valid flag
-        """
-
-        # check against regexp
-        return bool(re.match(PATTERN, value))
-
-
+    
     def _deserialize(self, value, attr, data, **kwargs):             
-        value = value.lower()
-        value = value.replace('grch', 'GRCh')
-        if self._validate(value):
-            return value
-        else:
-            raise BadRequest("Invalid genome build in route: '" + value + "'; Genome Build should be one of: GRCh37, GRCh38")
+        value = value.lower().replace('grch', 'GRCh')
+        match value:
+            case 'hg38':
+                return 'GRCh38'
+            case 'hg19':
+                return 'GRCh37'
+            case _:
+                test = re.match(PATTERN, value)
+                if bool(test):
+                    return test.group(0)
+                else:
+                    raise BadRequest("Invalid genome build in route: '" + value
+                            + "'; Genome Build should be one of: GRCh37, GRCh38, hg19, hg38")
+        
         
     def format(self, value):
         return value

@@ -1,5 +1,5 @@
 ''' GenomicsdB gene data model '''
-from shared_resources.db import genomicsdb as gdb
+from shared_resources.db import db as gdb
 from sqlalchemy import text, select
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import column_property

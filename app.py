@@ -1,12 +1,11 @@
-from flask import Flask
+import logging
+from os import _exit
+from flask import Flask, send_file
 
 # local imports
-from shared_resources.db import genomicsdb
+from shared_resources.db import db, create_tables
 from shared_resources import niagads_api as api
 from config import set_app_config
-import logging
-from os import path
-from flask import send_file
 
 def configure_logging(app: Flask):
     logging.basicConfig(format='[%(asctime)s] %(levelname)s %(name)s: %(message)s')
@@ -16,10 +15,26 @@ def configure_logging(app: Flask):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
+    return logging.getLogger(__name__)
 
-app = Flask(__name__)
-configure_logging(app)
-app.config.update(set_app_config())
+def create_app(initCacheDB):
+    
+    app = Flask(__name__)
+    logger = configure_logging(app)
+    app.config.update(set_app_config(initCacheDB != None))
+    api.init_app(app)
+    db.init_app(app)   
+    
+    if initCacheDB:
+        logger.info("'initCacheDB' parameter passed, initializing cache database: " + initCacheDB)
+        create_tables(app, initCacheDB.lower())
+        logger.info("DONE initializing cache DB: " + initCacheDB + " / please restart with FLASK_APP=app:create_app(None)")
+        _exit(0)
+
+    return app
+
+
+    
 
 # custom swagger-ui? 
 # @app.route('/swaggerui/swagger-ui.css')
@@ -28,10 +43,16 @@ app.config.update(set_app_config())
 #          path.join(app.root_path, 'ui/custom_swagger.css') 
 #       )
 
-api.init_app(app)
-genomicsdb.init_app(app)
-
 
 if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('--initCacheDB', choices=['all', 'cache', 'FILER'],
+            help="initialize or reinitialize DB cache: FILER - FILER metadata, cache - query cache, all - both")
+    args = parser.parse_args()
+
+    app = create_app(args.initDB)
+    
     app.run()
+    
     

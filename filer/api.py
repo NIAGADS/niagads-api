@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from shared_resources.schemas.about import api_root_information
 from shared_resources.fields.genome_build import GenomeBuild
 from shared_resources.parsers import arg_parsers as parsers
-from shared_resources.urls import external as urls
+from shared_resources.constants import URLS
 
 # child APIs
 from filer.track.api import api as track_api
@@ -22,8 +22,8 @@ class Filer(Resource):
     def get(self):
         args = parsers.parse_args()
         return {"endpoint": "/filer",
-                "resource_url": urls.filer,
+                "resource_url": URLS.filer,
                 "organization": "NIAGADS", 
-                "organization_url": urls.niagads,
+                "organization_url": URLS.niagads,
                 "description": description
                 }

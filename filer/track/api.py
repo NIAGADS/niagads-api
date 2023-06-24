@@ -4,7 +4,7 @@ import logging
 from flask_restx import Namespace, Resource
 
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers
-from shared_resources.urls import external as urls
+from shared_resources.constants import URLS
 from shared_resources.schemas.track import metadata
 
 from filer.utils import make_request

@@ -76,5 +76,5 @@ def is_null(value, naIsNull=False):
 
 
 def to_snake_case(key):
-    pattern = re.compile(r'(?<!^)(?=[A-Z])')
-    return pattern.sub('_', key).lower()
+    ''' from https://stackoverflow.com/a/1176023 / advanced cases'''
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', key).lower()

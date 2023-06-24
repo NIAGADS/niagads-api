@@ -1,6 +1,6 @@
 ''' GenomicsdB dataset (accession) data model '''
 from sqlalchemy.orm import column_property
-from shared_resources.db import genomicsdb as gdb
+from shared_resources.db import db as gdb
 from shared_resources.fields import GenomeBuild
 
 def table(genomeBuild):

@@ -1,6 +1,5 @@
 from shared_resources.utils import is_number, is_non_numeric, is_null, to_snake_case
 
-
 def metadata_parser(metadata):
     ''' iterate over list of one or more raw metadata 
     objects from FILER API and standardize'''
@@ -31,14 +30,19 @@ class FILERMetadataParser:
     '''
     
     def __init__(self, data):
-        self.metadata = self.parse(data)
+        self.metadata = data
 
 
-    def __parse_assay(self, assay):
+    def __parse_feature_type(self):
+        featureType = self.metadata['assay'].split(" ")[0]
+        return 1
+
+    def __parse_assay(self):
+        assayInfo = self.metadata['assay'].split(" ")
         return 1
 
 
-    def __parse_name(self, trackName):
+    def __parse_name(self):
         return 1
 
 
@@ -99,7 +103,7 @@ class FILERMetadataParser:
         
         
     def __transform_keys(self):
-        return { self.__transform_key(key): value for key, value in self.metadata.items()}
+        self.metadata = { self.__transform_key(key): value for key, value in self.metadata.items()}
 
 
     def parse(self):
