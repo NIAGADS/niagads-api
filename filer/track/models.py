@@ -1,5 +1,6 @@
 ''' FILER track metadata model '''
 from sqlalchemy.orm import column_property
+
 from shared_resources.db import db
 from shared_resources.constants import DATASOURCE_URLS
 from filer.metadata.parsers import split_replicates
@@ -28,6 +29,9 @@ class Track(db.Model):
     biological_replicates = db.Column(db.String)
     technical_replicates = db.Column(db.String)
     antibody_target = db.Column(db.String)
+    experiment_id = db.Column(db.String)
+    project = db.Column(db.String)
+    experiment_info = db.Column(db.String)
     
     # provenance
     data_source = db.Column(db.String)

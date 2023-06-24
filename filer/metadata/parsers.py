@@ -56,10 +56,10 @@ class FILERMetadataParser:
             
         return value
 
-
     def __parse_feature_type(self):
         featureType = self.metadata['assay'].split(" ")[0]
         return 1
+
 
     def __parse_assay(self):
         assayInfo = self.metadata['assay'].split(" ")
@@ -67,6 +67,33 @@ class FILERMetadataParser:
 
 
     def __parse_name(self):
+        #     "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) 
+        # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
+        nameInfo = [self.metadata['data_source']]
+        if self.metadata['data_source_version']:
+            nameInfo.append('(' + self.metadata['data_source_version'] + ')')
+        nameInfo.append(self.metadata['cell_type'], self.metadata['assay'])
+        if self.metadata['antibody_target']:
+            nameInfo.append(self.metadata['antibody_target'])
+        nameInfo.append(self.metadata['output_type'])
+        
+        self.metadata.update({'name': ' '.join(nameInfo)})
+        
+    
+    def __parse_experiment_info(self):
+        # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD]",
+        id = self.metadata['encode_experiment_id']
+        info =  self.metadata['track_description']
+        project = utils.regex_extract('Project=(.+);*')
+        
+        self.metadata.update({
+                "experiment_id": id,
+                "experiment_info": info,
+                "project": project
+        })
+        
+
+    def __parse_description(self):
         return 1
 
 
@@ -126,8 +153,6 @@ class FILERMetadataParser:
 
     def __rename_key(self, key):
         match key:
-            case 'track_description':
-                return 'description'
             case 'antibody':
                 return 'antibody_target'
             case 'downloaded_date':
@@ -160,7 +185,7 @@ class FILERMetadataParser:
     def __remove_internal_attributes(self):
         ''' remove internal attributes '''
         internalKeys = ['link_out_url', 'date_added_to_filer', 'processed_file_download_url', 
-                'wget_command', 'tabix_index_download']
+                'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id']
         [self.metadata.pop(key) for key in internalKeys]
  
         
@@ -173,10 +198,15 @@ class FILERMetadataParser:
         
         # parse concatenated data points into separate attributes
         # standardize others (e.g., urls, data sources)
+        # TODO: description, assay, type
+        # TODO: classifications, output type,  format etc
         self.__parse_is_lifted()
         self.__parse_genome_build()
         self.__parse_data_source()
         self.__parse_urls()
+        self.__parse_experiment_info()
+        self.__parse_name()
+        
           
         # remove private info
         self.__remove_internal_attributes()
