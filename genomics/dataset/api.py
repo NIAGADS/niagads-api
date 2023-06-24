@@ -51,7 +51,8 @@ class Dataset(Resource):
         return dataset
 
 filter_parser = parsers.filters.copy()
-filter_parser.replace_argument('type', help="type of dataset or track; what kind of information", default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
+filter_parser.replace_argument('type', help="type of dataset or track; what kind of information", 
+        default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
 filter_parser = merge_parsers(filter_parser, parsers.genome_build)
 
 @api.route('/', doc={"description": "retrieve meta-data for datasets by type"})

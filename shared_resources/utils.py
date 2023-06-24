@@ -1,3 +1,5 @@
+import re
+
 def extract_json_value(attribute, field):
     """extract value from field in a JSON attribute
 
@@ -11,6 +13,7 @@ def extract_json_value(attribute, field):
         return None
     
     return attribute[field] if field in attribute else None
+
 
 def extract_row_data(queryResultRow):
     data = queryResultRow._data
@@ -64,9 +67,14 @@ def to_numeric(value):
         return float(value) # raises ValueError again that will be thrown
 
 
-def is_null(value, includeNA=False):
+def is_null(value, naIsNull=False):
     if value is None:
         return True
-    if includeNA and value in ['NA', 'not applicable', 'Not applicable', '.']:
+    if naIsNull and value in ['NA', 'not applicable', 'Not applicable', '.']:
         return True
     return False
+
+
+def to_snake_case(key):
+    pattern = re.compile(r'(?<!^)(?=[A-Z])')
+    return pattern.sub('_', key).lower()
