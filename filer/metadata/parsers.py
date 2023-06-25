@@ -55,36 +55,152 @@ class FILERMetadataParser:
             return utils.to_numeric(value)
             
         return value
+    
+    
+    def __assign_feature_by_assay(self):
+        assay = self.metadata['assay']
+        if assay is not None:
+            if 'QTL' in assay:
+                return assay
+            if 'TF' in assay:
+                return "transcription factor binding site"
+            if 'Histone' in assay:
+                return "histone modification"
+            if assay in ["Small RNA-Seq", "short total RNA-Seq"]:
+                return "small non-coding RNA"     
+        
+        return None
+    
+    
+    def __assign_feature_by_analysis(self):
+        analysis = self.metadata['analysis']
+        if analysis is not None:
+            if analysis == "annotation":
+                # check output type
+                if 'gene' in self.metadata["output_type"].lower():
+                    return "gene"
+                
+                # check track_description
+                # e.g., All lncRNA annotations
+                if 'annotation' in self.metadata["track_description"]:
+                    return utils.regex_extract("All (.+) annotation" , self.metadata["track_description"])
+            if 'QTL' in analysis:
+                return analysis
+        
+        return None
+    
+    
+    def __assign_feature_by_output_type(self):
+        outputType = self.metadata["output_type"]
+        if 'enhancer' in outputType.lower():
+            return "enhancer"    
+        
+        # peaks are too generic, ignore for this
+        # but there are some "enhancer peaks", which is why
+        # this test is 2nd
+        if 'peaks' in outputType:
+            return None  
+        if 'microrna target' in outputType.lower():
+            return 'microRNA target'  
+        if 'microRNA' in outputType: 
+            return "microRNA"     
+        if 'exon' in outputType:
+            return "exon"        
+        if 'transcription start sites' in outputType or 'TSS' in outputType:
+            return "transcription start site"      
+        if 'transcribed fragments' in outputType:
+            return 'transcribed fragment'
+        
+        if outputType in ["footprints", "hotspots"]:
+            # TODO: this needs to be updated, as it varies based on the assay type
+            return outputType
+        
+        # should have been already handled, but just in case
+        if outputType in ["clusters", "ChromHMM", "Genomic Partition"]: 
+            return None 
+        
+        if outputType.startswith("Chromatin"): # standardize case
+            return outputType.lower()
+        
+        return outputType
+    
+    
+    def __assign_feature_by_classification(self):
+        classification = self.metadata["classification"]
+        if 'histone-mark' in classification:
+            return "histone modification"
+        if classification == "CTCF peaks":
+            return "CTCF-binding site"
+        if classification == "RNA-PET clusters":
+            return "RNA-PET cluster"
+        
+        return None
+    
+        
+    def __parse_feature_type(self): 
+        feature = self.__assign_feature_by_assay()        
+        if feature is None: feature = self.__assign_feature_by_analysis()
+        if feature is None: feature = self.__assign_feature_by_classification() 
+        if feature is None: feature = self.__assign_feature_by_output_type()
 
-    def __parse_feature_type(self):
-        featureType = self.metadata['assay'].split(" ")[0]
-        return 1
-
+        if feature is None:
+            raise ValueError("No feature type mapped for track: ", self.metadata)
+        self.metadata.update({"feature_type": feature})
+        
 
     def __parse_assay(self):
-        assayInfo = self.metadata['assay'].split(" ")
-        return 1
+        analysis = None
+        assay = self.metadata['assay']
+        
+        if assay == 'ChromHMM_enhancer':
+            assay = 'ChromHMM'
+            
+        elif assay.lower() == 'annotation':
+            assay = None
+            analysis = "annotation"
+        
+        elif assay in ['ChromHMM', "eQTL", "sQTL"]:
+            analysis = assay
+            assay = None
+            
+        # TODO: need to check output type b/c assay type may need to be updated
+        # e.g. DNASeq Footprinting if output_type == footprints
+        elif 'DNASeq' in assay:
+            1
+                      
+        self.metadata.update({"assay": assay, "analysis": analysis})
 
 
     def __parse_name(self):
         #     "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) 
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
         nameInfo = [self.metadata['data_source']]
+        
         if self.metadata['data_source_version']:
             nameInfo.append('(' + self.metadata['data_source_version'] + ')')
-        nameInfo.append(self.metadata['cell_type'], self.metadata['assay'])
+        
+        if self.metadata['cell_type']:    
+            nameInfo.append(self.metadata['cell_type'])
+            
         if self.metadata['antibody_target']:
             nameInfo.append(self.metadata['antibody_target'])
-        nameInfo.append(self.metadata['output_type'])
         
-        self.metadata.update({'name': ' '.join(nameInfo)})
+        if 'DASHR2' in self.metadata['output_type']:
+            nameInfo.append(self.metadata['output_type'].replace('DASHR2 ', ''))
+        else:
+            nameInfo.append(self.metadata['assay'])
+            nameInfo.append(self.metadata['output_type'])
+   
+        name = self.metadata['identifier'] + ': ' + ' '.join(nameInfo) 
+        
+        self.metadata.update({"name": name})
         
     
     def __parse_experiment_info(self):
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD]",
         id = self.metadata['encode_experiment_id']
         info =  self.metadata['track_description']
-        project = utils.regex_extract('Project=(.+);*')
+        project = utils.regex_extract('Project=(.+);*', info)
         
         self.metadata.update({
                 "experiment_id": id,
@@ -98,7 +214,9 @@ class FILERMetadataParser:
 
 
     def __parse_data_source(self):
-        source, version = self.metadata('data_source').split('_', 1)
+        dsInfo = self.metadata['data_source'].split('_', 1)
+        source = dsInfo[0]
+        version = dsInfo[1] if len(dsInfo) > 1 else None
         if source == 'FANTOM5'and 'slide' in self.metadata['link_out_url']:
             version = version + '_SlideBase'
         if 'INFERNO' in source: # don't split on the _
@@ -198,7 +316,8 @@ class FILERMetadataParser:
         
         # parse concatenated data points into separate attributes
         # standardize others (e.g., urls, data sources)
-        # TODO: description, assay, type
+        # dropping description; allow use cases to piece together out of the other info
+        # TODO: feature type
         # TODO: classifications, output type,  format etc
         self.__parse_is_lifted()
         self.__parse_genome_build()
@@ -206,6 +325,8 @@ class FILERMetadataParser:
         self.__parse_urls()
         self.__parse_experiment_info()
         self.__parse_name()
+        self.__parse_assay()
+        self.__parse_feature_type()
         
           
         # remove private info
