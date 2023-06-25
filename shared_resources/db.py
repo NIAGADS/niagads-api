@@ -12,10 +12,11 @@ logger = logging.getLogger(__name__)
 
 def initialize_FILER_metadata_cache(metadataFileName, debug):
     ''' initializes FILER metadta from the metadata template file '''
-    
+    lineNum = 0
+    currentLine = None
     try:
         # fetch the template file 
-        requestUrl = URLS.filer_downloads + '/metada/' + metadataFileName
+        requestUrl = URLS.filer_downloads + '/metadata/' + metadataFileName
         if debug:
             logger.debug("Fetching FILER metadata from " + requestUrl)
         response = get(requestUrl)
@@ -26,17 +27,21 @@ def initialize_FILER_metadata_cache(metadataFileName, debug):
         if debug:
             logger.debug("Retrieved metadata for " + str(len(metadata)) + " tracks.")
     
+
         for line in metadata:
+            lineNum += 1
+            currentLine = line
             # parse & create Metadata object
             track = FILERMetadataParser(dict(zip(header, line.split('\t')))).parse()
             # db.session.add(Metadata(track))
             
-        db.session.commit()
+        # db.session.commit()
         
     except HTTPError as err:
         raise HTTPError("Unable to fetch FILER metadata", err)
     except Exception as err:
-        raise IOError("Unable to parse FILER metadata", err)
+        raise RuntimeError("Unable to parse FILER metadata, problem with line #: " 
+                + str(lineNum), currentLine , err)
 
 
 def create_tables(app, bind):
