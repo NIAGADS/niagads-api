@@ -1,4 +1,7 @@
 import logging
+
+from urllib.parse import unquote
+
 from shared_resources import utils
 from shared_resources.constants import URLS
 
@@ -43,7 +46,7 @@ class FILERMetadataParser:
     '''
     
     def __init__(self, data):
-        self.metadata = data
+        self.__metadata = data
 
 
     def __parse_value(self, value):
@@ -58,7 +61,7 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_assay(self):
-        assay = self.metadata['assay']
+        assay = self.__metadata['assay']
         if assay is not None:
             if 'QTL' in assay:
                 return assay
@@ -73,17 +76,17 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_analysis(self):
-        analysis = self.metadata['analysis']
+        analysis = self.__metadata['analysis']
         if analysis is not None:
             if analysis == "annotation":
                 # check output type
-                if 'gene' in self.metadata["output_type"].lower():
+                if 'gene' in self.__metadata["output_type"].lower():
                     return "gene"
                 
                 # check track_description
                 # e.g., All lncRNA annotations
-                if 'annotation' in self.metadata["track_description"]:
-                    return utils.regex_extract("All (.+) annotation" , self.metadata["track_description"])
+                if 'annotation' in self.__metadata["track_description"]:
+                    return utils.regex_extract("All (.+) annotation" , self.__metadata["track_description"])
             if 'QTL' in analysis:
                 return analysis
         
@@ -91,15 +94,10 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_output_type(self):
-        outputType = self.metadata["output_type"]
+        outputType = self.__metadata["output_type"]
         if 'enhancer' in outputType.lower():
             return "enhancer"    
         
-        # peaks are too generic, ignore for this
-        # but there are some "enhancer peaks", which is why
-        # this test is 2nd
-        if 'peaks' in outputType:
-            return None  
         if 'microrna target' in outputType.lower():
             return 'microRNA target'  
         if 'microRNA' in outputType: 
@@ -122,11 +120,19 @@ class FILERMetadataParser:
         if outputType.startswith("Chromatin"): # standardize case
             return outputType.lower()
         
+        # peaks are too generic
+        # TODO: handle peaks & correctly map, for now
+        # just return
+        # but there are some "enhancer peaks", which is why
+        # this test is 2nd
+        if 'peaks' in outputType:
+            return outputType  
+        
         return outputType
     
     
     def __assign_feature_by_classification(self):
-        classification = self.metadata["classification"]
+        classification = self.__metadata["classification"]
         if 'histone-mark' in classification:
             return "histone modification"
         if classification == "CTCF peaks":
@@ -144,13 +150,13 @@ class FILERMetadataParser:
         if feature is None: feature = self.__assign_feature_by_output_type()
 
         if feature is None:
-            raise ValueError("No feature type mapped for track: ", self.metadata)
-        self.metadata.update({"feature_type": feature})
+            raise ValueError("No feature type mapped for track: ", self.__metadata)
+        self.__metadata.update({"feature_type": feature})
         
 
     def __parse_assay(self):
         analysis = None
-        assay = self.metadata['assay']
+        assay = self.__metadata['assay']
         
         if assay == 'ChromHMM_enhancer':
             assay = 'ChromHMM'
@@ -168,41 +174,46 @@ class FILERMetadataParser:
         elif 'DNASeq' in assay:
             1
                       
-        self.metadata.update({"assay": assay, "analysis": analysis})
+        self.__metadata.update({"assay": assay, "analysis": analysis})
 
 
     def __parse_name(self):
         #     "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) 
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
-        nameInfo = [self.metadata['data_source']]
+        nameInfo = [self.__metadata['data_source']]
         
-        if self.metadata['data_source_version']:
-            nameInfo.append('(' + self.metadata['data_source_version'] + ')')
+        if self.__metadata['data_source_version']:
+            nameInfo.append('(' + self.__metadata['data_source_version'] + ')')
         
-        if self.metadata['cell_type']:    
-            nameInfo.append(self.metadata['cell_type'])
+        if self.__metadata['cell_type']:    
+            biosample = self.__metadata['cell_type']
+            if utils.is_number(biosample):
+                logger.debug("Found numeric cell_type - " + biosample + " - for track " + self.__metadata['identifier'])
+                biosample = unquote(self.__metadata['file_name']).split('.')[0]
+                logger.debug("Updated to " + biosample + " from file name = " + self.__metadata['file_name'])
+            nameInfo.append(biosample)
             
-        if self.metadata['antibody_target']:
-            nameInfo.append(self.metadata['antibody_target'])
+        if self.__metadata['antibody_target']:
+            nameInfo.append(self.__metadata['antibody_target'])
         
-        if 'DASHR2' in self.metadata['output_type']:
-            nameInfo.append(self.metadata['output_type'].replace('DASHR2 ', ''))
+        if 'DASHR2' in self.__metadata['output_type']:
+            nameInfo.append(self.__metadata['output_type'].replace('DASHR2 ', ''))
         else:
-            nameInfo.append(self.metadata['assay'])
-            nameInfo.append(self.metadata['output_type'])
+            nameInfo.append(self.__metadata['assay'])
+            nameInfo.append(self.__metadata['output_type'])
    
-        name = self.metadata['identifier'] + ': ' + ' '.join(nameInfo) 
+        name = self.__metadata['identifier'] + ': ' + ' '.join(nameInfo) 
         
-        self.metadata.update({"name": name})
+        self.__metadata.update({"name": name})
         
     
     def __parse_experiment_info(self):
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD]",
-        id = self.metadata['encode_experiment_id']
-        info =  self.metadata['track_description']
+        id = self.__metadata['encode_experiment_id']
+        info =  self.__metadata['track_description']
         project = utils.regex_extract('Project=(.+);*', info)
         
-        self.metadata.update({
+        self.__metadata.update({
                 "experiment_id": id,
                 "experiment_info": info,
                 "project": project
@@ -214,15 +225,15 @@ class FILERMetadataParser:
 
 
     def __parse_data_source(self):
-        dsInfo = self.metadata['data_source'].split('_', 1)
+        dsInfo = self.__metadata['data_source'].split('_', 1)
         source = dsInfo[0]
         version = dsInfo[1] if len(dsInfo) > 1 else None
-        if source == 'FANTOM5'and 'slide' in self.metadata['link_out_url']:
+        if source == 'FANTOM5'and 'slide' in self.__metadata['link_out_url']:
             version = version + '_SlideBase'
         if 'INFERNO' in source: # don't split on the _
-            source = self.metadata['data_source']
+            source = self.__metadata['data_source']
         
-        self.metadata.update( {
+        self.__metadata.update( {
                 "data_source": source,
                 "data_source_version": version
         })
@@ -248,25 +259,25 @@ class FILERMetadataParser:
     
     
     def __parse_urls(self):
-        self.metadata.update({
-                "url": self.__parse_internal_url(self.metadata['processed_file_download_url']),
-                "raw_file_url": self.__parse_internal_url(self.metadata['raw_file_download']),
-                "download_url": self.__parse_generic_url(self.metadata['raw_file_url'])
+        self.__metadata.update({
+                "url": self.__parse_internal_url(self.__metadata['processed_file_download_url']),
+                "raw_file_url": self.__parse_internal_url(self.__metadata['raw_file_download']),
+                "download_url": self.__parse_generic_url(self.__metadata['raw_file_url'])
         })
         
         
     def __parse_genome_build(self):
-        if 'hg38' in self.metadata['genome_build']:
-            self.metadata['genome_build'] = 'GRCh38'
+        if 'hg38' in self.__metadata['genome_build']:
+            self.__metadata['genome_build'] = 'GRCh38'
         else:
-            self.metadata['genome_build'] = 'GRCh37'
+            self.__metadata['genome_build'] = 'GRCh37'
     
     
     def __parse_is_lifted(self):
         lifted = None
-        if 'lifted' in self.metadata['genome_build'] or 'lifted' in self.metadata['data_source']:
+        if 'lifted' in self.__metadata['genome_build'] or 'lifted' in self.__metadata['data_source']:
             lifted = True
-        self.metadata.update({"is_lifted": lifted})
+        self.__metadata.update({"is_lifted": lifted})
 
 
     def __rename_key(self, key):
@@ -297,14 +308,14 @@ class FILERMetadataParser:
         ''' transform keys and since iterating over 
             the metadata anyway, catch nulls, numbers and convert from string
         '''
-        self.metadata = { self.__transform_key(key): self.__parse_value(value) for key, value in self.metadata.items()}
+        self.__metadata = { self.__transform_key(key): self.__parse_value(value) for key, value in self.__metadata.items()}
 
 
     def __remove_internal_attributes(self):
         ''' remove internal attributes '''
         internalKeys = ['link_out_url', 'date_added_to_filer', 'processed_file_download_url', 
                 'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id']
-        [self.metadata.pop(key) for key in internalKeys]
+        [self.__metadata.pop(key) for key in internalKeys]
  
         
     def parse(self):
@@ -328,13 +339,11 @@ class FILERMetadataParser:
         self.__parse_assay()
         self.__parse_feature_type()
         
-          
         # remove private info
         self.__remove_internal_attributes()
         
-        
         # return the 
-        return self.metadata
+        return self.__metadata
 
 
 
@@ -375,6 +384,3 @@ class FILERMetadataParser:
         "tabixFileUrl": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz.tbi"
     }
     ]
-    
-# https://lisanwanglab.org/GADB/Annotationtracks/DASHRv2/Small_RNA-Seq/hg19/DASHR1_GEO_hg19/adipose1_GSE45159_peaks_annot_hg19.bed.gz.tbi
-# https://lisanwanglab.org/GADB/Annotationtracks/DASHRv2/Small_RNA-Seq/hg19/DASHR1_GEO_hg19/adipose1_GSE45159_peaks_annot_hg19.bed.gz
