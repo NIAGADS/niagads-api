@@ -69,8 +69,14 @@ class FILERMetadataParser:
                 return "transcription factor binding site"
             if 'Histone' in assay:
                 return "histone modification"
-            if assay in ["Small RNA-Seq", "short total RNA-Seq"]:
-                return "small non-coding RNA"     
+            if assay in ["Small RNA-seq", "short total RNA-seq"]:
+                return "small non-coding RNA"   
+            if assay in ['FAIRE-seq', 'DNase-seq', 'ATAC-seq']:
+                return "chromatin accessibility"
+            if assay == 'PRO-seq':
+                return "enhancer"
+            if assay in ['eCLIP', 'iCLIP', 'RIP-seq']:
+                return "protein-RNA crosslink or binding sites"
         
         return None
     
@@ -132,12 +138,42 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_classification(self):
-        classification = self.__metadata["classification"]
+        classification = self.__metadata['classification'].lower()
         if 'histone-mark' in classification:
             return "histone modification"
-        if classification == "CTCF peaks":
-            return "CTCF-binding site"
-        if classification == "RNA-PET clusters":
+        if 'chip-seq' or 'chia-pet' in classification:
+            if 'consolidated' in classification:
+                return self.__metadata['classification'] 
+            if 'ctcf' in classification:
+                return 'CTCF-biding site'
+            if 'ctcfl' in classification:
+                return 'CTCFL-binding site'
+            if classification.startswith('tf '):
+                return 'transcription factor binding site'
+            
+            # next options should have been  caught earier, but just in case
+            assay = self.__metadata['assay']
+            if 'Histone' in assay:
+                return 'histone modification'
+            if 'TF' in assay:
+                return 'transcription factor binding site'
+            
+            # TODO: any other protein peaks?
+            # plus:
+            # FAIRE-seq peaks
+            # RIP-seq protein peaks
+            # iCLIP protein peaks
+            # eCLIP protein peaks
+            # DNase-seq peaks
+            # ATAC-seq peaks
+            # GM DNase-seq [genetic modification followed by DNase-seq] peaks
+            # ATAC-seq IDR thresholded peaks
+            # ATAC-seq pseudoreplicated peaks
+            # ATAC-seq replicated peaks
+            # ATAC-seq conservative IDR thresholded peaks
+            # PRO-seq bidirectional peaks
+
+        if classification == "rna-pet clusters":
             return "RNA-PET cluster"
         
         return None
@@ -157,6 +193,7 @@ class FILERMetadataParser:
     def __parse_assay(self):
         analysis = None
         assay = self.__metadata['assay']
+        assay = assay.replace('-Seq', '-seq') # consistency
         
         if assay == 'ChromHMM_enhancer':
             assay = 'ChromHMM'
@@ -171,8 +208,8 @@ class FILERMetadataParser:
             
         # TODO: need to check output type b/c assay type may need to be updated
         # e.g. DNASeq Footprinting if output_type == footprints
-        elif 'DNASeq' in assay:
-            1
+        elif 'DNase' in assay:
+            return "DNase-seq"
                       
         self.__metadata.update({"assay": assay, "analysis": analysis})
 
