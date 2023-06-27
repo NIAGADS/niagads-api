@@ -24,13 +24,16 @@ def initialize_FILER_metadata_cache(metadataFileName, debug):
         
         metadata = response.text.split('\n')
         header = metadata.pop(0).split('\t')
+        if metadata[-1] == '': metadata.pop()    # file may end with empty line
+            
         if debug:
             logger.debug("Retrieved metadata for " + str(len(metadata)) + " tracks.")
     
-
         for line in metadata:
+
             lineNum += 1
             currentLine = line
+        
             # parse & create Metadata object
             track = FILERMetadataParser(dict(zip(header, line.split('\t')))).parse()
             # db.session.add(Metadata(track))

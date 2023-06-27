@@ -49,6 +49,16 @@ class FILERMetadataParser:
         self.__metadata = data
 
 
+    def _get_metadata(self, attribute=None):
+        """ for debugging, to access private member & also to handle KeyErrors"""
+        if attribute is None:
+            return self.__metadata
+        
+        else: 
+            return self.__metadata[attribute] \
+                if attribute in self.__metadata else None
+    
+
     def __parse_value(self, value):
         ''' catch numbers, booleans, and nulls '''
         if utils.is_null(value, naIsNull=True):
@@ -61,7 +71,7 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_assay(self):
-        assay = self.__metadata['assay']
+        assay = self._get_metadata('assay')
         if assay is not None:
             if 'QTL' in assay:
                 return assay
@@ -82,17 +92,17 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_analysis(self):
-        analysis = self.__metadata['analysis']
+        analysis = self._get_metadata('analysis')
         if analysis is not None:
             if analysis == "annotation":
                 # check output type
-                if 'gene' in self.__metadata["output_type"].lower():
+                if 'gene' in self._get_metadata("output_type").lower():
                     return "gene"
                 
                 # check track_description
                 # e.g., All lncRNA annotations
-                if 'annotation' in self.__metadata["track_description"]:
-                    return utils.regex_extract("All (.+) annotation" , self.__metadata["track_description"])
+                if 'annotation' in self._get_metadata("track_description"):
+                    return utils.regex_extract("All (.+) annotation" , self._get_metadata("track_description"))
             if 'QTL' in analysis:
                 return analysis
         
@@ -100,7 +110,7 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_output_type(self):
-        outputType = self.__metadata["output_type"]
+        outputType = self._get_metadata("output_type")
         if 'enhancer' in outputType.lower():
             return "enhancer"    
         
@@ -138,12 +148,12 @@ class FILERMetadataParser:
     
     
     def __assign_feature_by_classification(self):
-        classification = self.__metadata['classification'].lower()
+        classification = self._get_metadata('classification').lower()
         if 'histone-mark' in classification:
             return "histone modification"
-        if 'chip-seq' or 'chia-pet' in classification:
+        if 'chip-seq' in classification or 'chia-pet' in classification:
             if 'consolidated' in classification:
-                return self.__metadata['classification'] 
+                return self._get_metadata('classification')
             if 'ctcf' in classification:
                 return 'CTCF-biding site'
             if 'ctcfl' in classification:
@@ -152,26 +162,11 @@ class FILERMetadataParser:
                 return 'transcription factor binding site'
             
             # next options should have been  caught earier, but just in case
-            assay = self.__metadata['assay']
+            assay = self._get_metadata('assay')
             if 'Histone' in assay:
                 return 'histone modification'
             if 'TF' in assay:
                 return 'transcription factor binding site'
-            
-            # TODO: any other protein peaks?
-            # plus:
-            # FAIRE-seq peaks
-            # RIP-seq protein peaks
-            # iCLIP protein peaks
-            # eCLIP protein peaks
-            # DNase-seq peaks
-            # ATAC-seq peaks
-            # GM DNase-seq [genetic modification followed by DNase-seq] peaks
-            # ATAC-seq IDR thresholded peaks
-            # ATAC-seq pseudoreplicated peaks
-            # ATAC-seq replicated peaks
-            # ATAC-seq conservative IDR thresholded peaks
-            # PRO-seq bidirectional peaks
 
         if classification == "rna-pet clusters":
             return "RNA-PET cluster"
@@ -192,7 +187,7 @@ class FILERMetadataParser:
 
     def __parse_assay(self):
         analysis = None
-        assay = self.__metadata['assay']
+        assay = self._get_metadata('assay')
         assay = assay.replace('-Seq', '-seq') # consistency
         
         if assay == 'ChromHMM_enhancer':
@@ -210,45 +205,46 @@ class FILERMetadataParser:
         # e.g. DNASeq Footprinting if output_type == footprints
         elif 'DNase' in assay:
             return "DNase-seq"
-                      
+
         self.__metadata.update({"assay": assay, "analysis": analysis})
 
 
     def __parse_name(self):
         #     "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) 
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
-        nameInfo = [self.__metadata['data_source']]
+        nameInfo = [self._get_metadata('data_source')]
         
-        if self.__metadata['data_source_version']:
-            nameInfo.append('(' + self.__metadata['data_source_version'] + ')')
+        if self._get_metadata('data_source_version'):
+            nameInfo.append('(' + self._get_metadata('data_source_version') + ')')
         
-        if self.__metadata['cell_type']:    
-            biosample = self.__metadata['cell_type']
+        if self._get_metadata('cell_type'):    
+            biosample = self._get_metadata('cell_type')
             if utils.is_number(biosample):
-                logger.debug("Found numeric cell_type - " + biosample + " - for track " + self.__metadata['identifier'])
-                biosample = unquote(self.__metadata['file_name']).split('.')[0]
-                logger.debug("Updated to " + biosample + " from file name = " + self.__metadata['file_name'])
+                logger.debug("Found numeric cell_type - " + str(biosample) + " - for track " + self._get_metadata('identifier'))
+                biosample = unquote(self._get_metadata('file_name')).split('.')[0].replace(':',' - ')
+                logger.debug("Updated to " + biosample + " from file name = " + self._get_metadata('file_name'))
             nameInfo.append(biosample)
             
-        if self.__metadata['antibody_target']:
-            nameInfo.append(self.__metadata['antibody_target'])
+        if self._get_metadata('antibody_target'):
+            nameInfo.append(self._get_metadata('antibody_target'))
         
-        if 'DASHR2' in self.__metadata['output_type']:
-            nameInfo.append(self.__metadata['output_type'].replace('DASHR2 ', ''))
+        if 'DASHR2' in self._get_metadata('output_type'):
+            nameInfo.append(self._get_metadata('output_type').replace('DASHR2 ', ''))
         else:
-            nameInfo.append(self.__metadata['assay'])
-            nameInfo.append(self.__metadata['output_type'])
+            nameInfo.append(self._get_metadata('assay'))
+            nameInfo.append(self._get_metadata('output_type'))
    
-        name = self.__metadata['identifier'] + ': ' + ' '.join(nameInfo) 
+        name = self._get_metadata('identifier') + ': ' + ' '.join(nameInfo) 
         
         self.__metadata.update({"name": name})
         
     
     def __parse_experiment_info(self):
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD]",
-        id = self.__metadata['encode_experiment_id']
-        info =  self.__metadata['track_description']
-        project = utils.regex_extract('Project=(.+);*', info)
+        id = self._get_metadata('encode_experiment_id')
+        info =  self._get_metadata('track_description')
+        project = utils.regex_extract('Project=(.+);*', info) \
+                if info is not None else None
         
         self.__metadata.update({
                 "experiment_id": id,
@@ -262,13 +258,13 @@ class FILERMetadataParser:
 
 
     def __parse_data_source(self):
-        dsInfo = self.__metadata['data_source'].split('_', 1)
+        dsInfo = self._get_metadata('data_source').split('_', 1)
         source = dsInfo[0]
         version = dsInfo[1] if len(dsInfo) > 1 else None
-        if source == 'FANTOM5'and 'slide' in self.__metadata['link_out_url']:
+        if source == 'FANTOM5'and 'slide' in self._get_metadata('link_out_url'):
             version = version + '_SlideBase'
         if 'INFERNO' in source: # don't split on the _
-            source = self.__metadata['data_source']
+            source = self._get_metadata('data_source')
         
         self.__metadata.update( {
                 "data_source": source,
@@ -297,22 +293,21 @@ class FILERMetadataParser:
     
     def __parse_urls(self):
         self.__metadata.update({
-                "url": self.__parse_internal_url(self.__metadata['processed_file_download_url']),
-                "raw_file_url": self.__parse_internal_url(self.__metadata['raw_file_download']),
-                "download_url": self.__parse_generic_url(self.__metadata['raw_file_url'])
+                "url": self.__parse_internal_url(self._get_metadata('processed_file_download_url')),
+                "raw_file_url": self.__parse_internal_url(self._get_metadata('raw_file_download')),
+                "download_url": self.__parse_generic_url(self._get_metadata('raw_file_url'))
         })
         
         
     def __parse_genome_build(self):
-        if 'hg38' in self.__metadata['genome_build']:
-            self.__metadata['genome_build'] = 'GRCh38'
-        else:
-            self.__metadata['genome_build'] = 'GRCh37'
+        genomeBuild = 'GRCh38' if 'hg38' in self._get_metadata('genome_build') else 'GRCh37'
+        self.__metadata.update({"genome_build": genomeBuild})
     
     
     def __parse_is_lifted(self):
         lifted = None
-        if 'lifted' in self.__metadata['genome_build'] or 'lifted' in self.__metadata['data_source']:
+        if 'lifted' in self._get_metadata('genome_build') \
+                    or 'lifted' in self._get_metadata('data_source'):
             lifted = True
         self.__metadata.update({"is_lifted": lifted})
 
