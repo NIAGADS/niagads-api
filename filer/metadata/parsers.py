@@ -303,10 +303,10 @@ class FILERMetadataParser:
     
     
     def __parse_file_format(self):
-        fileFormat = self._get_metadata('file_format')
-        if ' ' in fileFormat:
-            format, schema = fileFormat.split[' ']
-            self.__metadata.update({"file_format": format, "file_schema": schema})
+        formatInfo = self._get_metadata('file_format').split(' ')
+        format = formatInfo[0]
+        schema = formatInfo[1] if len(formatInfo) == 2 else formatInfo[1] + "|" + formatInfo[2]
+        self.__metadata.update({"file_format": format[0], "file_schema": schema[1]})
     
     
     def __parse_generic_url(self, url):
