@@ -83,7 +83,7 @@ class FILERMetadataParser:
         # lifeStage = self._get_metadata("life_stage")
         
         biosample = self._get_metadata("cell_type")
-        biosampleType = self._get_metadata('biosample_type').lower()
+        biosampleType = self._get_metadata('biosample_type')
         self.__metadata.update({
             "biosample_term": biosample,
             "biosample_term_id": self._get_metadata('biosamples_term_id'),
