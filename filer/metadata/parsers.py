@@ -70,6 +70,28 @@ class FILERMetadataParser:
         return value
     
     
+    # TODO map ontology terms to correct     
+    # TODO validate ontology terms against GenomicsDB
+    def __parse_biosamples(self):
+        ''' "cell type": "Middle frontal area 46",
+        "Biosample type": "Tissue",
+        "Biosamples term id": "UBERON:0006483",            
+        "Tissue category": "Brain",
+        "Track Description": "Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD",
+        "system category": "Nervous",
+        "life stage": "Adult", '''
+        # lifeStage = self._get_metadata("life_stage")
+        
+        biosample = self._get_metadata("cell_type")
+        self.__metadata.update({
+            "biosample_term": biosample,
+            "biosample_term_id": self._get_metadata('biosamples_term_id'),
+            "biosample_display": biosample,
+            "biosample_type": self._get_metadata("biosample_type").lower()
+        })
+        
+        
+            
     def __assign_feature_by_assay(self):
         assay = self._get_metadata('assay')
         if assay is not None:
@@ -126,7 +148,7 @@ class FILERMetadataParser:
             return 'transcribed fragment'
         
         if outputType in ["footprints", "hotspots"]:
-            # TODO: this needs to be updated, as it varies based on the assay type
+            # TODO: this may need to be updated, as it varies based on the assay type
             return outputType
         
         # should have been already handled, but just in case
@@ -183,6 +205,18 @@ class FILERMetadataParser:
         if feature is None:
             raise ValueError("No feature type mapped for track: ", self.__metadata)
         self.__metadata.update({"feature_type": feature})
+        
+        
+    def __parse_data_category(self):
+        category = self._get_metadata('data_category')
+        if category is not None:
+            category = category.lower()
+            if category == 'called peaks expression': 
+                category = 'called peaks'
+            if category == 'qtl':
+                category = 'QTL'
+            
+            self.__metadata.update({"data_category":category})
         
 
     def __parse_assay(self):
@@ -253,10 +287,6 @@ class FILERMetadataParser:
         })
         
 
-    def __parse_description(self):
-        return 1
-
-
     def __parse_data_source(self):
         dsInfo = self._get_metadata('data_source').split('_', 1)
         source = dsInfo[0]
@@ -272,8 +302,11 @@ class FILERMetadataParser:
         })
     
     
-    def __parse_file(self):
-        return 1
+    def __parse_file_format(self):
+        fileFormat = self._get_metadata('file_format')
+        if ' ' in fileFormat:
+            format, schema = fileFormat.split[' ']
+            self.__metadata.update({"file_format": format, "file_schema": schema})
     
     
     def __parse_generic_url(self, url):
@@ -346,7 +379,9 @@ class FILERMetadataParser:
     def __remove_internal_attributes(self):
         ''' remove internal attributes '''
         internalKeys = ['link_out_url', 'date_added_to_filer', 'processed_file_download_url', 
-                'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id']
+                'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id',
+                'cell_type', 'biosample_type', 'biosamples_term_id']
+              
         [self.__metadata.pop(key) for key in internalKeys]
  
         
@@ -360,15 +395,16 @@ class FILERMetadataParser:
         # parse concatenated data points into separate attributes
         # standardize others (e.g., urls, data sources)
         # dropping description; allow use cases to piece together out of the other info
-        # TODO: feature type
-        # TODO: classifications, output type,  format etc
         self.__parse_is_lifted()
         self.__parse_genome_build()
         self.__parse_data_source()
+        self.__parse_biosamples()
         self.__parse_urls()
+        self.__parse_file_format()
         self.__parse_experiment_info()
         self.__parse_name()
         self.__parse_assay()
+        self.__parse_data_category()
         self.__parse_feature_type()
         
         # remove private info
@@ -394,24 +430,24 @@ class FILERMetadataParser:
         "Biosample type": "Tissue",
         "Biosamples term id": "UBERON:0006483",
         "Tissue category": "Brain",
+        "Track Description": "Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD",
+        "system category": "Nervous",
+        "life stage": "Adult",
         # "ENCODE Experiment id": "ENCSR778NDP",
         # "Biological replicate(s)": 1,
         #"Technical replicate": "1_1, 1_2",
         # "Antibody": "CTCF", --> antibody_target
-        "Assay": "TF ChIP-seq",
-        "File format": "bed narrowPeak",
+        #"Assay": "TF ChIP-seq",
+        #"File format": "bed narrowPeak",
         "File size": 666660,
-        "Downloaded date": "6/12/22",
-        "Release date": "7/23/21",
-        "Date added to FILER": "11/20/22",
-        "Processed File Download URL": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz",
-        "Processed file md5": "095d38425edff39dbbd099700e54c260",
-        "Link out URL": "https://www.encodeproject.org",
+        #"Downloaded date": "6/12/22",
+        #"Release date": "7/23/21",
+        #"Date added to FILER": "11/20/22",
+        #"Processed File Download URL": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz",
+        #"Processed file md5": "095d38425edff39dbbd099700e54c260",
+        #"Link out URL": "https://www.encodeproject.org",
         "Data Category": "Called peaks",
         "classification": "TF ChIP-seq CTCF IDR thresholded peaks",
-        "Track Description": "Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD",
-        "system category": "Nervous",
-        "life stage": "Adult",
         "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
         "tabixFileUrl": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz.tbi"
     }
