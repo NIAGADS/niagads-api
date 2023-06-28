@@ -36,10 +36,10 @@ def initialize_FILER_metadata_cache(metadataFileName, debug):
         
             # parse & create Metadata object
             track = FILERMetadataParser(dict(zip(header, line.split('\t')))).parse()
+
             # db.session.add(Metadata(track))
             if debug and lineNum % 10000 == 0:
                 logger.debug("Loaded metadata for " + str(lineNum) +" tracks")
-                
             
         # db.session.commit()
         
