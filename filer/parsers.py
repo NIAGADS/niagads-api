@@ -1,5 +1,4 @@
 import logging
-
 from urllib.parse import unquote
 
 from shared_resources import utils
@@ -268,7 +267,14 @@ class FILERMetadataParser:
         else:
             nameInfo.append(self._get_metadata('assay'))
             nameInfo.append(self._get_metadata('output_type'))
-   
+            
+        bReps = utils.is_null(self._get_metadata('biological_replicates'), True)
+        tReps = utils.is_null(self._get_metadata('technical_replicates'), True)
+        replicates = bReps is bReps if not None else None
+        replicates = tReps if replicates is None and tReps is not None else None
+        if replicates is not None:
+            nameInfo.append('(repl. ' + str(replicates) + ')')
+
         name = self._get_metadata('identifier') + ': ' + ' '.join(nameInfo) 
         
         self.__metadata.update({"name": name})
@@ -390,7 +396,7 @@ class FILERMetadataParser:
         ''' parse the FILER metadata & transform/clean up 
         returns parsed / transformed metadata '''
         
-        # standardize keys & convert nulls & numbers from string
+        # standardize keys & convert nulls & numbers from__parse_replicates string
         self.__transform_key_values()
         
         # parse concatenated data points into separate attributes
