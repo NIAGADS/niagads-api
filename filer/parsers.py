@@ -216,7 +216,7 @@ class FILERMetadataParser:
             if category == 'qtl':
                 category = 'QTL'
             
-            self.__metadata.update({"data_category":category})
+            self.__metadata.update({"data_category": category})
         
 
     def __parse_assay(self):
@@ -311,9 +311,17 @@ class FILERMetadataParser:
     
     def __parse_file_format(self):
         formatInfo = self._get_metadata('file_format').split(' ')
-        format = formatInfo[0]
-        schema = formatInfo[1] if len(formatInfo) == 2 else formatInfo[1] + "|" + formatInfo[2]
-        self.__metadata.update({"file_format": format[0], "file_schema": schema[1]})
+        format = formatInfo[0]      
+        schema = None
+        
+        if len(formatInfo) == 1:
+            if 'bed' in format:
+                schema = format
+                format = 'bed'    
+        else:
+            schema = formatInfo[1] if len(formatInfo) == 2 else formatInfo[1] + "|" + formatInfo[2]
+            
+        self.__metadata.update({"file_format": format, "file_schema": schema})
     
     
     def __parse_generic_url(self, url):
@@ -387,7 +395,7 @@ class FILERMetadataParser:
         ''' remove internal attributes '''
         internalKeys = ['link_out_url', 'date_added_to_filer', 'processed_file_download_url', 
                 'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id',
-                'cell_type', 'biosample_type', 'biosamples_term_id']
+                'cell_type', 'biosamples_term_id', 'filepath', 'raw_file_download']
               
         [self.__metadata.pop(key) for key in internalKeys]
  

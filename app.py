@@ -3,7 +3,8 @@ from os import _exit
 from flask import Flask, send_file
 
 # local imports
-from shared_resources.db import db, create_tables
+from shared_resources.db import db
+from shared_resources.db_utils import create_tables
 from shared_resources import niagads_api as api
 from config import set_app_config
 
@@ -17,6 +18,7 @@ def configure_logging(app: Flask):
 
     return logging.getLogger(__name__)
 
+
 def create_app(initCacheDB):
     
     app = Flask(__name__)
@@ -27,7 +29,7 @@ def create_app(initCacheDB):
     
     if initCacheDB:
         logger.info("'initCacheDB' parameter passed, initializing cache database: " + initCacheDB)
-        create_tables(app, initCacheDB.lower())
+        create_tables(db, app, initCacheDB.lower())
         logger.info("DONE initializing cache DB: " + initCacheDB + " / please restart with FLASK_APP=app:create_app(None)")
         _exit(0)
 

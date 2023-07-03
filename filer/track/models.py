@@ -19,9 +19,19 @@ class Track(db.Model):
     __bind_key__ = 'filer'
     identifier = db.Column(db.String, primary_key=True)
     name = db.Column(db.String)
-    description = db.Column(db.String)
-    
+    description = db.Column(db.String) 
     genome_build = db.Column(db.String)
+    data_category = db.Column(db.String)
+    feature_type = db.Column(db.String)
+    
+    # biosample
+    tissue_category = db.Column(db.String)
+    system_category = db.Column(db.String)
+    biosample_term = db.Column(db.String)
+    biosample_term_id = db.Column(db.String)
+    biosample_display = db.Column(db.String)
+    biosample_type = db.Column(db.String)
+    life_stage = db.Column(db.String)
     
     # experiment design
     biological_replicates = db.Column(db.String)
@@ -30,6 +40,9 @@ class Track(db.Model):
     experiment_id = db.Column(db.String)
     project = db.Column(db.String)
     experiment_info = db.Column(db.String)
+    assay = db.Column(db.String)
+    analysis = db.Column(db.String)
+    classification = db.Column(db.String)
     
     # provenance
     data_source = db.Column(db.String)
@@ -48,6 +61,9 @@ class Track(db.Model):
     bp_covered = db.Column(db.Integer)
     number_of_intervals = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
+    output_type = db.Column(db.String)
+    file_format = db.Column(db.String)
+    file_schema = db.Column(db.String)
     
         
     @property
