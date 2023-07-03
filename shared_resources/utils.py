@@ -1,4 +1,6 @@
 import re
+from dateutil.parser import parse as parse_date
+from datetime import datetime
 
 def extract_json_value(attribute, field):
     """extract value from field in a JSON attribute
@@ -30,6 +32,26 @@ def extract_row_data(queryResultRow):
 
 def extract_result_data(queryResult):
     return [ extract_row_data(r) for r in queryResult ]
+
+
+def to_date(value, pattern='%m-%d-%Y'):
+    return parse_date(value, fuzzy=True) # datetime.strptime(value, pattern).date()
+
+
+def is_date(value, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+    from https://stackoverflow.com/a/25341965
+    :param value: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+   
+    """
+    try: 
+        parse_date(value, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False
 
 
 def is_number(value):

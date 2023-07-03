@@ -58,13 +58,16 @@ class FILERMetadataParser:
                 if attribute in self.__metadata else None
     
 
-    def __parse_value(self, value):
+    def __parse_value(self, key, value):
         ''' catch numbers, booleans, and nulls '''
         if utils.is_null(value, naIsNull=True):
             return None
         
         if utils.is_number(value):
             return utils.to_numeric(value)
+        
+        if 'date' in key and utils.is_date(value):
+            return utils.to_date(value)
             
         return value
     
@@ -336,7 +339,7 @@ class FILERMetadataParser:
         ''' correct domain and other formatting issues
         ''' 
         url = self.__parse_generic_url(url)           
-        return utils.regex_replace('^[^GADB]*', URLS.filer_downloads, url)
+        return utils.regex_replace('^[^GADB]*\/GADB', URLS.filer_downloads, url)
     
     
     def __parse_urls(self):
@@ -388,7 +391,7 @@ class FILERMetadataParser:
         ''' transform keys and since iterating over 
             the metadata anyway, catch nulls, numbers and convert from string
         '''
-        self.__metadata = { self.__transform_key(key): self.__parse_value(value) for key, value in self.__metadata.items()}
+        self.__metadata = { self.__transform_key(key): self.__parse_value(key, value) for key, value in self.__metadata.items()}
 
 
     def __remove_internal_attributes(self):

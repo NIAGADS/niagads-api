@@ -5,7 +5,7 @@ from flask import Flask, send_file
 # local imports
 from shared_resources.db import db
 from shared_resources.db_utils import create_tables
-from shared_resources import niagads_api as api
+from api import api
 from config import set_app_config
 
 def configure_logging(app: Flask):
@@ -24,7 +24,8 @@ def create_app(initCacheDB):
     app = Flask(__name__)
     logger = configure_logging(app)
     app.config.update(set_app_config(initCacheDB != None))
-    api.init_app(app)
+    if not initCacheDB:
+        api.init_app(app)
     db.init_app(app)   
     
     if initCacheDB:
