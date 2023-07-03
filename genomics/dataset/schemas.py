@@ -10,5 +10,4 @@ metadata = {
     'id': fields.String(required=True, 
             description="NIAGADS Accession Number", 
             example="NG00115")
-    
 }

@@ -9,7 +9,7 @@ from shared_resources.parsers import arg_parsers as parsers, merge_parsers
 from shared_resources.utils import extract_result_data
 
 from shared_resources.schemas.track import metadata
-from genomics.metadata.schemas import metadata as genomicsdb_metadata, phenotype
+from genomics.shared.schemas import metadata as genomicsdb_metadata, phenotype
 from genomics.dataset.schemas import metadata as dataset_metadata
 
 from genomics.dataset.models import table

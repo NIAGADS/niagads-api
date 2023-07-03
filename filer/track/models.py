@@ -3,7 +3,7 @@ from sqlalchemy.orm import column_property
 
 from shared_resources.db import db
 from shared_resources.constants import DATASOURCE_URLS
-from filer.metadata.parsers import split_replicates
+from filer.parsers import split_replicates
 
 
 # [
@@ -14,8 +14,6 @@ from filer.metadata.parsers import split_replicates
 #  
 # 'data_category', 'classification', 
 # 'system_category', 'life_stage']
-
-
 
 class Track(db.Model):
     __bind_key__ = 'filer'
@@ -50,14 +48,13 @@ class Track(db.Model):
     bp_covered = db.Column(db.Integer)
     number_of_intervals = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
-
-
- 
     
+        
     @property
     def data_source_url(self):
         dsKey = self.data_source + '|' + self.data_source_version
         return DATASOURCE_URLS[dsKey]
+    
     
     @property
     def replicates(self):
