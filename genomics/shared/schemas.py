@@ -15,9 +15,27 @@ phenotype = {
     'biosample': fields.String(description="biosample type, usually blood or cerebrospinal fluid")
 }
 
-metadata = {
-    'covariates': fields.List(fields.String(), 
-            description="GWAS covariates or other adjustments made to a meta-analysis", 
-            example= '["age","sex","population stratification"]'),
-    'cohorts': fields.String()
+base_metadata = {
+    'name': fields.String(required=True, 
+            description="dataset name", 
+            example="Genetic architecture of AD and differential effect between sexes"),
+    'description': fields.String(required=True, 
+            description="dataset description", 
+            example="summary statistics from a sex-stratified genome-wide association study of SNPS from Alzheimer's Disease Genetics Consortium (ADGC) female samples with European ancestry. Subjects with individual-pairwise genetic relationship matrix (GRM) > 0.1 were excluded from analyses to ensure sample independence. Samples were selected from both ADGC phase 1 and phase 2 cohorts. (Lifted Over from GRCh37 to GRCh38)"),
+    'data_source': fields.String(required=True, 
+            description="source repository or data collection", 
+            example="NIAGADS"),
+    'type': fields.String(required=True, description="type of dataset or track", example="GWAS_sumstats"),
 }
+
+gene = {
+    'name': fields.String(description="gene product name/description", required=True,
+            example="apolipoprotein E"),
+            #attribute=lambda x: extract_json_value(x.annotation, 'name')),
+    'type': fields.String(description="gene type", required=True, example="protein coding"),
+    'locus': fields.String(description="named locus", example="19q13.32"),   
+    'strand': fields.String(description="strand: + or -", example="+"),
+    'synonyms': fields.List(fields.String(), description="known synonyms (symbols) for gene", 
+            example=["AD2"])
+}
+          

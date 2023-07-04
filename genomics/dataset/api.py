@@ -8,12 +8,12 @@ from shared_resources.db import db as genomicsdb
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers
 from shared_resources.utils import extract_result_data
 
-from shared_resources.schemas.track import metadata
-from genomics.shared.schemas import metadata as genomicsdb_metadata, phenotype
+from genomics.shared.schemas import base_metadata, phenotype
 from genomics.dataset.schemas import metadata as dataset_metadata
 
 from genomics.dataset.models import table
 from genomics.track.models import table as track_table
+from genomics.track.schemas import metadata as track_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -21,22 +21,16 @@ api = Namespace('genomics/dataset',
         description="retrieve dataset metadata, where a dataset is collection of one or more related tracks from the NIAGADS repository; a NIAGADS accession)")
 
 # create response schema from the base metadata schema
-metadata_schema = api.model('Dataset', metadata)
-phenotypes_schema = api.model('Phenotype', phenotype)
-
-# extend w/GenomicsDB - only fields
-genomicsdb_metadata_schema = api.clone(
-        'GenomicsDB Dataset', 
-        metadata_schema, 
-        genomicsdb_metadata,
-        dataset_metadata
-        #{'phenotypes': fields.Nested(phenotypes_schema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
-)
+baseSchema = api.model('Metadata', base_metadata)
+phenotypeSchema = api.model('Phenotype', phenotype)
+trackSchema = api.clone('GenomicsDB Track', baseSchema, track_metadata)
+datasetSchema = api.clone('GenomicsDB Dataset', baseSchema, dataset_metadata)
+#{'phenotypes': fields.Nested(phenotypes_schema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
 
 @api.route('/<string:id>', doc={"description": "retrieve meta-data for specified dataset"})
 @api.expect(parsers.genome_build)
 class Dataset(Resource):
-    @api.marshal_with(genomicsdb_metadata_schema, skip_none=True)
+    @api.marshal_with(datasetSchema, skip_none=True)
     @api.doc(params={
             'id': 'unique dataset identifier or accession number in original datasource'
             })
@@ -50,17 +44,17 @@ class Dataset(Resource):
         
         return dataset
 
-filter_parser = parsers.filters.copy()
-filter_parser.replace_argument('type', help="type of dataset or track; what kind of information", 
+filterParser = parsers.filters.copy()
+filterParser.replace_argument('type', help="type of dataset or track; what kind of information", 
         default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
-filter_parser = merge_parsers(filter_parser, parsers.genome_build)
+argParser = merge_parsers(filterParser, parsers.genome_build)
 
 @api.route('/', doc={"description": "retrieve meta-data for datasets by type"})
-@api.expect(filter_parser)
+@api.expect(argParser)
 class DatasetList(Resource):    
-    @api.marshal_with(genomicsdb_metadata_schema, skip_none=True)
+    @api.marshal_with(datasetSchema, skip_none=True)
     def get(self):
-        args = filter_parser.parse_args()
+        args = argParser.parse_args()
         queryTable = table(args['assembly'])
         idMatch = "{}%".format("NG0")
         ignore = "{}%".format(ADSP_VARIANTS_ACCESSION)

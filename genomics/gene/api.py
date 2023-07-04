@@ -7,22 +7,20 @@ from shared_resources.schemas.gene_features import feature_properties, gene_prop
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers
 from shared_resources.utils import extract_result_data
 
-from genomics.gene.schemas import gene_extended_properties
+from genomics.shared.schemas import gene as genomicsdb_gene_properties
 from genomics.gene.models import table
 
 
 api = Namespace('genomics/gene', description="retrieve gene annotations from the NIAGADS GenomicsDB")
 
 # create response schema from the base gene schema
-feature_schema = api.model('Feature', feature_properties)
-gene_base_schema = api.clone('Gene', feature_schema, gene_properties)
-genomicsdb_gene_schema = api.clone('GenomicsDB Gene', gene_base_schema, gene_extended_properties)
-
+featureSchema = api.model('Feature', feature_properties)
+geneSchema = api.clone('Gene', featureSchema, gene_properties, genomicsdb_gene_properties)
 
 @api.route('/<string:id>', doc={"description": "get basic identifying annotation for the specified gene"})
 @api.expect(parsers.genome_build)
 class Gene(Resource):
-    @api.marshal_with(genomicsdb_gene_schema, skip_none=True)
+    @api.marshal_with(geneSchema, skip_none=True)
     @api.doc(
         params={
             'id': 'gene id: Ensembl ID, NCBI Gene (Entrez) ID or official gene symbol; queries against symbols will be case sensitive and match official symbols only'
@@ -40,14 +38,13 @@ class Gene(Resource):
         return gene
     
 
-
-lookup_parser = merge_parsers(parsers.id_enum, parsers.genome_build)
+argParser = merge_parsers(parsers.id_enum, parsers.genome_build)
 @api.route('/', doc={"description": "get basic identifying annotation for a list one or more genes"})
-@api.expect(lookup_parser)
+@api.expect(argParser)
 class GeneList(Resource):
-    @api.marshal_with(genomicsdb_gene_schema, skip_none=True, as_list=True)
+    @api.marshal_with(geneSchema, skip_none=True, as_list=True)
     def get(self):
-        args = lookup_parser.parse_args()
+        args = argParser.parse_args()
         queryTable = table(args['assembly'])
         genes = genomicsdb.session.execute(genomicsdb.select(queryTable, 
                 literal("gene").label("feature_type"), 

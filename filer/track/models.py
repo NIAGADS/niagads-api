@@ -1,9 +1,9 @@
 ''' FILER track metadata model '''
 from sqlalchemy.orm import column_property
-from sqlalchemy import func, distinct 
+from sqlalchemy import func, distinct, and_
 
 from shared_resources.db import db
-from shared_resources.constants import DATASOURCE_URLS
+from shared_resources import utils, constants
 from filer.parsers import split_replicates
 
 
@@ -70,7 +70,7 @@ class Track(db.Model):
     @property
     def data_source_url(self):
         dsKey = self.data_source + '|' + self.data_source_version
-        return DATASOURCE_URLS[dsKey]
+        return constants.DATASOURCE_URLS[dsKey]
     
     
     @property
@@ -87,11 +87,29 @@ class Track(db.Model):
         return { "technical": technical, "biological": biological}
 
 
+def __parse_attributes(attrName):
+    match attrName:
+        case 'assembly':
+            return 'genome_build'
+        case 'dataType':
+            return 'output_type'
+        case _:
+            return utils.to_snake_case(attrName)
+
+
 def get_track_count(filters):
+    # see https://stackoverflow.com/questions/48778162/variable-filter-for-sqlalchemy-query
+    # for dynamic filtering solution
     queryTarget = distinct(getattr(Track, 'identifier'))
     query = db.session.query(func.count(queryTarget))
     if filters is not None:
-        for attr, value in filters.items():
-            query = query.filter_by(getattr(Track, attr) == value)
+        expressions = [getattr(Track, __parse_attributes(attr)) == value for attr, value in filters.items() if value is not None]
+        query = query.filter(and_(*expressions))
 
     return query.scalar()
+
+
+def get_filter_values(filterName):
+    column = __parse_attributes(filterName)
+    result = db.session.query(distinct(getattr(Track, column))).all()
+    return utils.drop_nulls(utils.extract_result_data(result))

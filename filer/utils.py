@@ -2,7 +2,7 @@ import requests
 from urllib.parse import urlencode
 from copy import deepcopy
 
-from shared_resources.constants import URLS
+from shared_resources import constants
 
 
 def genome_build(genomeBuild):
@@ -27,6 +27,6 @@ def map_request_params(params):
 # TODO: error checking
 def make_request(endpoint, params):
     ''' map request params and submit to FILER API'''
-    requestUrl = URLS.filer + "/" + endpoint + ".php?" + urlencode(map_request_params(deepcopy(params)))
+    requestUrl = constants.URLS.filer + "/" + endpoint + ".php?" + urlencode(map_request_params(deepcopy(params)))
     response = requests.get(requestUrl)
     return response

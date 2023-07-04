@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# cache db
+instance/*.*
+
 # User-specific files
 genomicsdb.env
 .env
@@ -398,3 +401,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+instance/niagads_api_cache.db

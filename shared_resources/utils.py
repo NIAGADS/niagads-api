@@ -2,6 +2,15 @@ import re
 from dateutil.parser import parse as parse_date
 from datetime import datetime
 
+
+def error_message(arg, badValue, allowableValues, message=None):
+    if message is not None:
+        return { "error": message}
+    else:
+        return { "error": "Invalid value (" + to_string(badValue) 
+                + ") provided for: " + arg + ". Valid values are: " + to_string(allowableValues)}
+        
+
 def extract_json_value(attribute, field):
     """extract value from field in a JSON attribute
 
@@ -29,9 +38,30 @@ def extract_row_data(queryResultRow):
         
     return result
         
+        
+def drop_nulls(obj):
+    if isinstance(obj, list):
+        return list(filter(None, obj))
+    if isinstance(obj, dict):
+        return {k: v for k, v in obj.items() if v}
+        
 
 def extract_result_data(queryResult):
     return [ extract_row_data(r) for r in queryResult ]
+
+
+def to_string(value, nullVal="NULL", delim=','):
+    """ checks if list, if so, converts to string; 
+    None -> nullVal; 
+    all other return str(value) 
+    """
+    if value is None:
+        return nullVal
+    
+    if isinstance(value, list):
+        return delim.join(value)
+    
+    return str(value)
 
 
 def to_date(value, pattern='%m-%d-%Y'):

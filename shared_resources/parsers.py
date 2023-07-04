@@ -5,11 +5,14 @@ from types import SimpleNamespace
 from shared_resources.fields import Span, GenomeBuild
 from shared_resources.constants import CHROMOSOMES, DATASET_TYPES, GENOME_BUILDS
 
-def merge_parsers(parser1, parser2):
-    """ merge two parsers """
-    newParser = parser1.copy()
-    newParser.args = newParser.args + parser2.args
+def merge_parsers(*parsers):
+    """ merge a list of  parsers """
+    newParser = parsers[0].copy()
+   
+    for p in parsers[1:]:
+        newParser.args = newParser.args + p.args
     return newParser
+
 
 _parsers = {}
 
@@ -32,12 +35,10 @@ _parsers['span'].add_argument('end', type=int, help="start location for the inte
 _parsers['track'] = _parsers['span'].copy()
 
 _parsers['filters'] = reqparse.RequestParser()
-_parsers['filters'].add_argument('type', help="type of dataset or track; what kind of information")
+_parsers['filters'].add_argument('dataType', help="type of data / output type")
 
-_parsers['extended_filters'] = _parsers['filters'].copy()
-_parsers['extended_filters'].add_argument('source', help="original source of the data; e.g., NIAGADS, ENCODE, FANTOM5")
-_parsers['extended_filters'].add_argument('assay', help="assay type")
-
+_parsers['filter_values'] = reqparse.RequestParser()
+_parsers['filter_values'].add_argument('arg', help="name of filter argument")
 
 
 # for inheritence, use parsers.copy(), .replace_argument, .remove_argument, see 

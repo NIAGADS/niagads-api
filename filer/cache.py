@@ -5,7 +5,7 @@ from requests.exceptions import HTTPError
 # from filer.models import Metadata
 from filer.parsers import FILERMetadataParser
 from filer.track.models import Track
-from shared_resources.constants import URLS
+from shared_resources import constants
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ def initialize_metadata_cache(db, metadataFileName, debug):
     currentLine = None
     try:
         # fetch the template file 
-        requestUrl = URLS.filer_downloads + '/metadata/' + metadataFileName
+        requestUrl = constants.URLS.filer_downloads + '/metadata/' + metadataFileName
         if debug:
             logger.debug("Fetching FILER metadata from " + requestUrl)
         response = get(requestUrl)

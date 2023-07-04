@@ -3,6 +3,13 @@ from types import SimpleNamespace
 CHROMOSOMES = [*range(1,22)] + ['X', 'Y', 'N']
 DATASET_TYPES = ["GWAS_sumstats", "QTL_sumstats"]
 GENOME_BUILDS = ["GRCh37", "GRCh38"]
+ALLOWABLE_FILER_TRACK_FILTERS = {
+    "dataSource": "original data source ", 
+    "assay": "assay type", 
+    "featureType": "feature type", 
+    "antibodyTarget": "target of ChIP-seq or other immunoprecipitation assay",
+    "project": "member of a collection of related tracks, often an ENCODE project"
+    }
 
 ADSP_VARIANTS_ACCESSION = "NG00067"
 

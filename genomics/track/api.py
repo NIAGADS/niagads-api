@@ -6,11 +6,9 @@ from sqlalchemy import not_
 from shared_resources.constants import ADSP_VARIANTS_ACCESSION
 from shared_resources.db import db as genomicsdb
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers
-
 from shared_resources.utils import extract_result_data
 
-from shared_resources.schemas.track import metadata
-from genomics.shared.schemas import metadata as genomicsdb_metadata, phenotype
+from genomics.shared.schemas import base_metadata, phenotype
 from genomics.track.schemas import metadata as track_metadata
 
 from genomics.track.models import table
@@ -21,22 +19,16 @@ api = Namespace('genomics/track',
         description="retrieve track metadata and data")
 
 # create response schema from the base metadata schema
-metadata_schema = api.model('Track', metadata)
-phenotypes_schema = api.model('Phenotype', phenotype)
+baseSchema = api.model('Metadata', base_metadata)
+phenotypeSchema = api.model('Phenotype', phenotype)
+trackSchema = api.clone('GenomicsDB Track', baseSchema, track_metadata)
+#{'phenotypes': fields.Nested(phenotypeSchema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
 
-# extend w/GenomicsDB - only fields
-genomicsdb_metadata_schema = api.clone(
-        'GenomicsDB Track', 
-        metadata_schema, 
-        genomicsdb_metadata,
-        track_metadata
-       #{'phenotypes': fields.Nested(phenotypes_schema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
-        )
 
 @api.route('/<string:id>', doc={"description": "retrieve meta-data for specified track from the NIAGADS GenomicsDB"})
 @api.expect(parsers.genome_build)
 class Track(Resource):
-    @api.marshal_with(genomicsdb_metadata_schema, skip_none=True)
+    @api.marshal_with(trackSchema, skip_none=True)
     @api.doc(params={'id': 'unique track identifier'})
    
     def get(self, id): # genome_build:str = Route(default="GRCh38", pattern="GRCh(38|37)")):
@@ -48,21 +40,24 @@ class Track(Resource):
         
         return dataset
 
-filter_parser = parsers.filters.copy()
-filter_parser.replace_argument('type', help="type of track; what kind of information", default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
-filter_parser = merge_parsers(filter_parser, parsers.genome_build)
+
+filterParser = parsers.filters.copy()
+filterParser.replace_argument('dataType', help="type of data / output type",
+        default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
+filterParser = merge_parsers(filterParser, parsers.genome_build)
+
 @api.route('/', doc={"description": "retrieve meta-data for tracks by type"})
-@api.expect(filter_parser)
+@api.expect(filterParser)
 class TrackList(Resource):    
 
-    @api.marshal_with(genomicsdb_metadata_schema, skip_none=True)
+    @api.marshal_with(trackSchema, skip_none=True)
     def get(self):
-        args = filter_parser.parse_args()
+        args = filterParser.parse_args()
         
         queryTable = table(args['assembly'])
         idMatch = "{}%".format("NG0")
         ignore = "{}%".format(ADSP_VARIANTS_ACCESSION)
-         
+        
         # TODO: add conditional based on type
         tracks = genomicsdb.session.execute(genomicsdb.select(queryTable)
                 .filter(queryTable.id.like(idMatch) 

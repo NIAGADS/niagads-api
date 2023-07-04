@@ -1,10 +1,17 @@
 import logging
 from urllib.parse import unquote
+from flask_restx import reqparse 
+from types import SimpleNamespace
 
-from shared_resources import utils
-from shared_resources.constants import URLS
+from shared_resources import utils, constants
+from shared_resources.parsers import arg_parsers
 
 logger = logging.getLogger(__name__)
+
+filter_arg_parser = arg_parsers.filters.copy()
+for name, description in constants.ALLOWABLE_FILER_TRACK_FILTERS.items():
+    filter_arg_parser.add_argument(name, help=description)
+
 
 def metadata_parser(metadata):
     ''' iterate over list of one or more raw metadata 
@@ -138,7 +145,9 @@ class FILERMetadataParser:
         outputType = self._get_metadata("output_type")
         if 'enhancer' in outputType.lower():
             return "enhancer"    
-        
+        if 'methylation state' in outputType:
+            state, loc = outputType.split(' at ')
+            return loc + ' ' + state
         if 'microrna target' in outputType.lower():
             return 'microRNA target'  
         if 'microRNA' in outputType: 
@@ -177,14 +186,14 @@ class FILERMetadataParser:
         if 'histone-mark' in classification:
             return "histone modification"
         if 'chip-seq' in classification or 'chia-pet' in classification:
-            if 'consolidated' in classification:
-                return self._get_metadata('classification')
             if 'ctcf' in classification:
                 return 'CTCF-biding site'
             if 'ctcfl' in classification:
                 return 'CTCFL-binding site'
             if classification.startswith('tf '):
                 return 'transcription factor binding site'
+            if 'chromhmm' in classification:
+                return 'enhancer'
             
             # next options should have been  caught earier, but just in case
             assay = self._get_metadata('assay')
@@ -226,15 +235,20 @@ class FILERMetadataParser:
         analysis = None
         assay = self._get_metadata('assay')
         assay = assay.replace('-Seq', '-seq') # consistency
+        classification = self._get_metadata('classification')
         
-        if assay == 'ChromHMM_enhancer':
-            assay = 'ChromHMM'
+        if classification == 'ChIP-seq consolidated ChromHMM':
+            analysis = 'ChromHMM'
+            
+        if 'ChromHMM' in assay:
+            analysis = assay
+            assay = "ChIP-seq"
             
         elif assay.lower() == 'annotation':
             assay = None
             analysis = "annotation"
         
-        elif assay in ['ChromHMM', "eQTL", "sQTL"]:
+        elif assay in ["eQTL", "sQTL"]:
             analysis = assay
             assay = None
             
@@ -339,7 +353,7 @@ class FILERMetadataParser:
         ''' correct domain and other formatting issues
         ''' 
         url = self.__parse_generic_url(url)           
-        return utils.regex_replace('^[^GADB]*\/GADB', URLS.filer_downloads, url)
+        return utils.regex_replace('^[^GADB]*\/GADB', constants.URLS.filer_downloads, url)
     
     
     def __parse_urls(self):
@@ -362,6 +376,13 @@ class FILERMetadataParser:
             lifted = True
         self.__metadata.update({"is_lifted": lifted})
 
+    def __parse_output_type(self):
+        outputType = self._get_metadata('output_type')
+        if outputType.lower() in ['chromatin interactions', 'genomic partition', 'enhancer peaks']:
+            outputType = outputType.lower()
+
+        self.__metadata.update({"output_type": outputType})   
+        
 
     def __rename_key(self, key):
         match key:
@@ -424,6 +445,7 @@ class FILERMetadataParser:
         self.__parse_assay()
         self.__parse_data_category()
         self.__parse_feature_type()
+        self.__parse_output_type()
         
         # remove private info
         self.__remove_internal_attributes()
