@@ -20,10 +20,10 @@ class Track(db.Model):
     __bind_key__ = 'filer'
     identifier = db.Column(db.String, primary_key=True)
     name = db.Column(db.String)
-    description = db.Column(db.String) 
+    # description = db.Column(db.String) 
     genome_build = db.Column(db.String)
-    data_category = db.Column(db.String)
     feature_type = db.Column(db.String)
+    data_source = db.Column(db.String)
     
     # biosample
     tissue_category = db.Column(db.String)
@@ -32,27 +32,30 @@ class Track(db.Model):
     biosample_term_id = db.Column(db.String)
     biosample_display = db.Column(db.String)
     biosample_type = db.Column(db.String)
+    cell_line = db.Column(db.String)
     life_stage = db.Column(db.String)
     
     # experiment design
     biological_replicates = db.Column(db.String)
     technical_replicates = db.Column(db.String)
     antibody_target = db.Column(db.String)
-    experiment_id = db.Column(db.String)
-    project = db.Column(db.String)
-    experiment_info = db.Column(db.String)
     assay = db.Column(db.String)
     analysis = db.Column(db.String)
     classification = db.Column(db.String)
+    data_category = db.Column(db.String)
+    output_type = db.Column(db.String)
+    is_lifted = db.Column(db.Boolean)
+    experiment_info = db.Column(db.String)
     
     # provenance
-    data_source = db.Column(db.String)
     data_source_version = db.Column(db.String)
-    is_lifted = db.Column(db.Boolean)
     download_url = db.Column(db.String)
     download_date = db.Column(db.Date) # check
     release_date = db.Column(db.Date)
-    
+    filer_release_date = db.Column(db.Date)
+    experiment_id = db.Column(db.String)
+    project = db.Column(db.String)
+
     # FILER file properties
     file_name = db.Column(db.String)
     url = db.Column(db.String)
@@ -62,11 +65,28 @@ class Track(db.Model):
     bp_covered = db.Column(db.Integer)
     number_of_intervals = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
-    output_type = db.Column(db.String)
+
     file_format = db.Column(db.String)
-    file_schema = db.Column(db.String)
+    file_schema = db.Column(db.String) 
     
         
+    @property
+    def genome_browser_track_schema(self):    
+        schema = self.file_schema.split('|')
+        return schema[0]
+    
+    @property 
+    def genome_browser_track_type(self):
+        # TODO: interactions
+        if 'QTL' in self.feature_type:
+            return 'qtl'
+        else:
+            return 'annotation'
+    
+    @property
+    def index_url(self):
+        return self.url + '.tbi'
+    
     @property
     def data_source_url(self):
         dsKey = self.data_source + '|' + self.data_source_version

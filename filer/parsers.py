@@ -93,11 +93,13 @@ class FILERMetadataParser:
         
         biosample = self._get_metadata("cell_type")
         biosampleType = self._get_metadata('biosample_type')
+        cellLine = biosample if biosampleType == 'cell_line' else None
         self.__metadata.update({
             "biosample_term": biosample,
             "biosample_term_id": self._get_metadata('biosamples_term_id'),
             "biosample_display": biosample,
-            "biosample_type": biosampleType.lower() if biosampleType is not None else None
+            "biosample_type": biosampleType.lower() if biosampleType is not None else None,
+            "cell_line": cellLine
         })
         
         
@@ -396,6 +398,8 @@ class FILERMetadataParser:
                 return 'raw_file_md5sum'
             case 'technical_replicate': # for consistency
                 return 'technical_replicates'
+            case 'date_added_to_filer':
+                return 'filer_release_date'
             case _:
                 return key
             
