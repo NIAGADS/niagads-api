@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # cache db
-instance/*.*
+instance/*
 
 # User-specific files
 genomicsdb.env
