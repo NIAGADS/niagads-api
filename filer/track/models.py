@@ -1,5 +1,6 @@
 ''' FILER track metadata model '''
 from sqlalchemy.orm import column_property
+from sqlalchemy import func, distinct 
 
 from shared_resources.db import db
 from shared_resources.constants import DATASOURCE_URLS
@@ -84,9 +85,13 @@ class Track(db.Model):
             return { "biological": biological}
         
         return { "technical": technical, "biological": biological}
-    
-    
-    @property
-    def type(self):
-        return "track"
 
+
+def get_track_count(filters):
+    queryTarget = distinct(getattr(Track, 'identifier'))
+    query = db.session.query(func.count(queryTarget))
+    if filters is not None:
+        for attr, value in filters.items():
+            query = query.filter_by(getattr(Track, attr) == value)
+
+    return query.scalar()
