@@ -73,7 +73,7 @@ class FILERMetadataParser:
         if utils.is_number(value):
             return utils.to_numeric(value)
         
-        if 'date' in key and utils.is_date(value):
+        if 'date' in key.lower() and utils.is_date(value):
             return utils.to_date(value)
             
         return value
@@ -386,6 +386,16 @@ class FILERMetadataParser:
         self.__metadata.update({"output_type": outputType})   
         
 
+    def __add_text_search_field(self):
+        """ concatenate everything that isn't a date or url """
+        skipFieldsWith = ['date', 'url', 'md5', 'path', 'file']
+        textValues = [ v for k,v in self.__metadata.items() 
+                if utils.is_searchable_string(k, v, skipFieldsWith)]
+        
+        # some field have the same info
+        self.__metadata.update({"searchable_text": ' '.join(utils.remove_duplicates(textValues))})
+        
+
     def __rename_key(self, key):
         match key:
             case 'antibody':
@@ -424,7 +434,7 @@ class FILERMetadataParser:
         internalKeys = ['link_out_url', 'processed_file_download_url', 
                 'track_description', 'wget_command', 'tabix_index_download', 'encode_experiment_id',
                 'cell_type', 'biosamples_term_id', 'filepath', 'raw_file_download']
-              
+        
         [self.__metadata.pop(key) for key in internalKeys]
  
         
@@ -453,6 +463,9 @@ class FILERMetadataParser:
         
         # remove private info
         self.__remove_internal_attributes()
+        
+        # generate text search field
+        self.__add_text_search_field()
         
         # return the 
         return self.__metadata

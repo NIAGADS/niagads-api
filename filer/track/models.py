@@ -69,6 +69,8 @@ class Track(db.Model):
     file_format = db.Column(db.String)
     file_schema = db.Column(db.String) 
     
+    searchable_text = db.Column(db.String)
+    
         
     @property
     def genome_browser_track_schema(self):    
@@ -133,3 +135,9 @@ def get_filter_values(filterName):
     column = __parse_attributes(filterName)
     result = db.session.query(distinct(getattr(Track, column))).all()
     return utils.drop_nulls(utils.extract_result_data(result))
+
+
+def text_search(value, idsOnly):
+    queryTarget = Track.identifier if idsOnly else Track
+    result = db.session.query(distinct(queryTarget)).filter(Track.searchable_text.match(value)).all()
+    return utils.extract_result_data(result)

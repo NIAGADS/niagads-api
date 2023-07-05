@@ -50,6 +50,11 @@ def extract_result_data(queryResult):
     return [ extract_row_data(r) for r in queryResult ]
 
 
+def remove_duplicates(array):
+    """ remove duplicates from a list by transforming to set and back """
+    return [*set(array)]
+
+
 def to_string(value, nullVal="NULL", delim=','):
     """ checks if list, if so, converts to string; 
     None -> nullVal; 
@@ -63,10 +68,59 @@ def to_string(value, nullVal="NULL", delim=','):
     
     return str(value)
 
+def is_searchable_string(key, value, skipFieldsWith):
+        if array_in_string(key, skipFieldsWith):
+            return False
+        
+        if value is None:
+            return False
+        
+        if is_bool(value):
+            return False
+        
+        if is_number(value):
+            return False
+        
+        return True
+    
+
+def array_in_string(value, array):
+    """ check if any element in the array is the string """
+    for elem in array:
+        if elem in value:
+            return True
+    return False
+
 
 def to_date(value, pattern='%m-%d-%Y'):
     return parse_date(value, fuzzy=True) # datetime.strptime(value, pattern).date()
 
+def to_bool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    modified from https://stackoverflow.com/a/18472142
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true',  '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', '0'):
+        return 0
+    else:
+        raise ValueError("Invalid boolean value %r" % (val,))
+    
+    
+def is_bool(value):
+    if isinstance(value, bool):
+        return True
+    
+    try:
+        to_bool(value)
+        return True
+    except:
+        return False
+    
 
 def is_date(value, fuzzy=False):
     """
@@ -76,6 +130,9 @@ def is_date(value, fuzzy=False):
     :param fuzzy: bool, ignore unknown tokens in string if True
    
     """
+    if isinstance(value, datetime):
+        return True
+    
     try: 
         parse_date(value, fuzzy=fuzzy)
         return True
