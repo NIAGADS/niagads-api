@@ -11,3 +11,4 @@ Specification and Implementation of the NIAGADS API
 * flask_marshmallow
 * python-dotenv
 * requests
+* python-dateutil

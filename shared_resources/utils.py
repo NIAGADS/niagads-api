@@ -1,15 +1,17 @@
 import re
+from flask.json import jsonify
 from dateutil.parser import parse as parse_date
 from datetime import datetime
 
 
-def error_message(arg, badValue, allowableValues, message=None):
-    if message is not None:
-        return { "error": message}
-    else:
-        return { "error": "Invalid value (" + to_string(badValue) 
-                + ") provided for: " + arg + ". Valid values are: " + to_string(allowableValues)}
-        
+def error_message(message=None, errorType="error"):
+    if errorType == 'bad_arg':
+            return { "error": "Invalid value (" + to_string(message['bad_value']) 
+                + ") provided for: " + message['arg'] + ". Valid values are: " + to_string(message['valid_values'])}
+   
+    return { errorType: message}
+
+    
 
 def extract_json_value(attribute, field):
     """extract value from field in a JSON attribute
@@ -25,18 +27,25 @@ def extract_json_value(attribute, field):
     
     return attribute[field] if field in attribute else None
 
-
-def extract_row_data(queryResultRow):
-    data = queryResultRow._data
-    fields = queryResultRow._fields
-    # add in literals
-    result = data[0]
-    for index, d in enumerate(queryResultRow._data):
-        if index == 0:
-            continue
-        result.__setattr__(fields[index], data[index])
         
-    return result
+def extract_row_data(queryResultRow):
+    data = []
+    fields = []
+    try:
+        data = getattr(queryResultRow, '_data')
+        fields = getattr(queryResultRow, '_fields')
+        # add in literals  
+        result = data[0]
+        for index, d in enumerate(data):
+            if index == 0:
+                continue
+            if fields[index].startswith('_'):
+                continue
+            result.__setattr__(fields[index], d)
+        return result
+    except:
+        return queryResultRow        
+    
         
         
 def drop_nulls(obj):
@@ -45,6 +54,11 @@ def drop_nulls(obj):
     if isinstance(obj, dict):
         return {k: v for k, v in obj.items() if v}
         
+
+def dict_to_string(obj):
+    """ translate dict to attr=value; list"""
+    pairs = [ k + "=" + str(v) for k,v in obj.items()]
+    return ';'.join(pairs)
 
 def extract_result_data(queryResult):
     return [ extract_row_data(r) for r in queryResult ]

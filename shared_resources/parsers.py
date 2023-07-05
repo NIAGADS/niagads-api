@@ -1,16 +1,22 @@
 """ common parsers """
-from flask_restx import reqparse 
+from flask_restx import reqparse, inputs
 from types import SimpleNamespace
 
 from shared_resources.fields import Span, GenomeBuild
 from shared_resources.constants import CHROMOSOMES, DATASET_TYPES, GENOME_BUILDS
 
+
+def add_boolean_arg(parser, name, description):
+    """ add a boolean arg to the parser"""
+    parser.add_argument(name, help=description, action='store_true', type=inputs.boolean, default=False)
+
+
 def merge_parsers(*parsers):
     """ merge a list of  parsers """
     newParser = parsers[0].copy()
-   
     for p in parsers[1:]:
         newParser.args = newParser.args + p.args
+        
     return newParser
 
 

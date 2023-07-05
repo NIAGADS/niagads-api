@@ -8,7 +8,7 @@ from shared_resources.parsers import arg_parsers
 
 logger = logging.getLogger(__name__)
 
-filter_arg_parser = arg_parsers.filters.copy()
+filter_arg_parser = reqparse.RequestParser()
 for name, description in constants.ALLOWABLE_FILER_TRACK_FILTERS.items():
     filter_arg_parser.add_argument(name, help=description)
 
@@ -17,6 +17,7 @@ def metadata_parser(metadata):
     ''' iterate over list of one or more raw metadata 
     objects from FILER API and standardize'''
     return { FILERMetadataParser(m).parse() for m in metadata }
+
 
 def split_replicates(replicates):
     if utils.is_null(replicates, True):

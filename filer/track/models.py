@@ -7,6 +7,8 @@ from shared_resources import utils, constants
 from filer.parsers import split_replicates
 
 
+SKIP_FILTERS = ['idsOnly', 'countOnly', 'fuzzy']
+
 # [
 # 'output_type',  'cell_type', 'biosample_type', 'biosamples_term_id', 
 # 'tissue_category', 'encode_experiment_id', 
@@ -70,8 +72,7 @@ class Track(db.Model):
     file_schema = db.Column(db.String) 
     
     searchable_text = db.Column(db.String)
-    
-        
+     
     @property
     def genome_browser_track_schema(self):    
         schema = self.file_schema.split('|')
@@ -92,7 +93,7 @@ class Track(db.Model):
     @property
     def data_source_url(self):
         dsKey = self.data_source + '|' + self.data_source_version
-        return constants.DATASOURCE_URLS[dsKey]
+        return getattr(constants.DATASOURCE_URLS, dsKey)
     
     
     @property
@@ -125,19 +126,42 @@ def get_track_count(filters):
     queryTarget = distinct(getattr(Track, 'identifier'))
     query = db.session.query(func.count(queryTarget))
     if filters is not None:
-        expressions = [getattr(Track, __parse_attributes(attr)) == value for attr, value in filters.items() if value is not None]
-        query = query.filter(and_(*expressions))
+        expressions = [func.lower(getattr(Track, __parse_attributes(attr))) == str(value).lower()
+                for attr, value in filters.items() 
+                if value is not None
+                and attr not in SKIP_FILTERS]
+        result = query.filter(and_(*expressions))
 
-    return query.scalar()
+    return result.scalar()
+
+
+def __parse_query_result(queryResult, idsOnly):
+    result = utils.extract_result_data(queryResult)    
+    if idsOnly:
+        return utils.drop_nulls(result)
+    
+    return result    
+
+def get_track_metadata(filters):
+    queryTarget = distinct(Track.identifier) if filters.idsOnly else Track
+    query = db.session.query(queryTarget)
+    if filters is not None:
+        expressions = [func.lower(getattr(Track, __parse_attributes(attr))) == str(value).lower()
+                for attr, value in filters.items() 
+                if value is not None
+                and attr not in SKIP_FILTERS]
+        queryResult = query.filter(and_(*expressions)).order_by(Track.identifier)
+    return __parse_query_result(queryResult, filters.idsOnly)
 
 
 def get_filter_values(filterName):
     column = __parse_attributes(filterName)
-    result = db.session.query(distinct(getattr(Track, column))).all()
+    queryTarget = getattr(Track, column)
+    result = db.session.query(distinct(queryTarget)).order_by(queryTarget).all()
     return utils.drop_nulls(utils.extract_result_data(result))
 
 
-def text_search(value, idsOnly):
+def text_search(value, idsOnly, schema=None):
     queryTarget = Track.identifier if idsOnly else Track
-    result = db.session.query(distinct(queryTarget)).filter(Track.searchable_text.match(value)).all()
-    return utils.extract_result_data(result)
+    queryResult = db.session.query(distinct(queryTarget)).filter(Track.searchable_text.match(value)).all()
+    return __parse_query_result(queryResult, idsOnly, schema)
