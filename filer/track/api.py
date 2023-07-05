@@ -2,17 +2,23 @@
 import logging
 
 from flask_restx import Namespace, Resource, marshal, fields
-
+from marshmallow import ValidationError
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers, add_boolean_arg
 from shared_resources import constants, utils
 from shared_resources.db import db
 
 from filer.utils import make_request
 from filer.track.schemas import metadata, biosample
-from filer.track.models import get_track_count, get_filter_values, get_track_metadata
+from filer.track.models import get_track_count, get_filter_values, get_track_metadata, validate_track
 from filer.parsers import filter_arg_parser
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
+SPAN_PARSER = merge_parsers(parsers.genome_build, parsers.span)
+FILTER_PARSER = merge_parsers(parsers.genome_build, filter_arg_parser)
+add_boolean_arg(FILTER_PARSER, "countOnly", "return number of tracks that match the filter criteria")
+add_boolean_arg(FILTER_PARSER, "idsOnly", "return a list of track IDs that match the filter criteria")
+# add_boolean_arg(FILTER_PARSER, "full", "return full metadata")
 
 TRACK_FILTERS = list(constants.ALLOWABLE_FILER_TRACK_FILTERS.keys())
 
@@ -25,16 +31,22 @@ biosampleSchema = api.model('BioSample', biosample)
 # trackSchema = api.clone('FILER Track', trackSchema, 
 #        {"biosample": fields.Nested(biosampleSchema, skip_none=True, desciption="biosample characteristics")})
 
-argParser = merge_parsers(parsers.genome_build, filter_arg_parser)
-add_boolean_arg(argParser, "countOnly", "return number of tracks that match the filter criteria")
-add_boolean_arg(argParser, "idsOnly", "return a list of track IDs that match the filter criteria")
-# add_boolean_arg(argParser, "full", "return full metadata")
+
+@api.route('/<string:id>', doc={"description": "retrieve meta-data for specified track from FILER"})
+@api.expect(parsers.genome_build)
+class Track(Resource):
+    @api.marshal_with(trackSchema, skip_none=True)
+    @api.doc(params={'id': 'unique track identifier'})  
+    def get(self, id): 
+        args = parsers.genome_build.parse_args()
+        return validate_track(id, args['assembly'], True)
+
 
 @api.route('/', doc={"description": "retrieve meta-data for FILER tracks matching filter criteria"})
-@api.expect(argParser)  
-class TrackMetadata(Resource):
+@api.expect(FILTER_PARSER)  
+class TrackList(Resource):
     def get(self):
-        args = argParser.parse_args()
+        args = FILTER_PARSER.parse_args()
         count = get_track_count(args)
         result = {"query_params": args, "num_matched_tracks": count }
         if args.countOnly:
@@ -53,6 +65,26 @@ class TrackMetadata(Resource):
             
         return result, 200
     
+
+@api.route('/<string:id>/overlaps', doc={"description": "get track data in the specified span"})
+@api.expect(SPAN_PARSER)
+class TrackOverlaps(Resource):
+    @api.doc(params={'id': 'unique track identifier'})  
+    def get(self, id,):
+        args = SPAN_PARSER.parse_args()
+        validate_track(id, args['assembly'], False)         # if not valid, returns an error
+        try:
+            span = utils.parse_span(args)
+            if isinstance(span, dict):
+                return span # error message
+            return make_request("get_overlaps", {"id": id, "assembly": args['assembly'], "span": span})
+        except ValidationError as err:
+            return utils.error_message(str(err), errorType="validation_error")
+       
+            
+        
+
+
 
 @api.route('/filter/<string:filterName>')
 class Filter(Resource):

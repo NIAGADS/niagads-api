@@ -165,3 +165,12 @@ def text_search(value, idsOnly, schema=None):
     queryTarget = Track.identifier if idsOnly else Track
     queryResult = db.session.query(distinct(queryTarget)).filter(Track.searchable_text.match(value)).all()
     return __parse_query_result(queryResult, idsOnly, schema)
+
+
+def validate_track(id, genomeBuild, returnMetadata=False):
+    result = db.one_or_404(
+            statement=db.session.query(Track).filter_by(identifier=id).filter_by(genome_build=genomeBuild),
+            description=f"No track with id '{id}' found in FILER.")
+    return result if returnMetadata else True
+    
+    

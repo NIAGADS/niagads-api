@@ -9,9 +9,10 @@ substitutes MT with M
 
 import re
 from marshmallow import fields, ValidationError
+from shared_resources.constants import CHROMOSOMES
 
 PATTERN = '.+:\d+-\d+' # chr:start-enddddd
-VALID_CHROMOSOMES = list(range(1,22)) + [ 'X', 'Y', 'M', 'MT']
+
 
 class Span(fields.Raw):
     """Field that captures a span as chr:start-end,
@@ -30,8 +31,8 @@ class Span(fields.Raw):
         cN = chrm.replace('chr', '') if 'chr' in chrm else chrm
         if cN == 'MT':
             cN = 'M'
-        if cN not in VALID_CHROMOSOMES:
-            raise ValueError("invalid chromosome specified: " + cN)
+        if cN not in CHROMOSOMES:
+            raise ValidationError("Invalid genomic span: invalid chromosome specified: " + cN)
         
         return 'chr' + str(cN)
         
@@ -46,24 +47,24 @@ class Span(fields.Raw):
         
         # check against regexp
         if bool(re.match(PATTERN, value)) == False:
-            raise ValueError("for a chromosome, N, please specify as chrN:start-end or N:start-end")
+            raise ValidationError("Invalid genomic span: " + value + "- for a chromosome, N, please specify as chrN:start-end or N:start-end")
         
         # split on :
         [chrm, span] = value.split(':')
         
         # validate chr
-        chrm = self._validateChr(chrm)
+        chrm = self._validateChrm(chrm)
         
         # validate start < end
         [start, end] = span.split('-')
-        if (int(end) >= int(start)):
-            raise ValueError("start must be < end")
+        if (int(start) > int(end)):
+            raise ValidationError("Invalid genomic span: " + value + " - start must be <= end")
 
         return chrm + ':' + span
 
 
     def _deserialize(self, value, attr, data, **kwargs):
-        try:
-            self._validate(value)
-        except ValueError as error:
-            raise ValidationError("Invalid genomic span - " + value) from error
+        self._validate(value)
+ 
+
+

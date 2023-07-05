@@ -3,6 +3,9 @@ from flask.json import jsonify
 from dateutil.parser import parse as parse_date
 from datetime import datetime
 
+from shared_resources.fields import Span
+
+
 
 def error_message(message=None, errorType="error"):
     if errorType == 'bad_arg':
@@ -46,8 +49,20 @@ def extract_row_data(queryResultRow):
     except:
         return queryResultRow        
     
-        
-        
+
+def parse_span(args):
+    """ parse span out of request args """
+
+    if args.span:
+        return Span()._validate(args.span)
+    else:
+        if args.chr is None or args.start is None or args.end is None:
+            return error_message("if not specifying 'span' as 'chrN:start-end', must supply 'chr', 'start', and 'end' parameters",
+                    errorType='missing_required_parameter')
+        span = str(args.chr) + ':' + str(args.start) + '-' + str(args.end)
+        return Span()._validate(span)
+
+    
 def drop_nulls(obj):
     if isinstance(obj, list):
         return list(filter(None, obj))

@@ -5,7 +5,7 @@ metadata = {
     'id': fields.String(required=True, attribute="identifier",
             description="unique track identifier, usually accession number in original data source"),
     'name': fields.String(required=True, description="track name"),
-    'assembly': GenomeBuild(attribute="genome_build", description="reference genome build", required=True),
+    'assembly': fields.String(attribute="genome_build", description="reference genome build", required=True, example="GRCh38"),
     'feature_type': fields.String(required=True, description="type of genomic feature annotated by the track"),
     'data_source': fields.String(required=True, description="source repository or data collection"),
 
