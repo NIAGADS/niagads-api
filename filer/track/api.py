@@ -9,7 +9,7 @@ from shared_resources.db import db
 
 from filer.utils import make_request
 from filer.track.schemas import metadata, biosample
-from filer.track.models import get_track_count, get_filter_values, get_track_metadata, validate_track
+from filer.track.models import get_track_count, get_filter_values, get_track_metadata, validate_track, get_bulk_overlaps
 from filer.parsers import filter_arg_parser
 
 LOGGER = logging.getLogger(__name__)
@@ -81,7 +81,26 @@ class TrackOverlaps(Resource):
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
 
-            
+
+overlapsParser = FILTER_PARSER.copy()
+overlapsParser = merge_parsers(overlapsParser, parsers.span)
+overlapsParser.add_argument('id', help="comma separated list of one or more identifiers")
+@api.route('/overlaps', doc={"description": "get track data in the specified span for a list of one or more tracks"})
+@api.expect(overlapsParser)
+class TrackListOverlaps(Resource):
+    def get(self):
+        args = overlapsParser.parse_args()
+        try:
+            span = utils.validate_span(args)
+            if isinstance(span, dict):
+                return span # error message
+            result = get_bulk_overlaps(args, span)
+            if 'message' in result:
+                return utils.error_message(result.message, errorType="too_many_records")
+            return result
+        except ValidationError as err:
+            return utils.error_message(str(err), errorType="validation_error")
+        
         
 @api.route('/filter/<string:filterName>')
 class Filter(Resource):

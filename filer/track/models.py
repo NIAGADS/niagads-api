@@ -1,13 +1,16 @@
 ''' FILER track metadata model '''
 from sqlalchemy.orm import column_property
 from sqlalchemy import func, distinct, and_
+from flask import jsonify
 
 from shared_resources.db import db
 from shared_resources import utils, constants
 from filer.parsers import split_replicates
+from filer.utils import make_request
 
 
-SKIP_FILTERS = ['idsOnly', 'countOnly', 'fuzzy']
+SKIP_FILTERS = ['idsOnly', 'countOnly', 'fuzzy', 'keyword', 'span', 'chr', 'start', 'end']
+IGNORE_TRACKS = ['NGGT000235']
 
 # [
 # 'output_type',  'cell_type', 'biosample_type', 'biosamples_term_id', 
@@ -72,6 +75,8 @@ class Track(db.Model):
     file_schema = db.Column(db.String) 
     
     searchable_text = db.Column(db.String)
+    
+    tissue = db.synonym('tissue_category')
      
     @property
     def genome_browser_track_schema(self):    
@@ -130,6 +135,9 @@ def get_track_count(filters):
                 for attr, value in filters.items() 
                 if value is not None
                 and attr not in SKIP_FILTERS]
+        if 'keyword' in filters:
+            value = filters['keyword']
+            expressions.append(Track.searchable_text.match(value))
         result = query.filter(and_(*expressions))
 
     return result.scalar()
@@ -142,15 +150,20 @@ def __parse_query_result(queryResult, idsOnly):
     
     return result    
 
+
+def __get_filter_expressions(filters):
+    expressions = [func.lower(getattr(Track, __parse_attributes(attr))) == str(value).lower()
+            for attr, value in filters.items() 
+            if value is not None
+            and attr not in SKIP_FILTERS]
+    return expressions
+
+
 def get_track_metadata(filters):
     queryTarget = distinct(Track.identifier) if filters.idsOnly else Track
     query = db.session.query(queryTarget)
-    if filters is not None:
-        expressions = [func.lower(getattr(Track, __parse_attributes(attr))) == str(value).lower()
-                for attr, value in filters.items() 
-                if value is not None
-                and attr not in SKIP_FILTERS]
-        queryResult = query.filter(and_(*expressions)).order_by(Track.identifier)
+    expressions = __get_filter_expressions(filters) if filters is not None else None
+    queryResult = query.filter(and_(*expressions)).order_by(Track.identifier) 
     return __parse_query_result(queryResult, filters.idsOnly)
 
 
@@ -173,4 +186,19 @@ def validate_track(id, genomeBuild, returnMetadata=False):
             description=f"No track with id '{id}' found in FILER.")
     return result if returnMetadata else True
     
+
+def __get_track_ids(args):
+    queryTarget = distinct(Track.identifier)
+    query = db.session.query(queryTarget)
+    expressions = __get_filter_expressions(args) if args is not None else None
+    queryResult = query.filter(and_(*expressions)).order_by(Track.identifier) 
+    result =  __parse_query_result(queryResult, idsOnly=True)
+    return result
+
+def get_bulk_overlaps(args, span):
+    trackIds = [ v[0] for v in __get_track_ids(args) if v not in IGNORE_TRACKS]
+    if len(trackIds) > 300:
+        return {'message': 'Too many tracks;' + str(len(trackIds) + ' match the filter criteria. Please add additional filters.  Pagination coming soon')}
     
+    trackIds = ','.join(trackIds)
+    return make_request("get_overlaps", {"id": trackIds, "assembly": args['assembly'], "span": span})

@@ -8,7 +8,8 @@ ALLOWABLE_FILER_TRACK_FILTERS = {
     "assay": "assay type", 
     "featureType": "feature type", 
     "antibodyTarget": "target of ChIP-seq or other immunoprecipitation assay",
-    "project": "member of a collection of related tracks, often an ENCODE project"
+    "project": "member of a collection of related tracks, often an ENCODE project",
+    "tissue": "tissue associated with biosample"
     }
 
 ADSP_VARIANTS_ACCESSION = "NG00067"

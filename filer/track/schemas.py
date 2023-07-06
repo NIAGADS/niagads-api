@@ -16,6 +16,8 @@ metadata = {
     'url': fields.String(required=True, description="URL for accessing file in FILER"),
     'index_url': fields.String(required=True, description="URL for accessing paired tabix index file in FILER"),
     'md5sum': fields.String(description="file md5sum"),
+    'biosample_term': fields.String(description="biosample ontology term"),
+    'tissue': fields.String(description="biosample tissue, if any", attribute="tissue_category"),
 }
 
 experimental_design = {
