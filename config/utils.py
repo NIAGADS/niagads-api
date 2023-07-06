@@ -34,11 +34,14 @@ def set_app_config(initCacheDB=False):
     if not initCacheDB:
         # only add GenomicsDB if not updating the cache
         # head off any chance of dropping anything from GenomicsDB database
-        del app_config['FILER_METADATA_TEMPLATE_FILE']
         db_config.update({
-                'GRCh38' : connection_str.format('genomicsdb'),
-                'GRCh37' : connection_str.format('genomicsdb37'),
+                'GRCh38' : connection_str.format(app_config['GENOMICSDB_GRCh38']),
+                'GRCh37' : connection_str.format(app_config['GENOMICSDB_GRCh37']),
         })
+        
+        del app_config['FILER_METADATA_TEMPLATE_FILE']
+        del app_config['GENOMICSDB_GRCh37']
+        del app_config['GENOMICSDB_GRCh38']
         
 
     app_config.update({'SQLALCHEMY_BINDS': db_config})    
