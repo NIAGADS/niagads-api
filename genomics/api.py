@@ -7,10 +7,10 @@ from shared_resources import constants, utils
 
 # child APIs
 from genomics.gene.api import api as gene_api
-from genomics.dataset.api import api as dataset_api
+from genomics.collection.api import api as collection_api
 from genomics.track.api import api as track_api
 
-CHILD_APIS = [dataset_api, track_api, gene_api]
+CHILD_APIS = [collection_api, track_api, gene_api]
 
 
 api = Namespace('genomics', description="API Calls for accessing the NIAGADS Alzheimer's Genomics Database")

@@ -17,7 +17,7 @@ from genomics.track.models import table
 logger = logging.getLogger(__name__)
 
 api = Namespace('genomics/track',
-        description="retrieve track metadata and data")
+        description="get track metadata and data")
 
 # create response schema from the base metadata schema
 baseSchema = api.model('Metadata', base_metadata)
@@ -26,7 +26,7 @@ trackSchema = api.clone('GenomicsDB Track', baseSchema, track_metadata)
 #{'phenotypes': fields.Nested(phenotypeSchema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
 
 
-@api.route('/<string:id>', doc={"description": "retrieve meta-data for specified track from the NIAGADS GenomicsDB"})
+@api.route('/<string:id>', doc={"description": "get meta-data for specified track from the NIAGADS GenomicsDB"})
 @api.expect(parsers.genome_build)
 class Track(Resource):
     @api.marshal_with(trackSchema, skip_none=True)
@@ -47,10 +47,10 @@ class Track(Resource):
 
 
 filterParser = parsers.filters.copy()
-filterParser.replace_argument('dataType', help="type of data / output type",
+filterParser.replace_argument('dataType', help="type of data or analysis output type",
         default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
 filterParser = merge_parsers(filterParser, parsers.genome_build)
-@api.route('/', doc={"description": "retrieve meta-data for tracks by type"})
+@api.route('/', doc={"description": "get meta-data for tracks by type"})
 @api.expect(filterParser)
 class TrackList(Resource):    
     @api.marshal_with(trackSchema, skip_none=True)

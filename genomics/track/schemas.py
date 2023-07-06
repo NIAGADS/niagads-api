@@ -4,7 +4,7 @@ metadata = {
     'attribution': fields.String(description="submitter or first author and date of publication", 
             required=True, 
             example="Wang et al. 2021"),
-    'dataset_accession': fields.String(description="accession number for the track dataset",
+    'collection': fields.String(description="accession number for the track dataset", attribute="dataset_accession",
             required=True),   
     'id': fields.String(required=True, 
             description="unique track identifiers", 

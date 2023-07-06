@@ -42,3 +42,12 @@ class Track_GRCh37(TrackMixin, db.Model):
     __tablename__ = 'trackattributes'
     __table_args__ = {'schema': 'niagads', 'extend_existing':True}
     id = db.synonym('track')
+
+
+def validate_track(id, genomeBuild, returnMetadata=False):
+    queryTable = table(genomeBuild)
+    result = db.one_or_404(
+            statement=db.session.query(queryTable).filter_by(id=id),
+            description=f"No track with id '{id}' found in the NIAGADS GenomicsDB.")
+    return result if returnMetadata else True
+    
