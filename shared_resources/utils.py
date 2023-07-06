@@ -52,14 +52,14 @@ def extract_row_data(queryResultRow):
     
 def validate_assembly(assembly):
     """ validate assembly / genome build"""
-    return GenomeBuild()._validate(assembly)
+    return GenomeBuild().deserialize(assembly)
         
 
 def validate_span(args):
     """ parse span out of request args & validate """
 
     if args.span:
-        return Span()._validate(args.span)
+        return Span().deserialize(args.span)
     else:
         if args.chr is None or args.start is None or args.end is None:
             return error_message("if not specifying 'span' as 'chrN:start-end', must supply 'chr', 'start', and 'end' parameters",
