@@ -31,16 +31,20 @@ def extract_json_value(attribute, field):
     return attribute[field] if field in attribute else None
 
         
-def extract_row_data(queryResultRow):
+def extract_row_data(queryResultRow, tableValued, hasLiterals):
     data = []
     fields = []
     try:
         data = getattr(queryResultRow, '_data')
         fields = getattr(queryResultRow, '_fields')
+        
+        if tableValued:
+            return dict(zip(fields, data))
+        
         # add in literals  
-        result = data[0]
+        result = data[0] if hasLiterals else {}
         for index, d in enumerate(data):
-            if index == 0:
+            if index == 0 and hasLiterals:
                 continue
             if fields[index].startswith('_'):
                 continue
@@ -80,8 +84,9 @@ def dict_to_string(obj):
     pairs = [ k + "=" + str(v) for k,v in obj.items()]
     return ';'.join(pairs)
 
-def extract_result_data(queryResult):
-    return [ extract_row_data(r) for r in queryResult ]
+
+def extract_result_data(queryResult, tableValued=False, hasLiterals=False):
+    return [ extract_row_data(r, tableValued, hasLiterals) for r in queryResult ]
 
 
 def remove_duplicates(array):
@@ -128,6 +133,7 @@ def array_in_string(value, array):
 
 def to_date(value, pattern='%m-%d-%Y'):
     return parse_date(value, fuzzy=True) # datetime.strptime(value, pattern).date()
+
 
 def to_bool(val):
     """Convert a string representation of truth to true (1) or false (0).

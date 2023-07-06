@@ -12,3 +12,4 @@ Specification and Implementation of the NIAGADS API
 * python-dotenv
 * requests
 * python-dateutil
+* sqlalchemy-utils

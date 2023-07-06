@@ -58,7 +58,7 @@ class GeneList(Resource):
                     .filter(queryTable.gene_symbol.in_(args.id) 
                             | queryTable.source_id.in_(args['id']) 
                             | queryTable.annotation['entrez_id'].astext.in_(args['id'])).order_by(queryTable.source_id))
-            return utils.extract_result_data(genes)
+            return utils.extract_result_data(genes, hasLiterals=True)
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
     
