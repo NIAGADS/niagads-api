@@ -21,16 +21,17 @@ def validate_variant(genomeBuild, id):
     return utils.extract_result_data(result)[0]
 
 
-def get_variant(genomeBuild, ids, single=False):
+def get_variant(genomeBuild, ids, full=False, single=False):
     dbSession = get_session(genomeBuild)
-    lookupFunc = func.get_variant_primary_keys_and_annotations_tbl(ids).table_valued('lookup_variant_id', 'annotation')
+    lookupFunc = func.get_variant_primary_keys_and_annotations_tbl(ids).table_valued('lookup_variant_id', 'mapping')
     statement = select(lookupFunc)
     queryResult = dbSession.execute(statement)
    
     dbSession.remove()
-    result = utils.extract_result_data(queryResult, tableValued=True)
+    result = utils.extract_variant_result_data(queryResult, fullAnnotation=full)
     if single:
-        mapping = result[0]['annotation']
+        mapping = result[0]['mapping']
         if mapping is None:
-            return {"message": "No variant with id '{id}' found in the NIAGADS GenomicsDB. "}
+            return {"message": "No variant with id '" + str(ids) + "' found in the NIAGADS GenomicsDB. "}
+        return mapping
     return result

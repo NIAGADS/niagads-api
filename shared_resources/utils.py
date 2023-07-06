@@ -89,6 +89,21 @@ def extract_result_data(queryResult, tableValued=False, hasLiterals=False):
     return [ extract_row_data(r, tableValued, hasLiterals) for r in queryResult ]
 
 
+def remove_extra_variant_annotations(result, keepFullAnnotation):
+    if result['mapping'] is not None and not keepFullAnnotation:
+        mapping = result['mapping']['annotation']
+        del mapping['ADSP_QC']
+        del mapping['ranked_consequences']
+        del mapping['mapped_coordinates']
+    return result
+    
+    
+def extract_variant_result_data(queryResult, fullAnnotation=False):
+    tableValued = True
+    hasLiterals = False
+    return [ remove_extra_variant_annotations(extract_row_data(r, tableValued, hasLiterals), fullAnnotation) for r in queryResult ]
+
+
 def remove_duplicates(array):
     """ remove duplicates from a list by transforming to set and back """
     return [*set(array)]
