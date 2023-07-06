@@ -1,12 +1,12 @@
 ''' api to retrieve all tracks associated with a dataset '''
 import logging
+from marshmallow import ValidationError
 from flask_restx import Namespace, Resource
 from sqlalchemy import not_
 
-from shared_resources.constants import ADSP_VARIANTS_ACCESSION
 from shared_resources.db import db as genomicsdb
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers
-from shared_resources.utils import extract_result_data
+from shared_resources import utils, constants
 
 from genomics.shared.schemas import base_metadata, phenotype
 from genomics.dataset.schemas import metadata as dataset_metadata
@@ -37,32 +37,41 @@ class Dataset(Resource):
     
     def get(self, id): 
         args = parsers.genome_build.parse_args()
-        dataset = genomicsdb.one_or_404(
-            statement=genomicsdb.select(table(args['assembly'])).filter_by(id=id),
-            description=f"No database with accession # {id} found in the NIAGADS GenomicsDB."
-        )
+        try:
+            genomeBuild = utils.validate_assembly(args['assembly'])     
+            dataset = genomicsdb.one_or_404(
+                statement=genomicsdb.select(table(genomeBuild)).filter_by(id=id),
+                description=f"No database with accession # {id} found in the NIAGADS GenomicsDB."
+            )
         
-        return dataset
+            return dataset
+        except ValidationError as err:
+            return utils.error_message(str(err), errorType="validation_error")
 
 filterParser = parsers.filters.copy()
 filterParser.replace_argument('type', help="type of dataset or track; what kind of information", 
         default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
 argParser = merge_parsers(filterParser, parsers.genome_build)
-
 @api.route('/', doc={"description": "retrieve meta-data for datasets by type"})
 @api.expect(argParser)
 class DatasetList(Resource):    
     @api.marshal_with(datasetSchema, skip_none=True)
     def get(self):
         args = argParser.parse_args()
-        queryTable = table(args['assembly'])
-        idMatch = "{}%".format("NG0")
-        ignore = "{}%".format(ADSP_VARIANTS_ACCESSION)
-        
-        # TODO: add conditional based on type
-        datasets = genomicsdb.session.execute(genomicsdb.select(queryTable)
-                .filter(queryTable.id.like(idMatch) 
-                        & not_(queryTable.id.like(ignore)))
-                .order_by(queryTable.id))
-        
-        return extract_result_data(datasets)
+        try:
+            genomeBuild = utils.validate_assembly(args['assembly'])    
+
+            queryTable = table(genomeBuild)
+            idMatch = "{}%".format("NG0")
+            ignore = "{}%".format(constants.ADSP_VARIANTS_ACCESSION)
+            
+            # TODO: add conditional based on type
+            datasets = genomicsdb.session.execute(genomicsdb.select(queryTable)
+                    .filter(queryTable.id.like(idMatch) 
+                            & not_(queryTable.id.like(ignore)))
+                    .order_by(queryTable.id))
+            
+            return utils.extract_result_data(datasets)
+
+        except ValidationError as err: 
+            return utils.error_message(str(err), errorType="validation_error")

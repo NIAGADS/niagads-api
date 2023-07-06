@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 CHROMOSOMES = [str(x) for x in [*range(1,22)]] + ['X', 'Y', 'N']
 DATASET_TYPES = ["GWAS_sumstats", "QTL_sumstats"]
-GENOME_BUILDS = ["GRCh37", "GRCh38"]
+GENOME_BUILDS = ["GRCh37", "GRCh38", "grch38", "grch37", "hg38", "hg19"]
 ALLOWABLE_FILER_TRACK_FILTERS = {
     "dataSource": "original data source ", 
     "assay": "assay type", 

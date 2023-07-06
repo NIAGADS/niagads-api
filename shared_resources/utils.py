@@ -3,7 +3,7 @@ from flask.json import jsonify
 from dateutil.parser import parse as parse_date
 from datetime import datetime
 
-from shared_resources.fields import Span
+from shared_resources.fields import Span, GenomeBuild
 
 
 
@@ -49,9 +49,14 @@ def extract_row_data(queryResultRow):
     except:
         return queryResultRow        
     
+    
+def validate_assembly(assembly):
+    """ validate assembly / genome build"""
+    return GenomeBuild()._validate(assembly)
+        
 
-def parse_span(args):
-    """ parse span out of request args """
+def validate_span(args):
+    """ parse span out of request args & validate """
 
     if args.span:
         return Span()._validate(args.span)

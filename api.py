@@ -1,11 +1,15 @@
 from flask_restx import Api
+from flask import Blueprint
 
+from config.utils import get_version
 from genomics import genomics_api, genomics_api_children
 from filer import filer_api, filer_api_children
 
+version = get_version()
+
 api = Api(
     title='NIAGADS API',
-    version='1.0',
+    version=version,
     description='API for accessing NIAGADS resources',
     # All API metadatas
 )

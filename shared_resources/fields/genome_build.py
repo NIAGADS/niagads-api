@@ -4,8 +4,8 @@ GRCh37 or GRCh38
 """
 
 import re
-from marshmallow import fields
-from werkzeug.exceptions import BadRequest
+from marshmallow import fields, ValidationError
+
 
 PATTERN = re.compile('GRCh(37|38)') # saves a little time
 
@@ -14,6 +14,9 @@ class GenomeBuild(fields.Raw):
     """
     
     def _deserialize(self, value, attr, data, **kwargs):             
+        return self._validate(value)
+    
+    def _validate(self, value):
         value = value.lower().replace('grch', 'GRCh')
         match value:
             case 'hg38':
@@ -25,8 +28,8 @@ class GenomeBuild(fields.Raw):
                 if bool(test):
                     return test.group(0)
                 else:
-                    raise BadRequest("Invalid genome build in route: '" + value
-                            + "'; Genome Build should be one of: GRCh37, GRCh38, hg19, hg38")
+                    raise ValidationError("Invalid genome build (assembly): '" + value
+                            + "'; assembly should be one of: GRCh37, GRCh38 or hg19, hg38")
         
         
     def format(self, value):
@@ -44,3 +47,4 @@ class GenomeBuild(fields.Raw):
             if value == 'hg38': 
                 return 'GRCh38'
             return value
+        

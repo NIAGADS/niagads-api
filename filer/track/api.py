@@ -74,18 +74,15 @@ class TrackOverlaps(Resource):
         args = SPAN_PARSER.parse_args()
         validate_track(id, args['assembly'], False)         # if not valid, returns an error
         try:
-            span = utils.parse_span(args)
+            span = utils.validate_span(args)
             if isinstance(span, dict):
                 return span # error message
             return make_request("get_overlaps", {"id": id, "assembly": args['assembly'], "span": span})
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
-       
+
             
         
-
-
-
 @api.route('/filter/<string:filterName>')
 class Filter(Resource):
     @api.doc(params={'filterName': 

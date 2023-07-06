@@ -64,7 +64,7 @@ class Span(fields.Raw):
 
 
     def _deserialize(self, value, attr, data, **kwargs):
-        self._validate(value)
+        return self._validate(value)
  
 
 
