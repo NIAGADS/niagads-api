@@ -28,8 +28,6 @@ def create_app(initCacheDB):
         api.init_app(app)
     db.init_app(app)   
     
-    logger.debug(app.config)
-    
     if initCacheDB:
         logger.info("'initCacheDB' parameter passed, initializing cache database: " + initCacheDB)
         create_tables(db, app, initCacheDB.lower())
