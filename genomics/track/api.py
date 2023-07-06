@@ -12,7 +12,7 @@ from shared_resources.utils import extract_result_data
 from genomics.shared.schemas import base_metadata, phenotype
 from genomics.track.schemas import metadata as track_metadata
 
-from genomics.track.models import table
+from genomics.track.models import table, validate_track
 
 logger = logging.getLogger(__name__)
 
@@ -36,10 +36,7 @@ class Track(Resource):
         args = parsers.genome_build.parse_args()
         try:
             genomeBuild = utils.validate_assembly(args['assembly'])
-            dataset = genomicsdb.one_or_404(
-                statement=genomicsdb.select(table(genomeBuild)).filter_by(id=id),
-                description=f"No track with id '{id}' found in the NIAGADS GenomicsDB."
-            )
+            dataset = validate_track(id, genomeBuild, True)
         
             return dataset
         except ValidationError as err:
