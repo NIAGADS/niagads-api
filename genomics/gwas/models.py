@@ -22,11 +22,11 @@ class GWASMixin:
     position = db.Column(db.Integer)
     is_adsp_variant = db.Column(db.Boolean)
     pvalue_display = db.Column(db.String)
-    neg_log10p_value = db.Column(db.Float)
+    neg_log10_pvalue = db.Column(db.Float)
     test_allele = db.Column(db.String)
-    bin_index = db.Column(LtreeType)
-    display_attributes = db.Column(postgresql.JSONB)
-    annotation = db.Column(postgresql.JSONB)
+    # bin_index = db.Column(LtreeType)
+    # display_attributes = db.Column(postgresql.JSONB)
+    # annotation = db.Column(postgresql.JSONB)
     
     @property
     def variant(self):
@@ -50,7 +50,7 @@ class TopGWAS_GRCh38(GWASMixin, db.Model):
     __tablename__ = 'variantgwastophits'
     __table_args__ = {'schema': 'niagads', 'extend_existing':True}
     variant_id = db.synonym('metaseq_id')
-    
+
 
 class TopGWAS_GRCh37(GWASMixin, db.Model):
     __bind_key__ = 'GRCh37'

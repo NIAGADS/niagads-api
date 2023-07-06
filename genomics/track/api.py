@@ -2,7 +2,7 @@
 import logging
 from marshmallow import ValidationError
 from flask_restx import Namespace, Resource
-from sqlalchemy import not_
+from sqlalchemy import not_, and_
 
 from shared_resources import constants, utils
 from shared_resources.db import db as genomicsdb
@@ -11,8 +11,10 @@ from shared_resources.utils import extract_result_data
 
 from genomics.shared.schemas import base_metadata, phenotype
 from genomics.track.schemas import metadata as track_metadata
+from genomics.gwas.schemas import gwas_result
 
 from genomics.track.models import table, validate_track
+from genomics.gwas.models import table as gwas_table
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +25,7 @@ api = Namespace('genomics/track',
 baseSchema = api.model('Metadata', base_metadata)
 phenotypeSchema = api.model('Phenotype', phenotype)
 trackSchema = api.clone('GenomicsDB Track', baseSchema, track_metadata)
+gwasSchema = api.model('GWAS Summary Statistics', gwas_result)
 #{'phenotypes': fields.Nested(phenotypeSchema, skip_none=True, desciption="clinical phenotypes", example="coming soon")}
 
 
@@ -66,5 +69,22 @@ class TrackList(Resource):
                     .order_by(queryTable.id))
             
             return extract_result_data(tracks)
+        except ValidationError as err:
+            return utils.error_message(str(err), errorType="validation_error")
+
+
+@api.route('/<string:id>/overlaps', doc={"description": "get top GWAS hits (p <= 5e-8) specified track from the NIAGADS GenomicsDB"})
+@api.expect(parsers.genome_build)
+class TrackOverlaps(Resource):
+    @api.marshal_with(gwasSchema, skip_none=True)
+    @api.doc(params={'id': 'unique track identifier'})
+    def get(self, id):
+        args = parsers.genome_build.parse_args()
+        try:
+            genomeBuild = utils.validate_assembly(args['assembly'])
+            queryTable = gwas_table(genomeBuild)
+            expressions = [getattr(queryTable, 'track')==id, getattr(queryTable, "neg_log10_pvalue")>=7.3]
+            hits = genomicsdb.session.query(queryTable).filter(and_(*expressions)).order_by(queryTable.neg_log10_pvalue.desc()).all()
+            return extract_result_data(hits)
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
