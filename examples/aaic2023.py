@@ -28,9 +28,9 @@ def make_request(endpoint, params):
 
 # let's find an interesting variant by getting the top result from the 
 # lifted over Kunkle et al. 2019 IGAP Rare Variants dataset
-# https://api.niagads.org/<version>/genomics/track/<trackId>/overlaps
+# https://api.niagads.org/<version>/genomics/track/<trackId>/hits
 trackId = 'NG00075_GRCh38_STAGE1'
-hits = make_request("genomics/track/" + trackId + "/overlaps", None)
+hits = make_request("genomics/track/" + trackId + "/hits", None)
 
 # the results are sorted, so the top hit will be the first one
 # let's get it's dbSNP refSNP ID

@@ -73,7 +73,7 @@ class TrackList(Resource):
             return utils.error_message(str(err), errorType="validation_error")
 
 
-@api.route('/<string:id>/overlaps', doc={"description": "get top GWAS hits (p <= 5e-8) specified track from the NIAGADS GenomicsDB"})
+@api.route('/<string:id>/hits', doc={"description": "get top GWAS hits (p <= 5e-8) specified track from the NIAGADS GenomicsDB"})
 @api.expect(parsers.genome_build)
 class TrackOverlaps(Resource):
     @api.marshal_with(gwasSchema, skip_none=True)
