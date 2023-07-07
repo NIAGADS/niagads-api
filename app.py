@@ -5,8 +5,9 @@ from flask import Flask, send_file
 # local imports
 from shared_resources.db import db
 from shared_resources.db_utils import create_tables
+from middleware import PrefixMiddleware
 from api import api
-from config import set_app_config
+from config import set_app_config, get_version
 
 def configure_logging(app: Flask):
     logging.basicConfig(format='[%(asctime)s] %(levelname)s %(name)s: %(message)s')
@@ -19,11 +20,12 @@ def configure_logging(app: Flask):
     return logging.getLogger(__name__)
 
 
-def create_app(initCacheDB):
-    
+def create_app(initCacheDB): 
     app = Flask(__name__)
     logger = configure_logging(app)
     app.config.update(set_app_config(initCacheDB != None))
+    prefix = '/' + str(get_version())
+    app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=prefix)
     if not initCacheDB:
         api.init_app(app)
     db.init_app(app)   
