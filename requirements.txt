@@ -1,0 +1,9 @@
+psycopg2-binary
+flask_restx
+flask_sqlalchemy
+flask_marshmallow
+python-dotenv
+requests
+python-dateutil
+gunicorn
+sqlalchemy_utils
