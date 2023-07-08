@@ -13,6 +13,6 @@ class PrefixMiddleware(object):
         else:
             start_response('404', [('Content-Type', 'text/plain')])
             baseUrl = environ['wsgi.url_scheme'] + '://' \
-                + environ['HTTP_HOST'] +  str(self.prefix) + environ['REQUEST_URI'] 
+                + environ['HTTP_HOST'] +  str(self.prefix) + environ['RAW_URI'] 
 
             return [("Missing version number: request URI should be: " + baseUrl).encode()]
