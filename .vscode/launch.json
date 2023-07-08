@@ -38,6 +38,15 @@
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "NIAGADS API:gunicorn",
+            "type": "python",
+            "request": "launch",
+            "program": "~/.local/bin/gunicorn",
+            "gevent": true,
+            "args": ["app:create_app(None)", "--bind=127.0.0.1:8000", "--reload", "--worker-class", "eventlet", "-w", "1", "--timeout=7200"],
+            "postDebugTask": "killdebugger"
         }
     ]
 }
