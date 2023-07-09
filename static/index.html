@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>NIAGADS API</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="api-home.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Lato", sans-serif;
+        }
+
+        .napi-bar,
+        h1,
+        button {
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .fa-anchor,
+        .fa-coffee {
+            font-size: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="napi-top">
+        <div class="napi-bar napi-dark-blue-grey napi-card napi-left-align napi-large">
+            <a class="napi-bar-item napi-button napi-hide-medium napi-hide-large napi-right napi-padding-large napi-hover-white napi-large napi-dark-blue-grey"
+                href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                    class="fa fa-bars"></i></a>
+            <a title="NIAGADS home page" target="_blank" href="https://www.niagads.org"
+                class="napi-bar-item napi-button napi-padding-large napi-white">NIAGADS</a>
+            <a href="../doc/" title="API documentation and examples"
+                class="napi-bar-item napi-button napi-hide-small napi-padding-large napi-hover-white">API
+                Documentation</a>
+            <a title="NIAGADS Alzheimer's disease variant portal (ADVP)" target="_blank" href="https://advp.niagads.org"
+                class="napi-bar-item napi-button napi-hide-small napi-padding-large napi-hover-white">ADVP</a>
+            <a title="NIAGADS Alzheimer's Genomics Database" target="_blank" href="https://www.niagads.org/genomics"
+                class="napi-bar-item napi-button napi-hide-small napi-padding-large napi-hover-white">GenomicsDB</a>
+            <a title="FILER, the NIAGADS functional genomics repository" target="_blank"
+                href="https://tf.lisanwanglab.org/FILER/"
+                class="napi-bar-item napi-button napi-hide-small napi-padding-large napi-hover-white">FILER</a>
+            <a href="#" title="contact us"
+                class="napi-bar-item napi-button napi-hide-small napi-padding-large napi-hover-white">Contact Us</a>
+        </div>
+
+        <!-- Navbar on small screens -->
+        <div id="responsive-menu" class="napi-bar-block napi-white napi-hide napi-hide-large napi-hide-medium napi-large">
+            <a href="../doc/" title="API documentation and examples"
+                class="napi-bar-item napi-button napi-padding-large">API Documentation</a>
+            <a title="NIAGADS Alzheimer's disease variant portal (ADVP)" target="_blank" href="https://advp.niagads.org"
+                class="napi-bar-item napi-button napi-padding-large">ADVP</a>
+            <a title="NIAGADS Alzheimer's Genomics Database" target="_blank" href="https://www.niagads.org/genomics"
+                class="napi-bar-item napi-button napi-padding-large">GenomicsDB</a>
+            <a title="FILER, the NIAGADS functional genomics repository" href="https://tf.lisanwanglab.org/FILER/"
+                class="napi-bar-item napi-button napi-padding-large" target="_blank">FILER</a>
+            <a href="#" title="contact us"
+                class="napi-bar-item napi-button napi-padding-large">Contact Us</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="napi-container napi-dark-blue-grey napi-center" style="padding: 128px 16px">
+        <h1 class="napi-margin napi-text-amber napi-jumbo">NIAGADS API</h1>
+        <p class="napi-xlarge">version alpha</p>
+        <button onclick="window.location.href='../doc/'" class="napi-button napi-blue-grey napi-padding-large napi-large napi-margin-top">
+            Get Started
+        </button>
+    </header>
+
+    <!-- First Grid -->
+    <div class="napi-row-padding napi-padding-64 napi-container">
+        <div class="napi-content">
+            <div class="napi-twothird">
+                <h1>About the NIAGADS API</h1>
+                <h5 class="napi-padding-32">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat.
+                </h5>
+
+                <p class="napi-text-grey">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat
+                    non proident, sunt in culpa qui officia deserunt mollit anim id est
+                    laborum consectetur adipiscing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                    ea commodo consequat.
+                </p>
+            </div>
+
+            <div class="napi-third napi-center">
+                <i class="fa fa-anchor napi-padding-64 napi-text-blue"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Grid -->
+    <div class="napi-row-padding napi-light-grey napi-padding-64 napi-container">
+        <div class="napi-content">
+            <div class="napi-third napi-center">
+                <i class="fa fa-coffee napi-padding-64 napi-text-blue napi-margin-right"></i>
+            </div>
+
+            <div class="napi-twothird">
+                <h1>Lorem Ipsum</h1>
+                <h5 class="napi-padding-32">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat.
+                </h5>
+
+                <p class="napi-text-grey">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat
+                    non proident, sunt in culpa qui officia deserunt mollit anim id est
+                    laborum consectetur adipiscing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                    ea commodo consequat.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="napi-container napi-black napi-center napi-opacity napi-padding-64">
+        <h1 class="napi-margin napi-xlarge">Quote of the day: live life</h1>
+    </div>
+
+    <!-- Footer -->
+    <footer class="napi-container napi-padding-64 napi-center napi-opacity">
+        <div class="napi-xlarge napi-padding-32">
+            Contact us at <a href="mailto:genomicsdb@pennmedicine.upenn.edu">genomicsdb@pennmedicine.upenn.edu</a>
+        </div>
+        <p>
+            <footer>&copy; Copyright 2023 University of Pennslyvania, Perelman School of Medicine</footer>
+
+        </p>
+    </footer>
+
+    <script>
+        // Used to toggle the menu on small screens when clicking on the menu button
+        function myFunction() {
+            var x = document.getElementById("responsive-menu");
+            if (x.className.indexOf("napi-show") == -1) {
+                x.className += " napi-show";
+            } else {
+                x.className = x.className.replace(" napi-show", "");
+            }
+        }
+    </script>
+</body>
+
+</html>

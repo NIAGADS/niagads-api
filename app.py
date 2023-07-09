@@ -21,11 +21,17 @@ def configure_logging(app: Flask):
 
 
 def create_app(initCacheDB): 
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='')
+    
     logger = configure_logging(app)
     app.config.update(set_app_config(initCacheDB != None))
     prefix = '/' + str(get_version())
     app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=prefix)
+    
+    @app.route('/')
+    def index():
+        return app.send_static_file('index.html')
+    
     if not initCacheDB:
         api.init_app(app)
     db.init_app(app)   
@@ -37,7 +43,6 @@ def create_app(initCacheDB):
         _exit(0)
 
     return app
-
 
     
 
@@ -57,7 +62,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     app = create_app(args.initDB)
-    
+      
     app.run()
     
     
