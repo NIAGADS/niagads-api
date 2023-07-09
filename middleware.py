@@ -1,5 +1,8 @@
 # part of adding (version) prefix to all app routs
 # adapted from https://stackoverflow.com/a/36033627
+
+from flask import redirect
+
 class PrefixMiddleware(object):
     def __init__(self, app, prefix=''):
         self.app = app
@@ -11,8 +14,10 @@ class PrefixMiddleware(object):
             environ['SCRIPT_NAME'] = self.prefix
             return self.app(environ, start_response)
         else:
-            start_response('404', [('Content-Type', 'text/plain')])
-            baseUrl = environ['wsgi.url_scheme'] + '://' \
-                + environ['HTTP_HOST'] +  str(self.prefix) + environ['RAW_URI'] 
-
-            return [("Missing version number: request URI should be: " + baseUrl).encode()]
+            endpoint = environ['RAW_URI'] 
+            correctedEndpoint = str(self.prefix) + endpoint
+            correctedUrl = environ['wsgi.url_scheme'] + '://' \
+                + environ['HTTP_HOST'] + correctedEndpoint
+                
+            start_response('302 Found', [('Location', correctedUrl)])
+            return ['1']

@@ -28,6 +28,7 @@ def create_app(initCacheDB):
     prefix = '/' + str(get_version())
     app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=prefix)
     
+    
     @app.route('/')
     def index():
         return app.send_static_file('index.html')
