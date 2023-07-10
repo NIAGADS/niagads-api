@@ -20,4 +20,4 @@ class PrefixMiddleware(object):
                 + environ['HTTP_HOST'] + correctedEndpoint
                 
             start_response('302 Found', [('Location', correctedUrl)])
-            return ['1']
+            return [bytes('1','utf-8')] # application must write bytes
