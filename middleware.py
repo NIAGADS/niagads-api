@@ -1,7 +1,6 @@
-# part of adding (version) prefix to all app routs
+# adds (version) prefix to all app routes
+# also redirects from url/endpoint to url/version/endopoint
 # adapted from https://stackoverflow.com/a/36033627
-
-from flask import redirect
 
 class PrefixMiddleware(object):
     def __init__(self, app, prefix=''):
@@ -19,5 +18,6 @@ class PrefixMiddleware(object):
             correctedUrl = environ['wsgi.url_scheme'] + '://' \
                 + environ['HTTP_HOST'] + correctedEndpoint
                 
+            # add version and redirect
             start_response('302 Found', [('Location', correctedUrl)])
             return [bytes('1','utf-8')] # application must write bytes
