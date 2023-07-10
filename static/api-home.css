@@ -1177,6 +1177,9 @@ a {
 .napi-margin-top {
   margin-top: 16px !important;
 }
+.napi-margin-top-32 {
+    margin-top: 32px !important;
+}
 .napi-margin-bottom {
   margin-bottom: 16px !important;
 }
