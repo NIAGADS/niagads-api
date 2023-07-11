@@ -3,8 +3,9 @@ from shared_resources.db import db
 from sqlalchemy import text, select
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import column_property
+
 from shared_resources.fields import GenomeBuild
-from shared_resources.utils import extract_json_value
+from shared_resources import utils
 
 
 def table(genomeBuild):
@@ -26,11 +27,11 @@ class GeneMixin:
 
     @property
     def name(self):
-        return extract_json_value(self.annotation, 'name')
+        return utils.extract_json_value(self.annotation, 'name')
     
     @property
     def locus(self):
-        return extract_json_value(self.annotation, 'location')
+        return utils.extract_json_value(self.annotation, 'location')
     
     @property 
     def strand(self):

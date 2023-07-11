@@ -1,4 +1,4 @@
-''' api to retrieve all tracks associated with a collection '''
+''' api to get all tracks associated with a collection '''
 import logging
 from marshmallow import ValidationError
 from flask_restx import Namespace, Resource

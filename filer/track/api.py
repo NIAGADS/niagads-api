@@ -1,4 +1,4 @@
-''' api to retrieve all tracks associated with a dataset '''
+''' api to get all tracks associated with a dataset '''
 import logging
 
 from flask_restx import Namespace, Resource, marshal, fields
@@ -23,7 +23,7 @@ add_boolean_arg(FILTER_PARSER, "idsOnly", "return a list of track IDs that match
 TRACK_FILTERS = list(constants.ALLOWABLE_FILER_TRACK_FILTERS.keys())
 
 api = Namespace('filer/track',
-        description="retrieve track metadata and data")
+        description="get track metadata and data")
 
 # create response schema from the base metadata schema
 trackSchema = api.model('FILER Track', metadata)
@@ -32,7 +32,7 @@ biosampleSchema = api.model('BioSample', biosample)
 #        {"biosample": fields.Nested(biosampleSchema, skip_none=True, desciption="biosample characteristics")})
 
 
-@api.route('/<string:id>', doc={"description": "retrieve meta-data for specified track from FILER"})
+@api.route('/<string:id>', doc={"description": "get meta-data for specified track from FILER"})
 @api.expect(parsers.genome_build)
 class Track(Resource):
     @api.marshal_with(trackSchema, skip_none=True)
@@ -42,7 +42,7 @@ class Track(Resource):
         return validate_track(id, args['assembly'], True)
 
 
-@api.route('/', doc={"description": "retrieve meta-data for FILER tracks matching filter criteria"})
+@api.route('/', doc={"description": "get meta-data for FILER tracks matching filter criteria"})
 @api.expect(FILTER_PARSER)  
 class TrackList(Resource):
     def get(self):
@@ -114,7 +114,7 @@ class Filter(Resource):
     
         
         
-# @api.route('/<string:id>', doc={"description": "retrieve meta-data for specified track from the NIAGADS GenomicsDB"})
+# @api.route('/<string:id>', doc={"description": "get meta-data for specified track from the NIAGADS GenomicsDB"})
 # @api.expect(parsers.genome_build)
 # class Track(Resource):
 #     # @api.marshal_with(genomicsdb_metadata_schema, skip_none=True)

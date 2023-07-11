@@ -1,4 +1,4 @@
-''' api to retrieve all tracks associated with a dataset '''
+''' api to get all tracks associated with a dataset '''
 import logging
 from marshmallow import ValidationError
 from flask_restx import Namespace, Resource

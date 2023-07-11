@@ -1,4 +1,4 @@
-''' api to retrieve all tracks associated with a gene or gene subfeature '''
+''' api to get all tracks associated with a gene or gene subfeature '''
 from flask_restx import Namespace, Resource
 from sqlalchemy import literal
 from marshmallow import ValidationError
@@ -11,7 +11,7 @@ from shared_resources import utils
 from genomics.shared.schemas import gene as genomicsdb_gene_properties
 from genomics.gene.models import table
 
-api = Namespace('genomics/gene', description="retrieve gene annotations from the NIAGADS GenomicsDB")
+api = Namespace('genomics/gene', description="get gene annotations from the NIAGADS GenomicsDB")
 
 # create response schema from the base gene schema
 featureSchema = api.model('Feature', feature_properties)
