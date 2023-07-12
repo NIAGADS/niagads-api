@@ -6,6 +6,9 @@
 # cache db
 instance/*
 
+# swagger
+swagger/*
+
 # User-specific files
 genomicsdb.env
 .env
