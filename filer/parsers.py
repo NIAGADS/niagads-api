@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 from shared_resources import utils, constants
 from shared_resources.parsers import arg_parsers
+from filer.utils import make_request
 
 logger = logging.getLogger(__name__)
 
@@ -438,14 +439,18 @@ class FILERMetadataParser:
         
         [self.__metadata.pop(key) for key in internalKeys]
  
-        
+    
     def parse(self):
         ''' parse the FILER metadata & transform/clean up 
-        returns parsed / transformed metadata '''
+        returns parsed / transformed metadata 
+        
+        if verifyTrack = True will query FILER to make sure that the track exists
+        parser will return None if the track is not valid
+        '''
         
         # standardize keys & convert nulls & numbers from__parse_replicates string
         self.__transform_key_values()
-        
+                
         # parse concatenated data points into separate attributes
         # standardize others (e.g., urls, data sources)
         # dropping description; allow use cases to piece together out of the other info
@@ -468,45 +473,5 @@ class FILERMetadataParser:
         # generate text search field
         self.__add_text_search_field()
         
-        # return the 
+        # return the parsed metadata
         return self.__metadata
-
-
-
-        
-
-    example = [
-    {
-        "Identifier": "NGEN060616",
-        # "Data Source": "ENCODE",
-        "File name": "ENCFF883PFA.bed.gz",
-        "Number of intervals": 38312,
-        "bp covered": 13276246,
-        "Output type": "IDR thresholded peaks",
-        "Genome build": "hg38",
-        "cell type": "Middle frontal area 46",
-        "Biosample type": "Tissue",
-        "Biosamples term id": "UBERON:0006483",
-        "Tissue category": "Brain",
-        "Track Description": "Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD",
-        "system category": "Nervous",
-        "life stage": "Adult",
-        # "ENCODE Experiment id": "ENCSR778NDP",
-        # "Biological replicate(s)": 1,
-        #"Technical replicate": "1_1, 1_2",
-        # "Antibody": "CTCF", --> antibody_target
-        #"Assay": "TF ChIP-seq",
-        #"File format": "bed narrowPeak",
-        "File size": 666660,
-        #"Downloaded date": "6/12/22",
-        #"Release date": "7/23/21",
-        #"Date added to FILER": "11/20/22",
-        #"Processed File Download URL": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz",
-        #"Processed file md5": "095d38425edff39dbbd099700e54c260",
-        #"Link out URL": "https://www.encodeproject.org",
-        "Data Category": "Called peaks",
-        "classification": "TF ChIP-seq CTCF IDR thresholded peaks",
-        "trackName": "ENCODE Middle frontal area 46 (repl. 1) TF ChIP-seq CTCF IDR thresholded peaks (narrowPeak) [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD] [Life stage: Adult]",
-        "tabixFileUrl": "https://lisanwanglab.org/GADB/Annotationtracks/ENCODE/data/TF-ChIP-seq/narrowpeak/hg38/2/ENCFF883PFA.bed.gz.tbi"
-    }
-    ]

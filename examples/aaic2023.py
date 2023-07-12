@@ -21,10 +21,10 @@ def make_request(endpoint, params):
     try:
         response = requests.get(requestUrl)
         response.raise_for_status()
+        return response.json()
     except requests.exceptions.HTTPError as err:
         print("HTTP Error: " + err.args[0])
 
-    return response.json()
 
 # let's find an interesting variant by getting the top result from the 
 # lifted over Kunkle et al. 2019 IGAP Rare Variants dataset

@@ -33,6 +33,7 @@ def create_app(initCacheDB):
     def index():
         return app.send_static_file('index.html')
     
+      
     if not initCacheDB:
         api.init_app(app)
     db.init_app(app)   
@@ -45,14 +46,7 @@ def create_app(initCacheDB):
 
     return app
 
-    
 
-# custom swagger-ui? 
-# @app.route('/swaggerui/swagger-ui.css')
-# def custom_css_theme():
-#       return send_file(
-#          path.join(app.root_path, 'ui/custom_swagger.css') 
-#       )
 
 
 if __name__ == "__main__":

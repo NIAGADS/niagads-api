@@ -22,8 +22,13 @@ def __map_request_params(params):
     if 'assembly' in params:
         newParams['genomeBuild'] = __genome_build(params['assembly'])
 
+
+    if 'genomeBuild' in params:
+        newParams['genomeBuild'] = __genome_build(params['genomeBuild'])
+
     if 'id' in params:
-        newParams['trackIDs'] = params['id']
+        key = "trackIDs" if ',' in params['id'] else "trackID"
+        newParams[key] = params['id']
 
     if 'span' in params:
         newParams['region'] = params['span']
@@ -32,9 +37,18 @@ def __map_request_params(params):
 
 
 # TODO: error checking
-def make_request(endpoint, params):
+def make_request(endpoint, params, returnSuccess=False):
     ''' map request params and submit to FILER API'''
     requestParams = __map_request_params(params)
     requestUrl = constants.URLS.filer_api + "/" + endpoint + ".php?" + urlencode(requestParams)
-    response = requests.get(requestUrl)
-    return response.json()
+    try:
+        response = requests.get(requestUrl)
+        response.raise_for_status()      
+        if returnSuccess:
+            return True       
+        return response.json()
+    except requests.exceptions.HTTPError as err:
+        if returnSuccess:
+            return False
+        return {"message", "Error accessing FILER: " + err.args[0]}
+

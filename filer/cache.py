@@ -5,15 +5,27 @@ from requests.exceptions import HTTPError
 # from filer.models import Metadata
 from filer.parsers import FILERMetadataParser
 from filer.track.models import Track
+from filer.utils import make_request
 from shared_resources import constants
 
 logger = logging.getLogger(__name__)
+
+def fetch_live_FILER_metadata():
+    ''' for verifying tracks and removing any not currently available '''
+    
+    # sum(list, []) is a python hack for flattening a nested list
+    hg19 = sum([[ v for k, v in d.items() if k == 'Identifier'] for d in make_request("get_metadata", {'assembly':'hg19'})], [])
+    hg38 = sum([[ v for k, v in d.items() if k == 'Identifier'] for d in make_request("get_metadata", {'assembly':'hg38'})], [])
+    return  {"GRCh37": hg19, "GRCh38": hg38}
 
 def initialize_metadata_cache(db, metadataFileName, debug):
     ''' initializes FILER metadta from the metadata template file '''
     lineNum = 0
     currentLine = None
     try:
+        # query FILER metadata (for verify track availabilty)
+        liveMetadata = fetch_live_FILER_metadata()
+        
         # fetch the template file 
         requestUrl = constants.URLS.filer_downloads + '/metadata/' + metadataFileName
         if debug:
@@ -34,7 +46,10 @@ def initialize_metadata_cache(db, metadataFileName, debug):
         
             # parse & create Metadata object
             track = FILERMetadataParser(dict(zip(header, line.split('\t')))).parse()
-            db.session.add(Track(**track))
+            if track['identifier'] in liveMetadata[track['genome_build']]:
+                db.session.add(Track(**track))
+            else:
+                logger.info("Track not found in FILER: " + currentLine)
             
             if debug and lineNum % 10000 == 0:
                 logger.debug("Loaded metadata for " + str(lineNum) +" tracks")
