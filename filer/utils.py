@@ -50,5 +50,5 @@ def make_request(endpoint, params, returnSuccess=False):
     except requests.exceptions.HTTPError as err:
         if returnSuccess:
             return False
-        return {"message", "Error accessing FILER: " + err.args[0]}
+        return {"message": "Error accessing FILER: " + err.args[0]}
 

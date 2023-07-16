@@ -22,7 +22,7 @@ parser = parsers.genome_build
 @api.route('/')
 @api.expect(parser)
 class Genomics(Resource):
-    @api.marshal_with(schema, envelope='genomics')
+    @api.marshal_with(schema)
 
     def get(self):
         args = parsers.genome_build.parse_args()

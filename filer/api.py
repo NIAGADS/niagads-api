@@ -18,7 +18,7 @@ parser = parsers.genome_build
 
 @api.route('/')
 class Filer(Resource):
-    @api.marshal_with(model, envelope='filer')
+    @api.marshal_with(model)
     def get(self):
         args = parsers.parse_args()
         return {"endpoint": "/filer",

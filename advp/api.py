@@ -16,8 +16,8 @@ api = Namespace('advp', description=description)
 model = api.model('API Info', api_root_information)
 parser = parsers.genome_build
 @api.route('/')
-class Filer(Resource):
-    @api.marshal_with(model, envelope='filer')
+class ADVP(Resource):
+    @api.marshal_with(model)
     def get(self):
         # args = parsers.parse_args()
         return {"endpoint": "/advp",
