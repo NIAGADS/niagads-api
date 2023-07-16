@@ -64,7 +64,7 @@ class CollectionList(Resource):
             collections = genomicsdb.session.execute(genomicsdb.select(queryTable)
                     .filter(queryTable.id.like(idMatch) 
                             & not_(queryTable.id.like(ignore)))
-                    .order_by(queryTable.id))
+                    .order_by(queryTable.id)).all()
             
             return utils.extract_result_data(collections)
 

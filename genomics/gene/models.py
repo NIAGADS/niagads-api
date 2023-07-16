@@ -43,7 +43,7 @@ class GeneMixin:
             return None
 
         fields = ['prev_symbol', 'alias_symbol']
-        aliases = '|'.join([a for a in [extract_json_value(self.annotation, f) for f in fields] if a is not None])
+        aliases = '|'.join([a for a in [utils.extract_json_value(self.annotation, f) for f in fields] if a is not None])
         
         return aliases.split('|')
 

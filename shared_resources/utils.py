@@ -38,6 +38,10 @@ def extract_row_data(queryResultRow, tableValued, hasLiterals):
         data = getattr(queryResultRow, '_data')
         fields = getattr(queryResultRow, '_fields')
         
+        if type(data) is tuple:
+            return data[0]
+            # fields = fields[0]
+
         if tableValued:
             return dict(zip(fields, data))
         
