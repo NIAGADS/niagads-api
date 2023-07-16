@@ -95,7 +95,8 @@ def remove_extra_variant_annotations(result, keepFullAnnotation):
         del mapping['ADSP_QC']
         del mapping['ranked_consequences']
         del mapping['mapped_coordinates']
-    return result
+    result['mapping']['queried_variant'] = result['lookup_variant_id']
+    return result['mapping']
     
     
 def extract_variant_result_data(queryResult, fullAnnotation=False):
