@@ -109,7 +109,7 @@ class Filter(Resource):
         + utils.to_string(TRACK_FILTERS, delim=", ")})
     def get(self, filterName):
         if filterName not in TRACK_FILTERS:
-            return utils.error_message({"arg":"filterName", "bad_value": filterName, "valid_values": TRACK_FILTERS}, messageType="bad_arg")
+            return utils.error_message({"arg":"filterName", "bad_value": filterName, "valid_values": TRACK_FILTERS}, errorType="bad_arg")
         return get_filter_values(filterName)
     
         
