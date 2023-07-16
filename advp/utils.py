@@ -17,7 +17,9 @@ def clean_response(obj):
     obj['reported_loci'] = loci
     obj['location'] = obj['Genomic coordinates']
     obj['num_publications'] = obj['num_papers']
+    obj['ref_snp_id'] = obj['variantID']
     
+    del obj['variantID']
     del obj['locusname']
     del obj['num_papers']
     del obj['genomicsDbID']
