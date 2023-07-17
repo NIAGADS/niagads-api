@@ -11,8 +11,8 @@ def get_session(genomeBuild):
     bind_db = GenomeBuild().deserialize(genomeBuild)
     engine = db.get_engine(bind_db)
     return scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+            autoflush=False,
+            bind=engine))
 
 def validate_variant(genomeBuild, id):
     dbSession = get_session(genomeBuild)
@@ -30,7 +30,7 @@ def get_variant(genomeBuild, ids, full=False, single=False):
     dbSession.remove()
     result = utils.extract_variant_result_data(queryResult, fullAnnotation=full)
     if single:
-        mapping = result[0]['mapping']
+        mapping = result[0]
         if mapping is None:
             return {"message": "No variant with id '" + str(ids) + "' found in the NIAGADS GenomicsDB. "}
         return mapping

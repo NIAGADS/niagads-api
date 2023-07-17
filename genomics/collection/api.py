@@ -43,6 +43,7 @@ class Collection(Resource):
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
 
+
 filterParser = parsers.filters.copy()
 filterParser.replace_argument('dataType', help="type of data or analysis output type",
         default="GWAS_sumstats", choices=["GWAS_sumstats"], required=True)
@@ -61,12 +62,10 @@ class CollectionList(Resource):
             ignore = "{}%".format(constants.ADSP_VARIANTS_ACCESSION)
             
             # TODO: add conditional based on type
-            collections = genomicsdb.session.execute(genomicsdb.select(queryTable)
-                    .filter(queryTable.id.like(idMatch) 
-                            & not_(queryTable.id.like(ignore)))
-                    .order_by(queryTable.id)).all()
+            collections = genomicsdb.session.query(queryTable).filter(queryTable.id.like(idMatch) 
+                            & not_(queryTable.id.like(ignore))).order_by(queryTable.id).all()
             
-            return utils.extract_result_data(collections)
+            return collections # utils.extract_result_data(collections)
 
         except ValidationError as err: 
             return utils.error_message(str(err), errorType="validation_error")
@@ -86,10 +85,8 @@ class CollectionTracks(Resource):
             genomeBuild = utils.validate_assembly(args['assembly'])
             validate_collection(id, genomeBuild, False)     
             queryTable = track_table(genomeBuild)
-            tracks = genomicsdb.session.execute(genomicsdb.select(queryTable)
-                    .filter_by(dataset_accession=id)
-                    .order_by(queryTable.id))
-            return utils.extract_result_data(tracks)
+            tracks = genomicsdb.session.query(queryTable).filter_by(dataset_accession=id).order_by(queryTable.id).all()
+            return tracks
         except ValidationError as err:
             return utils.error_message(str(err), errorType="validation_error")
     
