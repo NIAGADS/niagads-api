@@ -22,7 +22,6 @@ def __map_request_params(params):
     if 'assembly' in params:
         newParams['genomeBuild'] = __genome_build(params['assembly'])
 
-
     if 'genomeBuild' in params:
         newParams['genomeBuild'] = __genome_build(params['genomeBuild'])
 

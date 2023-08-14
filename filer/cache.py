@@ -3,7 +3,8 @@ from requests import get
 from requests.exceptions import HTTPError
 
 # from filer.models import Metadata
-from filer.parsers import FILERMetadataParser
+from niagads.filer import FILERMetadataParser
+# from filer.parsers import FILERMetadataParser
 from filer.track.models import Track
 from filer.utils import make_request
 from shared_resources import constants
