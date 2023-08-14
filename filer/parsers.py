@@ -3,7 +3,8 @@ from urllib.parse import unquote
 from flask_restx import reqparse 
 from types import SimpleNamespace
 
-from shared_resources import utils, constants
+from niagads.utils import string_utils
+from shared_resources import constants
 from shared_resources.parsers import arg_parsers
 from filer.utils import make_request
 
@@ -21,10 +22,10 @@ def metadata_parser(metadata):
 
 
 def split_replicates(replicates):
-    if utils.is_null(replicates, True):
+    if string_utils.is_null(replicates, True):
         return None
     
-    if utils.is_non_numeric(replicates) and ',' in replicates:
+    if string_utils.is_non_numeric(replicates) and ',' in replicates:
         return replicates.replace(' ', '').split(',')
     
     return [str(replicates)] # covert to list of 1 string
@@ -69,14 +70,14 @@ class FILERMetadataParser:
 
     def __parse_value(self, key, value):
         ''' catch numbers, booleans, and nulls '''
-        if utils.is_null(value, naIsNull=True):
+        if string_utils.is_null(value, naIsNull=True):
             return None
         
-        if utils.is_number(value):
-            return utils.to_numeric(value)
+        if string_utils.is_number(value):
+            return string_utils.to_numeric(value)
         
-        if 'date' in key.lower() and utils.is_date(value):
-            return utils.to_date(value)
+        if 'date' in key.lower() and string_utils.is_date(value):
+            return string_utils.to_date(value)
             
         return value
     
@@ -138,7 +139,7 @@ class FILERMetadataParser:
                 # check track_description
                 # e.g., All lncRNA annotations
                 if 'annotation' in self._get_metadata("track_description"):
-                    return utils.regex_extract("All (.+) annotation" , self._get_metadata("track_description"))
+                    return string_utils.regex_extract("All (.+) annotation" , self._get_metadata("track_description"))
             if 'QTL' in analysis:
                 return analysis
         
@@ -274,7 +275,7 @@ class FILERMetadataParser:
         
         if self._get_metadata('cell_type'):    
             biosample = self._get_metadata('cell_type')
-            if utils.is_number(biosample):
+            if string_utils.is_number(biosample):
                 logger.debug("Found numeric cell_type - " + str(biosample) + " - for track " + self._get_metadata('identifier'))
                 biosample = unquote(self._get_metadata('file_name')).split('.')[0].replace(':',' - ')
                 logger.debug("Updated to " + biosample + " from file name = " + self._get_metadata('file_name'))
@@ -289,8 +290,8 @@ class FILERMetadataParser:
             nameInfo.append(self._get_metadata('assay'))
             nameInfo.append(self._get_metadata('output_type'))
             
-        bReps = utils.is_null(self._get_metadata('biological_replicates'), True)
-        tReps = utils.is_null(self._get_metadata('technical_replicates'), True)
+        bReps = string_utils.is_null(self._get_metadata('biological_replicates'), True)
+        tReps = string_utils.is_null(self._get_metadata('technical_replicates'), True)
         replicates = bReps is bReps if not None else None
         replicates = tReps if replicates is None and tReps is not None else None
         if replicates is not None:
@@ -305,7 +306,7 @@ class FILERMetadataParser:
         # [Experiment: ENCSR778NDP] [Orig: Biosample_summary=With Cognitive impairment; middle frontal area 46 tissue female adult (81 years);Lab=Bradley Bernstein, Broad;System=central nervous system;Submitted_track_name=rep1-pr1_vs_rep1-pr2.idr0.05.bfilt.regionPeak.bb;Project=RUSH AD]",
         id = self._get_metadata('encode_experiment_id')
         info =  self._get_metadata('track_description')
-        project = utils.regex_extract('Project=(.+);*', info) \
+        project = string_utils.regex_extract('Project=(.+);*', info) \
                 if info is not None else None
         
         self.__metadata.update({
@@ -357,7 +358,7 @@ class FILERMetadataParser:
         ''' correct domain and other formatting issues
         ''' 
         url = self.__parse_generic_url(url)           
-        return utils.regex_replace('^[^GADB]*\/GADB', constants.URLS.filer_downloads, url)
+        return string_utils.regex_replace('^[^GADB]*\/GADB', constants.URLS.filer_downloads, url)
     
     
     def __parse_urls(self):
@@ -392,10 +393,10 @@ class FILERMetadataParser:
         """ concatenate everything that isn't a date or url """
         skipFieldsWith = ['date', 'url', 'md5', 'path', 'file']
         textValues = [ v for k,v in self.__metadata.items() 
-                if utils.is_searchable_string(k, v, skipFieldsWith)]
+                if string_utils.is_searchable_string(k, v, skipFieldsWith)]
         
         # some field have the same info
-        self.__metadata.update({"searchable_text": ' '.join(utils.remove_duplicates(textValues))})
+        self.__metadata.update({"searchable_text": ' '.join(string_utils.remove_duplicates(textValues))})
         
 
     def __rename_key(self, key):
@@ -418,7 +419,7 @@ class FILERMetadataParser:
 
     def __transform_key(self, key):
         # camel -> snake + lower case
-        tValue = utils.to_snake_case(key)
+        tValue = string_utils.to_snake_case(key)
         tValue = tValue.replace(" ", "_")
         tValue = tValue.replace("(s)", "s")
         return self.__rename_key(tValue)
