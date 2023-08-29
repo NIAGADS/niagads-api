@@ -3,9 +3,13 @@ import logging
 
 from flask_restx import Namespace, Resource, marshal, fields
 from marshmallow import ValidationError
+
+from niagads.utils import array_utils
+
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers, add_boolean_arg
 from shared_resources import constants, utils
 from shared_resources.db import db
+
 
 from filer.utils import make_request
 from filer.track.schemas import metadata, biosample
@@ -106,7 +110,7 @@ class TrackListOverlaps(Resource):
 class Filter(Resource):
     @api.doc(params={'filterName': 
         'an aspect of the track metadata that can be used to filter for relevant tracks; allowable values: ' 
-        + utils.to_string(TRACK_FILTERS, delim=", ")})
+        + array_utils.list_to_string(TRACK_FILTERS, delim=", ")})
     def get(self, filterName):
         if filterName not in TRACK_FILTERS:
             return utils.error_message({"arg":"filterName", "bad_value": filterName, "valid_values": TRACK_FILTERS}, errorType="bad_arg")
