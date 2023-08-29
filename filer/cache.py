@@ -46,7 +46,10 @@ def initialize_metadata_cache(db, metadataFileName, debug):
             currentLine = line
         
             # parse & create Metadata object
-            track = FILERMetadataParser(dict(zip(header, line.split('\t')))).parse()
+            track = FILERMetadataParser(dict(zip(header, line.split('\t'))), debug)
+            track.set_filer_download_url(constants.URLS.filer_downloads)
+            track = track.parse()
+            
             if track['identifier'] in liveMetadata[track['genome_build']]:
                 db.session.add(Track(**track))
             else:
