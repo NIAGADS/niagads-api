@@ -1,19 +1,56 @@
 # looks up a list of variants provided in a file
 # returns as JSON or tab-delimited text
 # output is to STDOUT
+# author: fossilfriend
 
 import requests
 import argparse
 import json
-from types import SimpleNamespace
 from sys import stderr, stdout, exit
 from urllib.parse import urlencode
 from multiprocessing import Pool
 
 REQUEST_URI = "https://api.niagads.org"
+GENOME_WIDE_SIG_P = 5e-8
+
+
+# some helpers
+
+def xstr(value, nullStr="", falseAsNull=False):
+    """wrapper for str() that handles Nones
+
+    Args:
+        value (obj): value to be converted to string
+        nullStr (str, optional): value to be printed for NULLS/None. Defaults to "".
+        falseAsNull (bool, optional): treat boolean "False" as None. Defaults to False.
+
+    Returns:
+        string conversion of `value`
+    """
+    if value is None:
+        return nullStr
+    elif falseAsNull and isinstance(value, bool):
+        if value is False:
+            return nullStr
+        else:
+            return str(value)
+    elif isinstance(value, list):
+        return ','.join(value)
+    elif isinstance(value, dict):
+        if bool(value):
+            return json.dumps(value, sort_keys=True)
+        else:
+            return nullStr
+    else:
+        return str(value)
+    
 
 def pretty_print(obj):
-    ''' pretty print a dict obj'''
+    """ pretty print a dict 
+
+    Args:
+        obj (dict): object (dict) to be printed
+    """
     if isinstance(obj, dict):
         print(json.dumps(obj, sort_keys=True, indent=4))
     else:
@@ -21,15 +58,37 @@ def pretty_print(obj):
     
     
 def chunker(seq, size):
-    """ for a given sequence, splits into even + residual chunks.  returns an iterator 
+    """
+    for a given sequence, splits into even + residual chunks.  returns an iterator 
     see: https://stackoverflow.com/a/434328
     using this to page the queries as paging is not yet implemented in the API
+
+    Args:
+        seq (tuple or list): list to be chunked
+        size (integer): chunk size
+
+    Returns:
+        list of chunks
     """
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
     
 def make_request(endpoint, params):
-    ''' wrapper to build and make a request '''
+    """
+    wrapper to build and make a request against the NIAGADS API
+    includes error check
+
+    Args:
+        endpoint (string): endpoint to be queried
+        params (dict): dict of param_name:value pairs
+
+    Raises:
+        requests.exceptions.HTTPError on error
+
+    Returns:
+        JSON response if successful
+    """
+
     requestUrl = REQUEST_URI + "/" + endpoint 
     if params is not None:
         requestUrl += '?' + urlencode(params)
@@ -43,45 +102,118 @@ def make_request(endpoint, params):
         raise requests.exceptions.HTTPError
         
 
-def read_variants():
-    with open(args.file) as fh:
-        variants = fh.read().splitlines() 
-        hasChr = True if 'chr' in variants[3] else False
-        variants = [ v.replace('chr', '').replace('MT', 'M') for v in variants ]
-        if variants[0].lower() in ['id', 'variant']:
-            variants.pop(0)
-    return tuple(variants), hasChr
+## end helpers
 
 
-def lookup(ids):
-    """ loookup a list of variants by ID"""
-    return make_request("genomics/variant/", {"id": ','.join(ids), "full": args.full})
-
-
-def run():
-    chunks = chunker(variants, args.pageSize)
-    with Pool() as pool:
-        response = pool.map(lookup, chunks)
-        return sum(response, []) # concatenates the individual responses
-
-
+## response parsers 
 def extract_associations(annotation):
-    associations = [ key + '=' + str(value['p_value'])
-                        for key, value in annotation['associations'].items()]
-    return [';'.join(associations), len(associations)]
+    """ extract association (GWAS summary statistics resuls)
+     from a variant annotations
+
+    Args:
+        annotation (dict): variant annotation block
+
+    Returns:
+        list containing:
+            info string of dataset=pvalue pairs delimited by semicolons
+            the # of associations
+            the # of associations in which the p-value has genome wide significance
+    """
+    if annotation['associations'] is not None:
+        associations = [key + '=' + str(value['p_value'])
+                            for key, value in annotation['associations'].items()]
+        associations.sort()
         
+        # associations w/genome wide significance
+        isGWS = [assoc['is_gws'] for assoc in annotation['associations'].values()]
+        
+        return [';'.join(associations), len(isGWS), sum(isGWS)]
+    else:
+        return [None, None, None]
+
+
+def extract_consequences(conseqAnnotations, fields):
+    """parse consequence annotations and retrieve the 
+    consequence terms and qualifying information as specified by 
+    `fields`
+
+    Args:
+        conseqAnnotations (dict): consequence annotation 
+        fields (string list): list of fields to be extracted from the `conseqAnnotations`
+
+    Returns:
+         list containing:
+            the consequence terms as a comma delimited string
+            info string of annotation=value pairs delimited by a semi-colon
+            if gene info (id or symbol) is requested (fields):
+                also return gene_id, gene_symbol
+    """
+    conseq = ','.join(conseqAnnotations['consequence_terms'])   
+    qualifiers = [ key + '=' + xstr(value, nullStr=args.nullStr) 
+                    for key, value in conseqAnnotations.items() if key in fields and key not in ['gene_id', 'gene_symbol'] ]
+    qualifiers.sort()
+    
+    if 'gene_id' in fields or 'gene_symbol' in fields:
+        geneId = conseqAnnotations['gene_id'] \
+            if 'gene_id' in fields and 'gene_id' in conseqAnnotations \
+                else None
+            
+        geneSymbol = conseqAnnotations['gene_symbol'] \
+            if 'gene_symbol' in fields and 'gene_symbol' in conseqAnnotations \
+                else None
+        return [conseq, ';'.join(qualifiers), geneId, geneSymbol]
+            
+    else:
+        return [conseq, ';'.join(qualifiers)]
+
 
 def extract_most_severe_consequence(annotation):
-    fields = ['biotype', 'consequence_is_coding', 'impact', 'gene_id', 'gene_symbol', 'protein_id']
-    conseqAnnotations = annotation['most_severe_consequence']
-    conseq = ','.join(conseqAnnotations['consequence_terms'])
-    qualifiers = [ key + '=' + str(value) 
-                    for key, value in conseqAnnotations.items() if key in fields]
+    """ extract most severe consequence and related annotations
+
+    Args:
+        annotation (dict): variant annotation block
+
+    Returns:
+        list containing:
+            the consequence 
+            info string of annotation=value pairs delimited by a semi-colon
+    """
+    fields = ['biotype', 'consequence_is_coding', 'impact', 'gene_id', 'gene_symbol', 'protein_id']   
+    return extract_consequences(annotation['most_severe_consequence'], fields)
+
+
+def extract_regulatory_feature_consequences(annotation):
+    rankedConsequences = annotation['ranked_consequences']
+    if 'regulatory_feature_consequences'  in rankedConsequences:
+        regConsequences = rankedConsequences['regulatory_feature_consequences']
+        fields = ['biotype', 'impact', 'consequence_is_coding', 'impact', 'regulatory_feature_id', 'variant_allele']
+
+        conseqList = [extract_consequences(conseqAnnotations, fields) for conseqAnnotations in regConsequences ]
+        conseqs = ["consequence=" + conseq[0] + ";" + conseq[1] for conseq in conseqList]
+        return '//'.join(conseqs)
+    else:
+        return None
     
-    return [conseq, ';'.join(qualifiers)]
+    
+def extract_motif_feature_consequences(annotation):
+    rankedConsequences = annotation['ranked_consequences']
+    if 'motif_feature_consequences'  in rankedConsequences:
+        motifConsequences = rankedConsequences['motif_feature_consequences']
+        fields = ['impact', 'consequence_is_coding', 'impact', 'variant_allele',
+                  'motif_feature_id', 'motif_name', 'motif_score_change', 'strand',
+                  'transcription_factors']
+
+        conseqList = [extract_consequences(conseqAnnotations, fields) for conseqAnnotations in motifConsequences ]
+        conseqs = ["consequence=" + conseq[0] + ";" + conseq[1] for conseq in conseqList]
+        return '//'.join(conseqs)
+    else:
+        return None
+
+
 # CADD
 # def extract_allele_frequencies(annotation)
-        
+
+# end response parsers
 
 def print_table(resultJson, reqChr):
     ''' 
@@ -94,17 +226,73 @@ def print_table(resultJson, reqChr):
     regulatory consequences
     '''
     header = ['queried_variant', 'mapped_variant', 'ref_snp_id', 'is_adsp_variant',
-              'associations', 'num_associations']
+              'most_severe_consequence', 'msc_annotations', 'msc_impacted_gene_id', 'msc_impacted_gene_symbol']
+    if args.full:
+        header = header + \
+            ['associations', 'num_associations', 'num_sig_assocations',
+             'regulatory_feature_consequences', 'motif_feature_consequences']
     
-    for vJson in resultJson:
-        variant = SimpleNamespace(**vJson)
-        values = ['chr' + variant.queried_variant if reqChr else variant.queried_variant,
-                  variant.metaseq_id, variant.ref_snp_id, variant.is_adsp_variant] \
-                  + extract_associations(variant.annotation) \
-                  + extract_most_severe_consequence(variant.annotation)  
-        print(values)
-        exit()
+    print('\t'.join(header))
     
+    for variant in resultJson:
+        annotation = variant['annotation']
+        
+        values = ['chr' + variant['queried_variant'] if reqChr else variant['queried_variant'],
+                  variant['metaseq_id'], variant['ref_snp_id'], variant['is_adsp_variant']] \
+                    + extract_most_severe_consequence(annotation)
+
+        if args.full: 
+            values = values + extract_associations(annotation) 
+            values = values + [extract_regulatory_feature_consequences(annotation)]
+            values = values + [extract_motif_feature_consequences(annotation)]
+
+        print('\t'.join([xstr(v, nullStr=args.nullStr, falseAsNull=True) for v in values]))
+
+
+def read_variants():
+    """ read list of variants from file; removing 'chr' and
+    substituting M for MT when appropriate
+    removes header if found
+
+    Returns:
+        tuple of variants,
+        flag indicating if 'chr' was removed so it can be added back later
+    """
+    with open(args.file) as fh:
+        variants = fh.read().splitlines() 
+        hasChr = True if 'chr' in variants[3] else False
+        variants = [ v.replace('chr', '').replace('MT', 'M') for v in variants ]
+        if variants[0].lower() in ['id', 'variant']:
+            variants.pop(0)
+    return tuple(variants), hasChr
+
+
+def lookup(ids):
+    """ loookup a list of variants by ID
+
+    Args:
+        ids (string list): list of variant identifiers
+
+    Returns:
+        json repsonse
+    """
+    return make_request("genomics/variant/", {"id": ','.join(ids), "full": args.full})
+
+
+def run():
+    """ run the lookup; since API currently does not
+    do pagination; chunks the lookup list and submits requests in parallel
+    using python mulitprocessing pooling
+
+    Returns:
+        json response for the lookup
+    """
+    chunks = chunker(variants, args.pageSize)
+    with Pool() as pool:
+        response = pool.map(lookup, chunks)
+        return sum(response, []) # concatenates the individual responses
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Look up a list of variants and retrieve annotation")
     parser.add_argument('--file', required=True,
@@ -113,8 +301,9 @@ if __name__ == '__main__':
                         help="output file format")
     parser.add_argument('--pageSize', default=500, choices = [50, 200, 300, 400, 500], type=int)
     parser.add_argument('--full', help="retrieve full annotation", action="store_true")
+    parser.add_argument('--nullStr', help="string for null values in .tab format", 
+                        choices=['N/A', 'NA', 'NULL', '.', ''], default='')
     args = parser.parse_args()
-    
     
     [variants, removeChr] = read_variants()
   
