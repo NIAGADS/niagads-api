@@ -260,15 +260,16 @@ def print_table(resultJson, reqChr):
               'most_severe_consequence', 'msc_annotations', 'msc_impacted_gene_id', 'msc_impacted_gene_symbol']
     if args.full:
         header = header + \
-            ['associations', 'num_associations', 'num_sig_assocations',
+            ['CADD_phred_score', 
+             'associations', 'num_associations', 'num_sig_assocations',
              'regulatory_feature_consequences', 'motif_feature_consequences']
         if args.alleleFreqs in ['1000Genomes', 'both']:
             header = header + \
                 ['1000Genomes_AFR', '1000Genomes_AMR', '1000Genomes_EAS', 
                  '1000Genomes_EUR', '1000Genomes_SAS', '1000Genomes_GMAF']
-        elif args.alleleFreqs == 'all':
+        if args.alleleFreqs == 'all':
             header = header + ['allele_frequencies']
-        else:
+        if args.alleleFreqs == 'both':
             header = header + ['other_allele_frequencies']    
             
     print('\t'.join(header))
@@ -281,6 +282,8 @@ def print_table(resultJson, reqChr):
                     + extract_most_severe_consequence(annotation)
 
         if args.full: 
+            values = values + [annotation['cadd_scores']['CADD_phred'] \
+                if 'CADD_phred' in annotation['cadd_scores'] else None]
             values = values + extract_associations(annotation) 
             values = values + [extract_regulatory_feature_consequences(annotation)]
             values = values + [extract_motif_feature_consequences(annotation)]
