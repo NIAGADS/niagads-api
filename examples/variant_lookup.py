@@ -35,7 +35,7 @@ def xstr(value, nullStr="", falseAsNull=False):
         else:
             return str(value)
     elif isinstance(value, list):
-        return ','.join(value)
+        return ','.join([xstr(v) for v in value])
     elif isinstance(value, dict):
         if bool(value):
             return json.dumps(value, sort_keys=True)
@@ -106,6 +106,37 @@ def make_request(endpoint, params):
 
 
 ## response parsers 
+
+def extract_allele_frequencies(annotation, skip='1000Genomes'):
+    alleleFreqs = annotation['allele_frequencies']
+    if alleleFreqs is None:
+        return None
+    else:
+        freqs = []
+        for source, populations in alleleFreqs.items():
+            if skip is not None and source == skip:
+                continue    
+                  
+            sFreqs = ["source=" + source]
+            for pop, af in populations.items():
+                sFreqs = sFreqs + ['='.join((pop, xstr(af)))] 
+            freqs = freqs + [';'.join(sFreqs)]
+            
+        return '//'.join(freqs)    
+        
+
+def extract_1000Genomes_allele_frequencies(annotation):
+    populations = ['afr', 'amr', 'eas', 'eur', 'sas', 'gmaf']
+    alleleFreqs = annotation['allele_frequencies']
+    if alleleFreqs  is None:
+        return [None] * 6
+    elif '1000Genomes' in alleleFreqs:
+        freqs = alleleFreqs['1000Genomes']
+        return [freqs[pop] if pop in freqs else None for pop in populations]
+    else:
+        return [None] * 6
+    
+
 def extract_associations(annotation):
     """ extract association (GWAS summary statistics resuls)
      from a variant annotations
@@ -231,7 +262,15 @@ def print_table(resultJson, reqChr):
         header = header + \
             ['associations', 'num_associations', 'num_sig_assocations',
              'regulatory_feature_consequences', 'motif_feature_consequences']
-    
+        if args.alleleFreqs in ['1000Genomes', 'both']:
+            header = header + \
+                ['1000Genomes_AFR', '1000Genomes_AMR', '1000Genomes_EAS', 
+                 '1000Genomes_EUR', '1000Genomes_SAS', '1000Genomes_GMAF']
+        elif args.alleleFreqs == 'all':
+            header = header + ['allele_frequencies']
+        else:
+            header = header + ['other_allele_frequencies']    
+            
     print('\t'.join(header))
     
     for variant in resultJson:
@@ -245,6 +284,11 @@ def print_table(resultJson, reqChr):
             values = values + extract_associations(annotation) 
             values = values + [extract_regulatory_feature_consequences(annotation)]
             values = values + [extract_motif_feature_consequences(annotation)]
+            if args.alleleFreqs in ['1000Genomes', 'both']:
+                values = values + extract_1000Genomes_allele_frequencies(annotation)
+            if args.alleleFreqs in ['all', 'both']:
+                skip = '1000Genomes' if args.alleleFreqs == 'both' else None
+                values = values + [extract_allele_frequencies(annotation, skip)]
 
         print('\t'.join([xstr(v, nullStr=args.nullStr, falseAsNull=True) for v in values]))
 
@@ -294,13 +338,16 @@ def run():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Look up a list of variants and retrieve annotation")
+    parser = argparse.ArgumentParser(description="Look up a list of variants and retrieve annotation", allow_abbrev=False)
     parser.add_argument('--file', required=True,
                         help="new line separated list of variants, can be refSnpID or chr:pos:ref:alt")
     parser.add_argument('--format', default="json", choices=['tab', 'json'], 
                         help="output file format")
     parser.add_argument('--pageSize', default=500, choices = [50, 200, 300, 400, 500], type=int)
     parser.add_argument('--full', help="retrieve full annotation", action="store_true")
+    parser.add_argument('--alleleFreqs', 
+                        help="which allele frequencies to include in .tab format; `both` returns extracted 1000Genomes population frequencies & column with all others",
+                        choices=['all', '1000Genomes', 'both'], default='1000Genomes')
     parser.add_argument('--nullStr', help="string for null values in .tab format", 
                         choices=['N/A', 'NA', 'NULL', '.', ''], default='')
     args = parser.parse_args()
