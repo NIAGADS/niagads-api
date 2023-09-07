@@ -108,6 +108,20 @@ def make_request(endpoint, params):
 ## response parsers 
 
 def extract_allele_frequencies(annotation, skip='1000Genomes'):
+    """extract allele frequencies and return as // delimited list 
+    info strings reporting the freq for each population in a datasource
+
+    Args:
+        annotation (dict): variant annotation block
+        skip (string, optional): A data source to skip. Defaults to '1000Genomes'.
+    
+    TODO:
+        make `skip` a list of one or more datasources
+
+    Returns:
+        a string that uses // to delimitate an info string for each data source
+        info strings are semi-colon delimited population=freq pairs
+    """
     alleleFreqs = annotation['allele_frequencies']
     if alleleFreqs is None:
         return None
@@ -126,6 +140,17 @@ def extract_allele_frequencies(annotation, skip='1000Genomes'):
         
 
 def extract_1000Genomes_allele_frequencies(annotation):
+    """extract out the 1000 Genomes frequencies into an array of freq,
+        with one value for each population: 
+             ['afr', 'amr', 'eas', 'eur', 'sas', 'gmaf']
+    Args:
+        annotation (dict): variant annotation block
+
+    Returns:
+        array of frequencies, with one value for each 1000 Genomes population
+        if the population is not provided in the annotation, None is returned for
+        that frequency
+    """
     populations = ['afr', 'amr', 'eas', 'eur', 'sas', 'gmaf']
     alleleFreqs = annotation['allele_frequencies']
     if alleleFreqs  is None:
@@ -214,6 +239,16 @@ def extract_most_severe_consequence(annotation):
 
 
 def extract_regulatory_feature_consequences(annotation):
+    """extract regulatory feature consequences and related annotations
+
+    Args:
+        annotation (dict): variant annotation block
+
+    Returns:
+        // list of consequences and related annotations
+        where each consequence and its annotations is returned as a info string of semi-colon
+        delimited key=value pairs
+    """
     rankedConsequences = annotation['ranked_consequences']
     if 'regulatory_feature_consequences'  in rankedConsequences:
         regConsequences = rankedConsequences['regulatory_feature_consequences']
@@ -227,6 +262,16 @@ def extract_regulatory_feature_consequences(annotation):
     
     
 def extract_motif_feature_consequences(annotation):
+    """extract motif feature consequences and related annotations
+
+    Args:
+        annotation (dict): variant annotation block
+
+    Returns:
+        // list of consequences and related annotations
+        where each consequence and its annotations is returned as a info string of semi-colon
+        delimited key=value pairs
+    """
     rankedConsequences = annotation['ranked_consequences']
     if 'motif_feature_consequences'  in rankedConsequences:
         motifConsequences = rankedConsequences['motif_feature_consequences']
@@ -241,21 +286,16 @@ def extract_motif_feature_consequences(annotation):
         return None
 
 
-# CADD
-# def extract_allele_frequencies(annotation)
 
 # end response parsers
 
 def print_table(resultJson, reqChr):
-    ''' 
-    id
-    ref_snp_id
-    associations (sum stats), one column per dataset
-    is_adsp_variant
-    1000 genomes allele frequencies
-    MSC
-    regulatory consequences
-    '''
+    """print query result in tab-delimited text format to STDOUT
+
+    Args:
+        resultJson (dict): JSON response from query against webservice
+        reqChr (boolean): flag indicating whether 'chr' needs to be prepended to the queried_varaint        
+    """
     header = ['queried_variant', 'mapped_variant', 'ref_snp_id', 'is_adsp_variant',
               'most_severe_consequence', 'msc_annotations', 'msc_impacted_gene_id', 'msc_impacted_gene_symbol']
     if args.full:
@@ -346,8 +386,8 @@ if __name__ == '__main__':
                         help="new line separated list of variants, can be refSnpID or chr:pos:ref:alt")
     parser.add_argument('--format', default="json", choices=['tab', 'json'], 
                         help="output file format")
-    parser.add_argument('--pageSize', default=500, choices = [50, 200, 300, 400, 500], type=int)
-    parser.add_argument('--full', help="retrieve full annotation", action="store_true")
+    parser.add_argument('--pageSize', default=200, choices = [50, 200, 300, 400, 500], type=int)
+    parser.add_argument('--full', help="retrieve full annotation; when not supplied will just return variant IDS and most severe consequence", action="store_true")
     parser.add_argument('--alleleFreqs', 
                         help="which allele frequencies to include in .tab format; `both` returns extracted 1000Genomes population frequencies & column with all others",
                         choices=['all', '1000Genomes', 'both'], default='1000Genomes')
@@ -358,7 +398,7 @@ if __name__ == '__main__':
     [variants, removeChr] = read_variants()
   
     print("Looking up", str(len(variants)), "variants.", file=stderr)
-
+        
     result = run()
     if args.format == 'json':
         pretty_print(result)
