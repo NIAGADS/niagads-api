@@ -384,8 +384,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Look up a list of variants and retrieve annotation", allow_abbrev=False)
     parser.add_argument('--file', required=True,
                         help="new line separated list of variants, can be refSnpID or chr:pos:ref:alt")
-    parser.add_argument('--format', default="json", choices=['tab', 'json'], 
-                        help="output file format")
+    parser.add_argument('--format', default="json", choices=['table', 'json'], 
+                        help="output file format; JSON format will include a lot more information than the table format")
     parser.add_argument('--pageSize', default=200, choices = [50, 200, 300, 400, 500], type=int)
     parser.add_argument('--full', help="retrieve full annotation; when not supplied will just return variant IDS and most severe consequence", action="store_true")
     parser.add_argument('--alleleFreqs', 
