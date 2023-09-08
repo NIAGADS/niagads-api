@@ -276,8 +276,9 @@ def extract_motif_feature_consequences(annotation):
     if 'motif_feature_consequences'  in rankedConsequences:
         motifConsequences = rankedConsequences['motif_feature_consequences']
         fields = ['impact', 'consequence_is_coding', 'impact', 'variant_allele',
-                  'motif_feature_id', 'motif_name', 'motif_score_change', 'strand',
-                  'transcription_factors']
+                  'motif_feature_id', 'motif_name', 'motif_score_change', 
+                  'motif_pos', 'high_inf_pos', 'cell_type',
+                  'strand', 'transcription_factors']
 
         conseqList = [extract_consequences(conseqAnnotations, fields) for conseqAnnotations in motifConsequences ]
         conseqs = ["consequence=" + conseq[0] + ";" + conseq[1] for conseq in conseqList]
