@@ -8,7 +8,7 @@ def error_message(message=None, errorType="error"):
     if errorType == 'bad_arg':
             return { "error": "Invalid value (" + array_utils.list_to_string(message['bad_value']) 
                 + ") provided for: " + message['arg'] + ". Valid values are: " 
-                + array_utils.list_to_string(message['valid_values'])}
+                + xstr(message['valid_values'])}
     return { errorType: message}
 
 
