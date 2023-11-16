@@ -4,10 +4,11 @@ import logging
 from flask_restx import Namespace, Resource, marshal, fields
 from marshmallow import ValidationError
 
-from niagads.utils import array_utils
+from niagads.utils.list import list_to_string
 
 from shared_resources.parsers import arg_parsers as parsers, merge_parsers, add_boolean_arg
-from shared_resources import constants, utils
+from shared_resources.utils import error_message, validate_span
+from shared_resources.constants import ALLOWABLE_FILER_TRACK_FILTERS
 from shared_resources.db import db
 
 
@@ -24,7 +25,7 @@ add_boolean_arg(FILTER_PARSER, "countOnly", "return number of tracks that match 
 add_boolean_arg(FILTER_PARSER, "idsOnly", "return a list of track IDs that match the filter criteria")
 # add_boolean_arg(FILTER_PARSER, "full", "return full metadata")
 
-TRACK_FILTERS = list(constants.ALLOWABLE_FILER_TRACK_FILTERS.keys())
+TRACK_FILTERS = list(ALLOWABLE_FILER_TRACK_FILTERS.keys())
 
 api = Namespace('filer/track',
         description="get track metadata and data")
@@ -57,7 +58,7 @@ class TrackList(Resource):
             return result, 200
         
         if count > 1000:
-            message = utils.error_message("More than 1000 tracks found matching the filter criteria, please add additional filters; pagination coming soon", errorType="result_too_large")
+            message = error_message("More than 1000 tracks found matching the filter criteria, please add additional filters; pagination coming soon", errorType="result_too_large")
             result.update(message)
             return result, 200
 
@@ -78,12 +79,12 @@ class TrackOverlaps(Resource):
         args = SPAN_PARSER.parse_args()
         validate_track(id, args['assembly'], False)         # if not valid, returns an error
         try:
-            span = utils.validate_span(args)
+            span = validate_span(args)
             if isinstance(span, dict):
                 return span # error message
             return make_request("get_overlaps", {"id": id, "assembly": args['assembly'], "span": span})
         except ValidationError as err:
-            return utils.error_message(str(err), errorType="validation_error")
+            return error_message(str(err), errorType="validation_error")
 
 
 overlapsParser = FILTER_PARSER.copy()
@@ -95,25 +96,25 @@ class TrackListOverlaps(Resource):
     def get(self):
         args = overlapsParser.parse_args()
         try:
-            span = utils.validate_span(args)
+            span = validate_span(args)
             if isinstance(span, dict):
                 return span # error message
             result = get_bulk_overlaps(args, span)
             if 'message' in result:
-                return utils.error_message(result.message, errorType="too_many_records")
+                return error_message(result.message, errorType="too_many_records")
             return result
         except ValidationError as err:
-            return utils.error_message(str(err), errorType="validation_error")
+            return error_message(str(err), errorType="validation_error")
         
         
 @api.route('/filter/<string:filterName>')
 class Filter(Resource):
     @api.doc(params={'filterName': 
         'an aspect of the track metadata that can be used to filter for relevant tracks; allowable values: ' 
-        + array_utils.list_to_string(TRACK_FILTERS, delim=", ")})
+        + list_to_string(TRACK_FILTERS, delim=", ")})
     def get(self, filterName):
         if filterName not in TRACK_FILTERS:
-            return utils.error_message({"arg":"filterName", "bad_value": filterName, "valid_values": TRACK_FILTERS}, errorType="bad_arg")
+            return error_message({"arg":"filterName", "bad_value": filterName, "valid_values": TRACK_FILTERS}, errorType="bad_arg")
         return get_filter_values(filterName)
     
         

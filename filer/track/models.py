@@ -8,7 +8,8 @@ from shared_resources.utils import extract_result_data
 from shared_resources.constants import DATASOURCE_URLS
 from niagads.filer.parser import split_replicates
 from filer.utils import make_request
-from niagads.utils import string, list
+from niagads.utils.string import to_snake_case
+from niagads.utils.list import drop_nulls
 
 
 SKIP_FILTERS = ['idsOnly', 'countOnly', 'fuzzy', 'keyword', 'span', 'chr', 'start', 'end']
@@ -124,7 +125,7 @@ def __parse_attributes(attrName):
         case 'dataType':
             return 'output_type'
         case _:
-            return string.to_snake_case(attrName)
+            return to_snake_case(attrName)
 
 
 def get_track_count(filters):
@@ -148,7 +149,7 @@ def get_track_count(filters):
 def __parse_query_result(queryResult, idsOnly):
     result = extract_result_data(queryResult)    
     if idsOnly:
-        return list.drop_nulls(result)
+        return drop_nulls(result)
     
     return result    
 
@@ -173,7 +174,7 @@ def get_filter_values(filterName):
     column = __parse_attributes(filterName)
     queryTarget = getattr(Track, column)
     result = db.session.query(distinct(queryTarget)).order_by(queryTarget).all()
-    return list.drop_nulls(extract_result_data(result))
+    return drop_nulls(extract_result_data(result))
 
 
 def text_search(value, idsOnly, schema=None):

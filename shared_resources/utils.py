@@ -1,12 +1,13 @@
 
 from flask.json import jsonify
 from shared_resources.fields import Span, GenomeBuild
-from niagads.utils import string_utils, array_utils
 
+from niagads.utils.list import list_to_string
+from niagads.utils.string import xstr
 
 def error_message(message=None, errorType="error"):
     if errorType == 'bad_arg':
-            return { "error": "Invalid value (" + array_utils.list_to_string(message['bad_value']) 
+            return { "error": "Invalid value (" + list_to_string(message['bad_value']) 
                 + ") provided for: " + message['arg'] + ". Valid values are: " 
                 + xstr(message['valid_values'])}
     return { errorType: message}
