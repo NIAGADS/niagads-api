@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from shared_resources.schemas.about import api_root_information
 from shared_resources.fields.genome_build import GenomeBuild
 from shared_resources.parsers import arg_parsers as parsers
-from shared_resources import constants 
+from shared_resources.constants import URLS
 
 # child APIs
 from advp.variant.api import api as variant_api
@@ -21,8 +21,8 @@ class ADVP(Resource):
     def get(self):
         # args = parsers.parse_args()
         return {"endpoint": "/advp",
-                "resource_url": constants.URLS.advp,
+                "resource_url": URLS.advp,
                 "organization": "NIAGADS", 
-                "organization_url": constants.URLS.niagads,
+                "organization_url": URLS.niagads,
                 "description": description
                 }
