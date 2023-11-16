@@ -5,7 +5,7 @@ from sqlalchemy_utils import LtreeType
 
 from shared_resources.db import db
 from shared_resources.fields import GenomeBuild
-from shared_resources import utils
+from niagads.utils.string import to_number
 
 def table(genomeBuild):
     """determine bind_db --> table based on genome_build route param"""
@@ -34,11 +34,11 @@ class GWASMixin:
     
     @property
     def start(self):
-        return utils.to_numeric(self.display_attributes['location_start'])
+        return to_number(self.display_attributes['location_start'])
     
     @property
     def end(self):
-        return utils.to_numeric(self.display_attributes['location_end'])
+        return to_number(self.display_attributes['location_end'])
     
     @property
     def span(self):
