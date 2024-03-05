@@ -5,18 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "NIAGADS API",
-            "type": "python",
+            "name": "NIAGADS API - dev",
+            "type": "debugpy",
             "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "app:create_app(None)",
-                "FLASK_DEBUG": "1"
-            },
+            "module": "uvicorn",
             "args": [
-                "run",
-                "--no-debugger",
-                //"--no-reload",
+                "src.main:app", "--reload"
+               //"--no-reload",
             ],
             "jinja": true,
             "justMyCode": true
