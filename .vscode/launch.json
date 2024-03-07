@@ -5,20 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "NIAGADS API - dev",
+            "name": "FAST-API - dev",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "src.main:app", "--reload"
-               //"--no-reload",
+                "api.main:app",
+                "--reload"
+                //"--no-reload",
             ],
             "jinja": true,
             "justMyCode": true
         },
         {
+            "name": "Next.js: debug server-side",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev",
+        },
+        {
+            "name": "Next.js: debug client-side",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:3000"
+        },
+        {
+            "name": "Next.js: debug full stack",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev",
+            "serverReadyAction": {
+                "pattern": "- Local:.+(https?://.+)",
+                "uriFormat": "%s",
+                "action": "debugWithChrome"
+            }
+        },
+        {
             "name": "Initialize Cache",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "flask",
             "env": {
@@ -34,14 +58,6 @@
             "jinja": true,
             "justMyCode": true
         },
-        {
-            "name": "NIAGADS API:gunicorn",
-            "type": "python",
-            "request": "launch",
-            "program": "~/.local/bin/gunicorn",
-            "gevent": true,
-            "args": ["app:create_app(None)", "--bind=127.0.0.1:8000", "--reload", "--worker-class", "eventlet", "-w", "1", "--timeout=7200"],
-            "postDebugTask": "killdebugger"
-        }
+        
     ]
 }
