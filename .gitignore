@@ -7,6 +7,8 @@
 package-lock.json
 **/node_modules/*
 **/.next/*
+.next
+.env.local
 
 # cache db
 instance/*
