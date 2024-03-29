@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:bookworm-slim as node-build
+FROM node:bookworm-slim as builder
 
 ARG BUILD
 ARG PYTHON_LOG_LEVEL
@@ -19,11 +19,11 @@ WORKDIR /src
 COPY . .
 COPY .env.local .
 
-FROM node:bookworm-slim as node-run
+FROM node:bookworm-slim as runner
 
 WORKDIR /app
 
-COPY --from=build /src/node_modules node_modules
+COPY --from=builder /src/node_modules node_modules
 
 EXPOSE 3000
 ENV BUILD_ENV=${BUILD}
