@@ -1,3 +1,4 @@
 fastapi
+gunicorn
 uvicorn
 niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main

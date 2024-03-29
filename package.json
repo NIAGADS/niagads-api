@@ -1,30 +1,30 @@
 {
-  "name": "niagads-api-nextjs-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "fastapi": "pip3 install -r requirements.txt && python3 -m uvicorn api.main:app --reload",
-    "next-dev": "next dev",
-    "start-dev": "concurrently 'npm run fastapi' 'npm run next-dev' ",
-    "build": "next build",
-    "start-prod": "concurrently 'npm run build' 'npm run fastapi' 'npm run next start'",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "concurrently": "^8.2.2",
-    "next": "14.1.2",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.1.2",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
-  }
+    "name": "niagads-api-nextjs-app",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "build-fastapi": "pip3 install -r requirements.txt",
+        "start-fastapi": "python3 -m uvicorn api.main:app --reload",
+        "start-dev": "next dev",
+        "build": "next build",
+        "start-prod": "concurrently 'npm run build' 'next start'",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "concurrently": "^8.2.2",
+        "next": "14.1.2",
+        "react": "^18",
+        "react-dom": "^18"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "autoprefixer": "^10.0.1",
+        "eslint": "^8",
+        "eslint-config-next": "14.1.2",
+        "postcss": "^8",
+        "tailwindcss": "^3.3.0",
+        "typescript": "^5"
+    }
 }
