@@ -15,7 +15,7 @@ services:
     volumes:
       - ${PG_DATA_DIR}:/var/lib/postgresql/data
 
-  app:
+  client-app:
     container_name: niagads-api-app-${API_VERSION}
     image: niagads-api-${API_VERSION}
     depends_on:

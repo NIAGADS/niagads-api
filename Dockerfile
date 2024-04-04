@@ -2,7 +2,6 @@
 
 FROM node:bookworm-slim as builder
 
-ARG BUILD
 ARG PYTHON_LOG_LEVEL
 
 WORKDIR /src
@@ -21,12 +20,15 @@ COPY .env.local .
 
 FROM node:bookworm-slim as runner
 
+ARG BUILD
+
 WORKDIR /app
 
 COPY --from=builder /src/node_modules node_modules
 
 EXPOSE 3000
 ENV BUILD_ENV=${BUILD}
+RUN echo "build - $BUILD / build env - $BUILD_ENV"
 CMD npm run start-$BUILD_ENV
 
 # FROM build as python-build
