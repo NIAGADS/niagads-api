@@ -15,20 +15,33 @@ services:
     volumes:
       - ${PG_DATA_DIR}:/var/lib/postgresql/data
 
-  client-app:
-    container_name: niagads-api-app-${API_VERSION}
-    image: niagads-api-${API_VERSION}
+  server-app:
+    container_name: niagads-api-python-server-${API_VERSION}
+    image: niagads-api-server-${API_VERSION}
     depends_on:
       - app-db
     build:
       context: .
-      dockerfile: ./Dockerfile     
+      dockerfile: ./sever.Dockerfile
       args:
-          LOG_LEVEL: ${LOG_LEVEL}
+          BUILD: ${BUILD}
+    ports:
+      - '${SERVER_API_PORT}:8000'
+    volumes:
+      - ${APPLICATION_DIR}:/app
+
+  client-app:
+    container_name: niagads-api-js-client-${API_VERSION}
+    image: niagads-api-client-${API_VERSION}
+    depends_on:
+      - app-db
+    build:
+      context: .
+      dockerfile: ./client.Dockerfile     
+      args:
           BUILD: ${BUILD} 
     ports:
-      - '3000:3000'
-      - '${PORT}:8000'  
+      - '${CLIENT_API_PORT}:3000'
     volumes:
       - ${APPLICATION_DIR}:/app
       # by mounting the "node_modules" we force it to be empty
