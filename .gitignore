@@ -8,6 +8,7 @@ package-lock.json
 **/node_modules/*
 **/.next/*
 .next
+**/build/*
 .env.local
 
 # cache db
