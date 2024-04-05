@@ -21,10 +21,8 @@ FROM node:bookworm-slim as runner
 ARG BUILD
 
 WORKDIR /app
-
 COPY --from=builder /src/node_modules node_modules
 
-EXPOSE 3000
 ENV BUILD_ENV=${BUILD}
-RUN echo "build - $BUILD / build env - $BUILD_ENV"
+EXPOSE 3000
 CMD npm run start-$BUILD_ENV

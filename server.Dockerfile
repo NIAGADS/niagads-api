@@ -7,35 +7,49 @@ ARG BUILD
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y \
-    # python3 python3-pip 
+# install git to be able to fetch niagads-pylib from git
+RUN apt-get update && apt-get install --no-install-recommends -y \
     git \
-    # && ln -sf python3 /usr/bin/python \
+    # remove cache
     && apt autoremove --purge -y \
     && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*.list
 
+RUN python -m venv /opt/venv
+
+# ensure venv is used; see https://pythonspeed.com/articles/activate-virtualenv-dockerfile/
+# to understand how this "activates" the venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 # Install application
-WORKDIR /src
+WORKDIR /init
 
 COPY ./requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt 
 
-# ENV BUILD_ENV=${BUILD}
-# ENV LOG_LEVEL=${PYTHON_LOG_LEVEL}
+FROM python:slim-bookworm AS python-runner
 
-# --break-system-packages let you install non-debian packaged libraries
-# bypass `externally-managed-environment` error
-RUN pip3 install -r requirements.txt --break-system-packages
-    # && apt remove -y python3-pip git --> [prod only]
+ARG BUILD
 
+COPY --from=builder /opt/venv /opt/venv
+
+WORKDIR /init
+
+COPY ./start.sh init.sh
+RUN chmod +x init.sh 
+
+# need to redefine in this stage
+ENV PATH="/opt/venv/bin:$PATH"
+ENV BUILD_ENV=${BUILD}
+
+EXPOSE 8000
+CMD ["./init.sh"]
 
 # # FROM nginx:bookworm-slim
 # # COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 # # COPY --from=builder  /usr/share/nginx/html
 
-# COPY ./start.sh .
-# RUN chmod +x start.sh 
+# CMD ["tail", "-f", "/dev/null"]
 
-# # CMD ls /app && gunicorn -w 4 --reload --bind 0.0.0.0:8000 'app:create_app(None)'
 
-# # CMD ["./start.sh"]
+
 # CMD tail -f /dev/null

@@ -22,7 +22,7 @@ services:
       - app-db
     build:
       context: .
-      dockerfile: ./sever.Dockerfile
+      dockerfile: ./server.Dockerfile
       args:
           BUILD: ${BUILD}
     ports:
