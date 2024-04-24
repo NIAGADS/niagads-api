@@ -1,26 +1,9 @@
 version: '3.3'
 
 services:
-  app-db:
-    container_name: niagads-api-app-db-${API_VERSION}
-    image: postgres:15
-    restart: always
-    ports:
-      - ${PG_PORT}:5432
-    environment:
-      POSTGRES_USER: ${PG_ADMIN_USER}
-      POSTGRES_PASSWORD: ${PG_ADMIN_PASSWORD}
-      POSTGRES_HOST_AUTH_METHOD: md5
-      POSTGRES_INITDB_ARGS: --auth-host=md5 --auth-local=md5
-    volumes:
-      - ${PG_DATA_DIR}:/var/lib/postgresql/data
-      - ${DB_INIT_DIR}:/docker-entrypoint-initdb.d/
-
   server-app:
-    container_name: niagads-api-python-server-${API_VERSION}
-    image: niagads-api-server-${API_VERSION}
-    depends_on:
-      - app-db
+    container_name: server-${API_VERSION}
+    image: niagads-api-server
     build:
       context: .
       dockerfile: ./server.Dockerfile
@@ -32,10 +15,8 @@ services:
       - ${APPLICATION_DIR}:/app
 
   client-app:
-    container_name: niagads-api-js-client-${API_VERSION}
-    image: niagads-api-client-${API_VERSION}
-    depends_on:
-      - app-db
+    container_name: client-${API_VERSION}
+    image: niagads-api-client
     build:
       context: .
       dockerfile: ./client.Dockerfile     
