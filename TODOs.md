@@ -1,5 +1,12 @@
 # TODOs
 
+## current
+
+```log
+psycopg2.errors.UndefinedColumn: column "life_stage" of relation "filertrack" does not exist
+LINE 1: ...filer_release_date", "genome_build", "is_lifted", "life_stag..."
+```
+
 ## Multiple Database Connections
 
 * <https://stackoverflow.com/questions/70081977/multiple-database-connections-using-fastapi>
