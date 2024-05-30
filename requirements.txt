@@ -2,4 +2,5 @@ fastapi
 gunicorn
 uvicorn
 sqlmodel
+nh3
 niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main

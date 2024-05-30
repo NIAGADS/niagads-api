@@ -16,6 +16,8 @@
 * Middleware for `bleaching`: https://github.com/tiangolo/fastapi/discussions/8354
 * generic for Python APIs: https://dev.to/mrkanthaliya/validating-and-sanitizing-user-inputs-on-python-projects-rest-api-5a4
 
+* nh3 for XSS <https://github.com/messense/nh3>
+
 ## Custom operators in query parameters
 
 * <https://stackoverflow.com/questions/40618327/how-to-design-generic-filtering-operators-in-the-query-string-of-an-api>
