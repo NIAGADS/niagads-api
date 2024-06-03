@@ -3,4 +3,5 @@ gunicorn
 uvicorn
 sqlmodel
 nh3
+pydantic_settings
 niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main
