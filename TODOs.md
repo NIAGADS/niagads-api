@@ -6,7 +6,7 @@
 
 ```
 
-# update biosample_term to pull from `original_term` field in track description
+* update biosample_term to pull from `original_term` field in track description
 
 ## Multiple Database Connections
 
@@ -23,3 +23,8 @@
 ## Custom operators in query parameters
 
 * <https://stackoverflow.com/questions/40618327/how-to-design-generic-filtering-operators-in-the-query-string-of-an-api>
+
+## Error handling & field validation
+
+* <https://stackoverflow.com/a/75545471>
+* <https://stackoverflow.com/questions/61392633/how-to-validate-more-than-one-field-of-a-pydantic-model/71258131#71258131>
