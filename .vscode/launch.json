@@ -18,6 +18,19 @@
             "justMyCode": true
         },
         {
+            "name": "FAST-API - plus dependencies",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "api.main:app",
+                "--reload"
+                //"--no-reload",
+            ],
+            "jinja": true,
+            "justMyCode": false
+        },
+        {
             "name": "Next.js: debug server-side",
             "type": "node-terminal",
             "request": "launch",
