@@ -1,9 +1,8 @@
-psycopg2-binary
-flask_restx
-flask_sqlalchemy
-flask_marshmallow
-python-dotenv
-requests
-python-dateutil
+fastapi
 gunicorn
-sqlalchemy_utils
+uvicorn
+sqlmodel
+nh3
+pydantic_settings
+pyparsing
+niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main

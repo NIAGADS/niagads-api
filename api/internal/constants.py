@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+FILER_N_TRACK_LOOKUP_LIMIT = 50
+
 CHR_NS = [str(x) for x in [*range(1,22)]] + ['X', 'Y', 'N']
 CHR_IDS = [ 'chr' + str(x) for x in CHR_NS]
 CHROMOSOMES = [*CHR_NS, *CHR_IDS]
@@ -37,6 +39,7 @@ __datasource_urls = ({
         'FactorBook': 'https://genome.ucsc.edu/index.html',
         'FactorBook|lifted': 'https://genome.ucsc.edu/index.html',
         'INFERNO_genomic_partition': 'http://inferno.lisanwanglab.org/index.php',
+        'INFERNO_genomic_partition|genomic_partition': 'http://inferno.lisanwanglab.org/index.php',
         'GTEx|v7': 'https://gtexportal.org/home/',
         'GTEx|v8': 'https://gtexportal.org/home/',
         'HOMER' : 'http://homer.ucsd.edu/homer/',
@@ -45,7 +48,8 @@ __datasource_urls = ({
         'ROADMAP|lifted': 'http://www.roadmapepigenomics.org/',
         'Repeats' : 'http://genome.ucsc.edu/cgi-bin/hgTables',
         'TargetScan|v7p2': 'http://www.targetscan.org/vert_72/',
-        'TargetScan|v7p2-lifted': 'http://www.targetscan.org/vert_72/' 
+        'TargetScan|v7p2-lifted': 'http://www.targetscan.org/vert_72/' ,
+        'Ensembl|Gene_model': 'https://useast.ensembl.org/info/genome/genebuild/index.html'
 })
 
 

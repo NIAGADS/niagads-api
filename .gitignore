@@ -3,6 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# javascript
+package-lock.json
+**/node_modules/*
+**/.next/*
+.next
+**/build/*
+.env.local
+
 # cache db
 instance/*
 

@@ -81,6 +81,9 @@ class Track(db.Model):
     
     tissue = db.synonym('tissue_category')
      
+     
+    # to migrate to pydantic/sqlmodel
+    # see https://github.com/tiangolo/sqlmodel/issues/150#issuecomment-1644847936
     @property
     def genome_browser_track_schema(self):    
         schema = self.file_schema.split('|')
