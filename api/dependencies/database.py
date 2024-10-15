@@ -10,8 +10,8 @@ from api.internal.config import get_settings
 
 logger = logging.getLogger(__name__)
 class DatabaseSessionManager:
-    def __init__(self, route: str):
-        self.__connectionString: str = self.__get_db_url(route)
+    def __init__(self, database: str):
+        self.__connectionString: str = self.__get_db_url(database)
         self.__engine: AsyncEngine = create_async_engine(
             self.__connectionString, 
             echo=True,  # Log SQL queries for debugging (set to False in production)
@@ -28,17 +28,16 @@ class DatabaseSessionManager:
         )
         
     
-    def __get_db_url(self, route: str = None):
-        match route:
+    def __get_db_url(self, database: str = None):
+        match database:
             case 'genomics':
                 return get_settings().GENOMICSDB_URL.replace('postgresql:', 'postgresql+asyncpg:')
-            case 'cache':
-                return get_settings().API_CACHEDB_URL
             case 'metadata': 
                 return get_settings().API_STATICDB_URL.replace('postgresql:', 'postgresql+asyncpg:')
             case _:
-                raise ValueError('Need to specify endpoint database - one of: genomics, cache, or metadata')
-            
+                raise ValueError('Need to specify endpoint database as one of: genomics or metadata')
+
+
     async def close(self):
         """ 
             note: this does not actually disconnect from the db, 
@@ -59,8 +58,9 @@ class DatabaseSessionManager:
                 await session.execute(text("SELECT 1"))
                 yield session
             except Exception as err:
-                # b/c it catches errors having nothing to do w/the database
-                # that disrupt the yielded session
+                # this will catch errors sometimes thathaving nothing to do w/the database
+                # that disrupt the yielded session; impossible to debug w/out
+                # explicitly logging
                 logger.error('Unexpected Error', exc_info=err, stack_info=True)
                 await session.rollback()
                 raise
