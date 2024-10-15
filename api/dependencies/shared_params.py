@@ -9,9 +9,11 @@ from fastapi import Query
 
 class OptionalParams(BaseModel):
     limit: Optional[int] = Query(Query(default=None, description="maximum number of results to return; please note that `pagination is not yet implemented`"))
-    page: Optional[int] = Query(Query(default=None, description="current page; please note that `pagination is not yet implemented`"))
     countOnly: Optional[bool] = Query(Query(default = False, description="return result size (count) only"))
 
 class ExtendedOptionalParams(OptionalParams):
     idsOnly: Optional[bool] = Query(Query(default = False, description="return only the IDS (no annotation or metadata) for matching records"))
     
+class PagingParams(BaseModel):
+    page: Optional[int] = Query(Query(default=None, description="current page; please note that `pagination is not yet implemented`"))
+    queryId: Optional[int] = Query(Query(default=None, description="query id; please note that `pagination is not yet implemented`"))
