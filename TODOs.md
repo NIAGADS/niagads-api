@@ -1,10 +1,18 @@
 # TODOs
 
+
+
 ## current
 
 ```log
-
+2024-10-15 12:55:48,755 INFO sqlalchemy.engine.Engine SELECT serverapplication.filertrack.track_id 
+FROM serverapplication.filertrack 
+WHERE serverapplication.filertrack.genome_build = $1::VARCHAR AND (serverapplication.filertrack.searchable_text ~* $2::VARCHAR OR serverapplication.filertrack.antibody_target ~* $3::VARCHAR) ORDER BY serverapplication.filertrack.track_id
+2024-10-15 12:55:48,756 INFO sqlalchemy.engine.Engine [cached since 42.94s ago] ('GRCh38', 'brain', 'brain')
+2024-10-15 12:55:52,835 INFO sqlalchemy.engine.Engine ROLLBACK
 ```
+
+> ? huh ? why is it searching searchable text & antibody target -- revisit `keyword search`?
 
 * update biosample_term to pull from `original_term` field in track description
 
