@@ -6,4 +6,5 @@ nh3
 pydantic_settings
 pyparsing
 asyncpg
+aiocache
 niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main
