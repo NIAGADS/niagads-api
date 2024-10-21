@@ -1,20 +1,23 @@
 # TODOs
 
-
-
 ## current
 
 ```log
-2024-10-15 12:55:48,755 INFO sqlalchemy.engine.Engine SELECT serverapplication.filertrack.track_id 
-FROM serverapplication.filertrack 
-WHERE serverapplication.filertrack.genome_build = $1::VARCHAR AND (serverapplication.filertrack.searchable_text ~* $2::VARCHAR OR serverapplication.filertrack.antibody_target ~* $3::VARCHAR) ORDER BY serverapplication.filertrack.track_id
-2024-10-15 12:55:48,756 INFO sqlalchemy.engine.Engine [cached since 42.94s ago] ('GRCh38', 'brain', 'brain')
-2024-10-15 12:55:52,835 INFO sqlalchemy.engine.Engine ROLLBACK
 ```
 
-> ? huh ? why is it searching searchable text & antibody target -- revisit `keyword search`?
-
 * update biosample_term to pull from `original_term` field in track description
+
+## session storage / redirects
+
+* look into `fastsession` as it lets you use your memory store
+* use memory store / cache instead of session so that we can have multiple windows w/same viz endpoint
+* use session to count requests and assign cache keys? maybe
+* definitely use for credentials
+
+## Overall great suggestions
+
+* <https://github.com/zhanymkanov/fastapi-best-practices>
+* <https://levelup.gitconnected.com/17-useful-middlewares-for-fastapi-that-you-should-know-about-951c2b0869c7>
 
 ## Multiple Database Connections
 
