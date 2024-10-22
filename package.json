@@ -13,6 +13,7 @@
     "dependencies": {
         "concurrently": "^8.2.2",
         "next": "14.1.2",
+        "niagads-viz-js": "github:NIAGADS/niagads-viz-js#feature/export-table-rollup",
         "react": "^18",
         "react-dom": "^18"
     },
