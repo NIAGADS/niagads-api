@@ -10,6 +10,7 @@ package-lock.json
 .next
 **/build/*
 .env.local
+next-env.d.ts
 
 # cache db
 instance/*
