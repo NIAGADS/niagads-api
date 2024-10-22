@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   server-app:
     container_name: server-${API_VERSION}
