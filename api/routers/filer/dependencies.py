@@ -87,9 +87,10 @@ class ApiWrapperService:
     
     def __clean_hit_result(self, hitList):
         queryRegion = hitList[0]['queryRegion']
-        hits = {record['Identifier']: record['features'] for record in hitList }
+        hits = [{'track_id': record['Identifier'], 'hits': record['features']} for record in hitList ]
         hits.update({'query_region': queryRegion})
         return hits
+    
         
     def get_track_hits(self, tracks: str, span: str):
         result = self.__wrapper.make_request(self._OVERLAPS_ENDPOINT, {'id': tracks, 'span': span})
