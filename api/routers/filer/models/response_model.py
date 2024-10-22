@@ -1,8 +1,9 @@
 import json
+from pydantic import BaseModel
 from sqlmodel import SQLModel
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
-from typing import Optional, List
+from typing import Dict, Optional, List
 
 from niagads.utils.list import find
 
@@ -86,3 +87,37 @@ class TrackQueryPublic(TrackPublicBase):
     biosample_display: Optional[str] = None
     biosample_summary: Optional[str] = None
     biosample_term_id: Optional[str] = None
+    
+
+class BEDFields:
+    chrom: str
+    chromStart: int
+    chromEnd: int
+    name: str
+    score: str
+    strand: str
+    details: Dict[str, str]
+    
+    def serialize(self, expandObjects=False):
+        """Return a dict which contains only serializable fields."""
+        data:dict = jsonable_encoder(self.model_dump())
+        
+        if expandObjects:
+            data.update(data.pop('details', None))
+
+        return data
+    
+    
+class TrackOverlaps(BaseModel):
+    track: str
+    hits: Optional[List[BEDFields]] = None
+    
+    def serialize(self, expandObjects=False):
+        """Return a dict which contains only serializable fields."""
+        data:dict = jsonable_encoder(self.model_dump())
+        
+        if expandObjects:
+            data = [h.update(data.pop('details', None)) for h in data['hits']]
+            
+        return data
+    
