@@ -2,12 +2,15 @@ from sqlmodel import Field, SQLModel, Column
 from fastapi.encoders import jsonable_encoder
 
 import json
+from collections import ChainMap
+from itertools import groupby
+from operator import itemgetter
 
 # typing
 from sqlalchemy import BigInteger
 from sqlalchemy.dialects.postgresql import TEXT, JSONB, TIMESTAMP
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import computed_field
 
 from niagads.filer.parser import split_replicates
@@ -17,6 +20,7 @@ from niagads.utils.string import xstr
 from api.internal.constants import DATASOURCE_URLS
 
 EXPERIMENTAL_DESIGN_FIELDS = qw('project experiment_id antibody_target assay analysis classification data_category output_type is_lifted')
+  
 
 class Track(SQLModel, table=True):
     __tablename__ = "filertrack"
@@ -136,4 +140,26 @@ class Track(SQLModel, table=True):
             data.update({'replicates': json.dumps(data['replicates'])})
 
         return data
-        return data
+
+
+def serialize_track_list(tList: List[Track], expand=False):
+    if tList is None:
+        return None
+    return [t.serialize(expandObjects=expand) for t in tList]
+
+
+def merge_track_lists(trackList1, trackList2):
+    """ compares two lists of track; if tracks are not serialized, serializes and then compares """
+    if trackList1 is None:
+        return trackList2
+    if trackList2 is None:
+        return trackList1
+        
+    if isinstance(trackList1[0], Track):
+        trackList1 = serialize_track_list(trackList1)
+    if isinstance(trackList2[0], Track):
+        trackList2 = serialize_track_list(trackList2)
+        
+    matched = groupby(sorted(trackList1 + trackList2, key=itemgetter('track_id')), itemgetter('track_id'))
+    combinedLists = [dict(ChainMap(*g)) for k, g in matched]
+    return combinedLists

@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, Path, Query, Request
 from typing import Annotated, List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from collections import OrderedDict, ChainMap
-from itertools import groupby
-from operator import itemgetter
+
 
 from api.dependencies.filter_params import ExpressionType, FilterParameter
 from api.dependencies.param_validation import clean
@@ -11,15 +9,11 @@ from api.dependencies.location_params import assembly_param, span_param
 from api.dependencies.exceptions import RESPONSES
 from api.dependencies.shared_params import ExtendedOptionalParams, OptionalParams
 from api.internal.constants import FILER_N_TRACK_LOOKUP_LIMIT
+from api.routers.filer.models.track_metadata_cache import merge_track_lists
 
 from ..dependencies import ROUTE_TAGS, MetadataQueryService, ApiWrapperService, ROUTE_SESSION_MANAGER, TRACK_SEARCH_FILTER_FIELD_MAP
 from ..models import TrackPublic, TrackQueryPublic
 
-def merge_track_lists(trackList1, trackList2):
-    matched = groupby(sorted(trackList1 + trackList2, key=itemgetter('track_id')), itemgetter('track_id'))
-    combinedLists = [dict(ChainMap(*g)) for k, g in matched]
-    return combinedLists
-    
 
 TAGS = ROUTE_TAGS 
 router = APIRouter(
