@@ -9,3 +9,4 @@ asyncpg
 niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main
 itsdangerous # required by SessionMiddleware
 asgi_correlation_id
+pyyaml
