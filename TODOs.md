@@ -1,11 +1,21 @@
 # TODOs
 
+* correct DB so that server_app user has correct grants
+
+```log
+permission denied for schema serverapplication
+```
+
 ## current
 
 ```log
 ```
 
 * update biosample_term to pull from `original_term` field in track description
+
+## Caching
+
+* let's try <https://github.com/long2ice/fastapi-cache> - `fastapi-cache2` python package
 
 ## session storage / redirects
 
