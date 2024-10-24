@@ -1,6 +1,7 @@
 # TODOs
 
 * correct DB so that server_app user has correct grants
+* descriptions missing from FILER metadata cache; see GenomicsDB code for how to generate
 
 ```log
 permission denied for schema serverapplication
