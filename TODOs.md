@@ -2,7 +2,7 @@
 
 ## FILER Routes
 
-* create route for `browser_config` so can add an endpoint for the metadata `search` that yields a browser_config list
+
 
 ## FILER Cache DB
 
