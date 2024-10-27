@@ -1,5 +1,9 @@
 # TODOs
 
+## FILER Routes
+
+* create route for `browser_config` so can add an endpoint for the metadata `search` that yields a browser_config list
+
 ## FILER Cache DB
 
 * correct DB so that server_app user has correct grants
