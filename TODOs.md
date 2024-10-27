@@ -1,7 +1,10 @@
 # TODOs
 
+## FILER Cache DB
+
 * correct DB so that server_app user has correct grants
 * descriptions missing from FILER metadata cache; see GenomicsDB code for how to generate
+* add antibody targets to searchable text during cache build
 
 ```log
 permission denied for schema serverapplication
