@@ -1,5 +1,16 @@
 # TODOs
 
+## Caching
+
+* internal cache key: from request (endpoing & alphabetized parameters)
+* external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
+
+* default `namespace` == `route root` (e.g., `filer`, `genomics`, `advp`, etc)
+
+* two stage caching for FILER data
+  * FILER API response: `cacheKey` = `<internal_cache_key>` with `namespace` = `EXT_FILER`
+  * processed response (e.g., IDS, SUMMARY, FULL, COUNTS): `cacheKey` = `<intenal_cache_key>`
+
 ## FILER API
 
 * add `ResponseType.URL` : IDs, (name?), URL
