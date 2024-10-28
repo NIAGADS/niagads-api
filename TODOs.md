@@ -1,9 +1,51 @@
 # TODOs
 
-## FILER Routes
+## Caching
 
-* need a new FILER endpoint: list of tracks, region, count of overlaps
+* internal cache key: from request (endpoing & alphabetized parameters)
+* external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
 
+* default `namespace` == `route root` (e.g., `filer`, `genomics`, `advp`, etc)
+
+* two stage caching for FILER data
+  * FILER API response: `cacheKey` = `<internal_cache_key>` with `namespace` = `EXT_FILER`
+  * processed response (e.g., IDS, SUMMARY, FULL, COUNTS): `cacheKey` = `<intenal_cache_key>`
+
+## FILER API
+
+* add `ResponseType.URL` : IDs, (name?), URL
+* add `/filter` endpoint
+* pagination for genome browser configs?
+
+## FILER - Raw
+
+* would a a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
+* what is an overlap? contained within vs overlap
+
+## ValidationErrors
+
+* should format as follows
+
+```json
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+```
+
+for example:
+
+```json
+{"error":"[{'type': 'enum', 'loc': ('query', 'format'), 'msg': \"Input should be 'json' or 'table'\", 'input': 'bob', 'ctx': {'expected': \"'json' or 'table'\"}}]","msg":"Invalid parameter value"}
+```
 
 ## FILER Cache DB
 

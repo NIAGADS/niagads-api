@@ -6,7 +6,9 @@ nh3
 pydantic_settings
 pyparsing
 asyncpg
-niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main
 itsdangerous # required by SessionMiddleware
 asgi_correlation_id
 pyyaml
+aiocache
+# redis
+niagads-pylib @ git+https://github.com/NIAGADS/niagads-pylib@main
