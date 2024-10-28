@@ -4,6 +4,30 @@
 
 * need a new FILER endpoint: list of tracks, region, count of overlaps
 
+## ValidationErrors
+
+* should format as follows
+
+```json
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+```
+
+for example:
+
+```json
+{"error":"[{'type': 'enum', 'loc': ('query', 'format'), 'msg': \"Input should be 'json' or 'table'\", 'input': 'bob', 'ctx': {'expected': \"'json' or 'table'\"}}]","msg":"Invalid parameter value"}
+```
 
 ## FILER Cache DB
 
