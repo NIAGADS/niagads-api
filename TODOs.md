@@ -1,8 +1,15 @@
 # TODOs
 
-## FILER Routes
+## FILER API
 
-* need a new FILER endpoint: list of tracks, region, count of overlaps
+* add `ResponseType.URL` : IDs, (name?), URL
+* add `/filter` endpoint
+* pagination for genome browser configs?
+
+## FILER - Raw
+
+* would a a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
+* what is an overlap? contained within vs overlap
 
 ## ValidationErrors
 
