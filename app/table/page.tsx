@@ -9,9 +9,7 @@ export default function Table() {
 
     return (
         <main >
-            <div className="pl-8 pt-8">
-                <h1 className="text-blue-500">Table!</h1>
-            </div>
+         <VizTable id={} columns={} data={}></VizTable>
         </main>
     );
 }
