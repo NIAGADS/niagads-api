@@ -1,11 +1,11 @@
 # TODOs
 
-
-
 ## Caching
 
 * internal cache key: from request (endpoing & alphabetized parameters)
 * external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
+
+* investigate node package [pickleparser](https://www.npmjs.com/package/pickleparser) to allow Python pickled responses to be retrieved from the cache
 
 * default `namespace` == `route root` (e.g., `filer`, `genomics`, `advp`, etc)
 
