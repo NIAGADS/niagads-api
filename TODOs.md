@@ -17,7 +17,9 @@
 
 * add `ResponseType.URL` : IDs, (name?), URL
 * add `/filter` endpoint
-* pagination for genome browser configs?
+* pagination for genome browser configs? and counts repsonse
+* sorting counts data request
+* if data request and # of tracks is too many (e.g., > 500?), `counts` response format should return the total number of tracks and a message that further filtering is needed
 
 ## FILER - Raw
 
