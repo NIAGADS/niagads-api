@@ -5,21 +5,13 @@
 * internal cache key: from request (endpoing & alphabetized parameters)
 * external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
 
-* investigate node package [pickleparser](https://www.npmjs.com/package/pickleparser) to allow Python pickled responses to be retrieved from the cache
-
-* default `namespace` == `route root` (e.g., `filer`, `genomics`, `advp`, etc)
-
-* two stage caching for FILER data
-  * FILER API response: `cacheKey` = `<internal_cache_key>` with `namespace` = `EXT_FILER`
-  * processed response (e.g., IDS, SUMMARY, FULL, COUNTS): `cacheKey` = `<intenal_cache_key>`
-
 ## FILER API
 
 * add `ResponseType.URL` : IDs, (name?), URL
 * add `/filter` endpoint
 * pagination for genome browser configs? and counts repsonse
 * sorting counts data request
-* if data request and # of tracks is too many (e.g., > 500?), `counts` response format should return the total number of tracks and a message that further filtering is needed
+* *URGENT*: if data request and # of tracks is too many (e.g., > 500?), `counts` response format should return the total number of tracks and a message that further filtering is needed
 
 ## FILER - Raw
 
@@ -68,9 +60,6 @@ permission denied for schema serverapplication
 
 * update biosample_term to pull from `original_term` field in track description
 
-## Caching
-
-* let's try <https://github.com/long2ice/fastapi-cache> - `fastapi-cache2` python package
 
 ## session storage / redirects
 
@@ -84,15 +73,11 @@ permission denied for schema serverapplication
 * <https://github.com/zhanymkanov/fastapi-best-practices>
 * <https://levelup.gitconnected.com/17-useful-middlewares-for-fastapi-that-you-should-know-about-951c2b0869c7>
 
-## Multiple Database Connections
-
-* <https://stackoverflow.com/questions/70081977/multiple-database-connections-using-fastapi>
-
 ## Security and Sanitizing
 
 * Very good + rate limiter: <https://escape.tech/blog/how-to-secure-fastapi-api/#validate-and-sanitize-user-input>
-* Middleware for `bleaching`: https://github.com/tiangolo/fastapi/discussions/8354
-* generic for Python APIs: https://dev.to/mrkanthaliya/validating-and-sanitizing-user-inputs-on-python-projects-rest-api-5a4
+* Middleware for `bleaching`: <https://github.com/tiangolo/fastapi/discussions/8354>
+* generic for Python APIs: <https://dev.to/mrkanthaliya/validating-and-sanitizing-user-inputs-on-python-projects-rest-api-5a4>
 
 * nh3 for XSS <https://github.com/messense/nh3>
 
