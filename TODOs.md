@@ -5,6 +5,8 @@
 * internal cache key: from request (endpoing & alphabetized parameters)
 * external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
 
+* investigate node package [pickleparser](https://www.npmjs.com/package/pickleparser) to allow Python pickled responses to be retrieved from the cache
+
 * default `namespace` == `route root` (e.g., `filer`, `genomics`, `advp`, etc)
 
 * two stage caching for FILER data
@@ -15,7 +17,9 @@
 
 * add `ResponseType.URL` : IDs, (name?), URL
 * add `/filter` endpoint
-* pagination for genome browser configs?
+* pagination for genome browser configs? and counts repsonse
+* sorting counts data request
+* if data request and # of tracks is too many (e.g., > 500?), `counts` response format should return the total number of tracks and a message that further filtering is needed
 
 ## FILER - Raw
 
