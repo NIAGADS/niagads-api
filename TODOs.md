@@ -1,5 +1,10 @@
 # TODOs
 
+## current
+
+```log
+```
+
 ## Caching
 
 * internal cache key: from request (endpoing & alphabetized parameters)
@@ -45,20 +50,10 @@ for example:
 
 ## FILER Cache DB
 
-* correct DB so that server_app user has correct grants
-* descriptions missing from FILER metadata cache; see GenomicsDB code for how to generate
-* add antibody targets to searchable text during cache build
-
-```log
-permission denied for schema serverapplication
-```
-
-## current
-
-```log
-```
-
 * update biosample_term to pull from `original_term` field in track description
+* add antibody targets to searchable text during cache build
+  > these should be added; need to debug to figure out why the aren't
+
 
 
 ## session storage / redirects
