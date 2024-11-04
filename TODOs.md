@@ -5,11 +5,22 @@
 ```log
 ```
 
-## page metada query
+## client libs from swagger
 
-* test with <http://localhost:3000/filer/metadata/search?content=summary&page=1&assembly=GRCh38&keyword=ENCODE&format=JSON>
+* java: <https://swagger.io/docs/open-source-tools/swagger-codegen/>
+* npm
 
-* test case where too many ids get passed to FILER external in one go
+```text
+Step 3: Generate Client Library
+
+Use openapi-generator-cli to generate client libraries from your OpenAPI specification. This simplifies interacting with your API from various programming languages.
+
+openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -o /path-to-output-director
+```
+
+## page queries that take a `track` query parameter
+
+* pagination when too many ids get passed to `/metadata?track=` or `/data?track=`
 
 ## Caching
 
