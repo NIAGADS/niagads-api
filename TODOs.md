@@ -5,11 +5,11 @@
 ```log
 ```
 
-##  page metada query
+## page metada query
 
-* get result size from DB
-* offset & limit
 * test with <http://localhost:3000/filer/metadata/search?content=summary&page=1&assembly=GRCh38&keyword=ENCODE&format=JSON>
+
+* test case where too many ids get passed to FILER external in one go
 
 ## Caching
 
