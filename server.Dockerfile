@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:slim-bookworm AS builder
+FROM python:3.10.15-slim-bookworm AS builder
 
 ARG BUILD
 
