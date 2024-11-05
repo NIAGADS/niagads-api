@@ -12,9 +12,13 @@ services:
     volumes:
       - ${APPLICATION_DIR}:/app
 
-networks: 
-  default:
-    external: 
-      name: niagads-api_default
+    # network_mode: bridge
+    networks:
+      - niagads-api_default
+
+networks:
+  niagads-api_default:
+      external: true
+
 
 
