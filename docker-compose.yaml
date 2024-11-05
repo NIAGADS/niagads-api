@@ -12,3 +12,8 @@ services:
     volumes:
       - ${APPLICATION_DIR}:/app
 
+networks: 
+  default:
+    external: niagads-api_default
+
+
