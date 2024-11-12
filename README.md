@@ -1,4 +1,6 @@
-# NIAGADS Open Access API 
+# NIAGADS Open Access API - Server Side
+
+Python backend (FAST-API) for the NIAGADS Open Access API
 
 > NOTE: **The API is still under development and has been release in _alpha_.**
 
