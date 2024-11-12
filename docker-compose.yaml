@@ -12,24 +12,13 @@ services:
     volumes:
       - ${APPLICATION_DIR}:/app
 
-  client-app:
-    container_name: client-${API_VERSION}
-    image: niagads-api-client
-    build:
-      context: .
-      dockerfile: ./client.Dockerfile     
-      args:
-          BUILD: ${BUILD} 
-    ports:
-      - '${CLIENT_API_PORT}:3000'
-    volumes:
-      - ${APPLICATION_DIR}:/app
-      # by mounting the "node_modules" we force it to be empty
-      # and keep the docker container from finding node_modules installed on the host
-      # https://github.com/Kartikdot/TS-Node-Docker-Starter/blob/main/docker-compose.yaml
-      - ignore:/app/node_modules
+    # network_mode: bridge
+    networks:
+      - niagads-api_default
 
-volumes:
-  ignore: 
+networks:
+  niagads-api_default:
+      external: true
 
-# see https://github.com/ErickWendel/livereload-docker-nodejs-typescript/blob/master/Dockerfile
+
+

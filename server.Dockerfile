@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:slim-bookworm AS builder
+FROM python:3.10.15-slim-bookworm AS builder
 
 ARG BUILD
 
@@ -26,7 +26,7 @@ WORKDIR /init
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt 
 
-FROM python:slim-bookworm AS python-runner
+FROM python:3.10.15-slim-bookworm AS python-runner
 
 ARG BUILD
 
@@ -52,4 +52,4 @@ CMD ["./init.sh"]
 
 
 
-# CMD tail -f /dev/null
+# CMD tail -f /dev/nullx
