@@ -5,6 +5,26 @@
 ```log
 ```
 
+* **URGENT**: custom error for zero-length responses for views - should we render a page?
+```json
+{
+  "error": "zero-length response; cannot generate view",
+  "msg": "An unexpected error occurred.  Please submit a `bug` GitHub issue containing this full error response at: https://github.com/NIAGADS/niagads-api/issues",
+  "stack_trace": [
+    "  File '/opt/venv/lib/python3.10/site-packages/starlette/_exception_handler.py', line 42, in wrapped_app    await app(scope, receive, sender)",
+    "  File '/opt/venv/lib/python3.10/site-packages/starlette/routing.py', line 73, in app    response = await f(request)",
+    "  File '/opt/venv/lib/python3.10/site-packages/fastapi/routing.py', line 301, in app    raw_response = await run_endpoint_function(",
+    "  File '/opt/venv/lib/python3.10/site-packages/fastapi/routing.py', line 212, in run_endpoint_function    return await dependant.call(**values)",
+    "  File '/app/api/routers/redirect/routes/view.py', line 36, in get_table_view    response = originatingResponse.to_view(ResponseFormat.TABLE, id=cacheKey)",
+    "  File '/app/api/routers/filer/models/track_response_model.py', line 129, in to_view    return super().to_view(view, **kwargs)",
+    "  File '/app/api/response_models/base_models.py', line 197, in to_view    return super().to_view(view, **kwargs)",
+    "  File '/app/api/response_models/base_models.py', line 137, in to_view    return super().to_view(view, **kwargs)",
+    "  File '/app/api/response_models/base_models.py', line 114, in to_view    raise RuntimeError('zero-length response; cannot generate view')"
+  ],
+  "request": "/redirect/view/table/7a93f493cc5eeb03cbf0566ab9b00c46"
+}
+```
+
 ## browser config and session
 
 * endpoint name?
