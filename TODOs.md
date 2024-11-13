@@ -5,6 +5,10 @@
 ```log
 ```
 
+* BEDFeature table labels
+
+* **URGENT**: genome browser variant & gene link outs
+
 * **URGENT**: custom error for zero-length responses for views - should we render a page?
 ```json
 {
