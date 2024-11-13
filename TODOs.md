@@ -82,6 +82,7 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 ### FILER Cache DB
 
+* eQTL (Catalogue) data source is not being parsed correctly
 * update biosample_term to pull from `original_term` field in track description
 * add antibody targets to searchable text during cache build
   > these should be added; need to debug to figure out why the aren't
