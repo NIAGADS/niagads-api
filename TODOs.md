@@ -2,12 +2,28 @@
 
 ## current task
 
-* service endpoint rewrites for the FILER tracks
-
 ```log
 ```
 
-## roots
+## browser config and session
+
+* endpoint name?
+* minimum required
+* field mapping - at SQLModel level?
+
+## models
+
+* revisit and abstract out
+
+## infrastructure questions
+
+* rate limits
+* server for live deployment (can it stay on webserver?)
+* cron job for log clean up
+* help@niagads.org
+* robots.txt
+
+## route roots
 
 * return title, description, publication, record types, count of number of records
 
@@ -27,10 +43,6 @@ Use openapi-generator-cli to generate client libraries from your OpenAPI specifi
 openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -o /path-to-output-director
 ```
 
-## page queries that take a `track` query parameter
-
-* pagination when too many ids get passed to `/metadata?track=` or `/data?track=`
-
 ## Caching
 
 * internal cache key: from request (endpoing & alphabetized parameters)
@@ -42,11 +54,21 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 * add `/filter` endpoint
 * pagination for genome browser configs? and counts repsonse
 * sorting counts data request
-* *URGENT*: if data request and # of tracks is too many (e.g., > 500?), `counts` response format should return the total number of tracks and a message that further filtering is needed
+* `hg38-lifted` genome build
+* summary response review
+* **URGENT**: limits?
+  * span
+  * number of tracks -> `counts` response format should return the total number of tracks and a message that further filtering is needed
 
-## FILER - Raw
+### FILER Cache DB
 
-* would a a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
+* update biosample_term to pull from `original_term` field in track description
+* add antibody targets to searchable text during cache build
+  > these should be added; need to debug to figure out why the aren't
+
+### FILER - Raw
+
+* would a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
 * what is an overlap? contained within vs overlap
 
 ## ValidationErrors
@@ -74,18 +96,9 @@ for example:
 {"error":"[{'type': 'enum', 'loc': ('query', 'format'), 'msg': \"Input should be 'json' or 'table'\", 'input': 'bob', 'ctx': {'expected': \"'json' or 'table'\"}}]","msg":"Invalid parameter value"}
 ```
 
-## FILER Cache DB
-
-* update biosample_term to pull from `original_term` field in track description
-* add antibody targets to searchable text during cache build
-  > these should be added; need to debug to figure out why the aren't
-
-
 
 ## session storage / redirects
 
-* look into `fastsession` as it lets you use your memory store
-* use memory store / cache instead of session so that we can have multiple windows w/same viz endpoint
 * use session to count requests and assign cache keys? maybe
 * definitely use for credentials
 
