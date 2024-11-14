@@ -1,17 +1,13 @@
 from fastapi import APIRouter, Depends, Query
-from fastapi.exceptions import RequestValidationError
-from typing import Annotated, Optional, Union
+from typing import Annotated, Union
 
-from api.common.enums import Assembly, ResponseContent
+from api.common.enums import ResponseContent
 from api.common.exceptions import RESPONSES
 from api.common.formatters import print_enum_values
-from api.dependencies.parameters.filters import ExpressionType, FilterParameter
-from api.dependencies.parameters.location import assembly_param, span_param
-from api.dependencies.parameters.optional import PaginationParameters, format_param, get_response_content, keyword_param, validate_response_content
-from api.common.helpers import Parameters
-from api.response_models.base_models import BaseResponseModel
-from api.response_models.data_models import BEDResponse
-from api.routers.filer.models.track_response_model import FILERTrackBriefResponse, FILERTrackResponse
+from api.dependencies.parameters.location import span_param
+from api.dependencies.parameters.optional import PaginationParameters, format_param, get_response_content
+from api.response_models import BaseResponseModel, BEDResponse
+from api.routers.filer.models.track_response_model import FILERTrackBriefResponse
 
 # TAGS = ROUTE_TAGS
 router = APIRouter(

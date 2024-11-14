@@ -1,3 +1,3 @@
-from .base_models import PagedResponseModel, BaseResponseModel, SerializableModel, RequestDataModel, GenericDataModel
+from .base_models import PagedResponseModel, BaseResponseModel, SerializableModel, RequestDataModel, PaginationDataModel, GenericDataModel
 from .genome_browser import GenomeBrowserConfig, GenomeBrowserConfigResponse, GenomeBrowserExtendedConfigResponse, GenomeBrowserExtendedConfig
-from .data_models import BEDFeature, BEDResponse
+from .bed_features import BEDFeature, BEDResponse

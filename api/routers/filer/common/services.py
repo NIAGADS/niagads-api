@@ -1,9 +1,8 @@
-from fastapi.exceptions import RequestValidationError, ResponseValidationError
+from fastapi.exceptions import RequestValidationError
 from sqlmodel import select, col, or_, func, distinct
 from sqlalchemy import Values, String, column as sqla_column
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional, Union
-from collections import OrderedDict
 
 from niagads.filer import FILERApiWrapper
 from niagads.utils.list import list_to_string
@@ -12,7 +11,6 @@ from niagads.utils.dict import rename_key
 from api.common.enums import ResponseContent
 from api.internal.config import get_settings
 from api.dependencies.parameters.filters import tripleToPreparedStatement
-from api.common.helpers import Parameters
 from api.response_models import BEDFeature, GenericDataModel
 
 from ..models.track_metadata_cache import Track
