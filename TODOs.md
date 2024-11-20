@@ -8,8 +8,10 @@
 * BEDFeature table labels
 
 * **URGENT**: genome browser variant & gene link outs
+* **URGENT**: hg19 genome browser
 
 * **URGENT**: custom error for zero-length responses for views - should we render a page?
+
 ```json
 {
   "error": "zero-length response; cannot generate view",
