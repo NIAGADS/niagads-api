@@ -74,6 +74,10 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 * internal cache key: from request (endpoing & alphabetized parameters)
 * external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
 
+## parameters
+
+* `page` should be a positive number or None
+
 ## FILER API
 
 * add `ResponseType.URL` : IDs, (name?), URL
