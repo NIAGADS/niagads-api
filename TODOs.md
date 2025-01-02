@@ -31,6 +31,12 @@
 }
 ```
 
+## healthchecks
+
+* check DB connections at app startup
+* FILER API endpoints
+* GenomicsDB? for gene/variant quick links
+
 ## browser config and session
 
 * endpoint name?
@@ -99,7 +105,7 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 ### FILER - Raw
 
-* would a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
+* would a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up? **YES**
 * what is an overlap? contained within vs overlap
 
 ## ValidationErrors
