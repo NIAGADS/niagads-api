@@ -31,6 +31,15 @@
 }
 ```
 
+## Pagination
+
+* use [background tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/) to prefetch and cache +/-2 pages
+* server-side: only necessary if `view==TABLE` 
+  * use `background tasks` to fetch full result; cache in `keydb` 
+  * create `QueryCache` in Postgres, keyed on cachekey (w/out pagination?)
+    * columns: `cachekey` (VARCHAR) | `result` (JSON)
+    * see <https://stackoverflow.com/questions/53591359/postgresql-filter-in-json-array> for ideas on how to filter/sort the JSON `result`
+
 ## healthchecks
 
 * check DB connections at app startup
