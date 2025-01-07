@@ -31,6 +31,23 @@
 }
 ```
 
+## Pagination
+
+* use [background tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/) to prefetch and cache +/-2 pages (full result?)
+* server-side: only necessary if `view==TABLE` 
+  * use `background tasks` to fetch full result; cache in `keydb` 
+  * create `QueryCache` in Postgres, keyed on cachekey (w/out pagination?)
+    * columns: `cachekey` (VARCHAR) | `result` (JSON)
+    * see <https://stackoverflow.com/questions/53591359/postgresql-filter-in-json-array> for ideas on how to filter/sort the JSON `result`
+    * can we have one row per page and then concatenate the `result`s? and then filter or should we pre-concatentate into one large field
+      * memory considerations?
+      
+## healthchecks
+
+* check DB connections at app startup
+* FILER API endpoints
+* GenomicsDB? for gene/variant quick links
+
 ## browser config and session
 
 * endpoint name?
@@ -74,8 +91,14 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 * internal cache key: from request (endpoing & alphabetized parameters)
 * external cache key (view endpoints): request_id + `_view_data_element` and `namespace` = `view`
 
+## parameters
+
+* `page` should be a positive number or None
+
 ## FILER API
 
+* pagination: how to handle one track returning > pageSize; 
+  * e.g., <http://localhost:8000/filer/data/search?content=full&page=1&assembly=GRCh38&loc=chr19%3A1038997-1066572&keyword=lung&format=JSON>
 * add `ResponseType.URL` : IDs, (name?), URL
 * add `/filter` endpoint
 * pagination for genome browser configs? and counts repsonse
@@ -85,6 +108,14 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 * **URGENT**: limits?
   * span
   * number of tracks -> `counts` response format should return the total number of tracks and a message that further filtering is needed
+* catch errors, especially w/parallel fetchs:
+```python
+except aiohttp.ClientConnectionError as e:
+    # deal with this type of exception
+except aiohttp.ClientResponseError as e:
+    # handle individually
+except asyncio.exceptions.TimeoutError as e:
+```
 
 ### FILER Cache DB
 
@@ -95,8 +126,12 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 ### FILER - Raw
 
-* would a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up?
+* would a new FILER endpoint (list of tracks & region -> count of overlaps) speed things up? **YES**
 * what is an overlap? contained within vs overlap
+
+## Error Handling
+
+* response size too large; see `__page_data_query`; <http://localhost:8000/filer/data/search?content=full&page=1&assembly=GRCh38&loc=chr19%3A1038997-1066572&keyword=lung&format=JSON>
 
 ## ValidationErrors
 

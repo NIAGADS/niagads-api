@@ -10,6 +10,8 @@ asyncpg
 itsdangerous # required by SessionMiddleware
 asgi_correlation_id
 pyyaml
+aiohttp
+aiohttp[speedups]
 aiocache
 aiocache[redis] # required to import RedisCache
 # redis
