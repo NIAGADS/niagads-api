@@ -2,6 +2,8 @@
 
 ## current task
 
+see <https://www.online-python.com/snkTJQIbBd> (old version)
+
 ```python
 tracks = ['A', 'B', 'C']
 cumSum = [ 75, 120, 135 ]
@@ -13,11 +15,10 @@ totalPages = 1 if resultSize < pageSize \
 
 print(resultSize, totalPages)
 
-cursors = []
+cursors = [f'{tracks[0]}_0']
 if resultSize < pageSize:
-    cursors = [f'{tracks[-1]}_{cumSum[-1]}']
+    cursors.append(f'{tracks[-1]}_{cumSum[-1]}')
 else:
-    cursors = [f'{tracks[0]}_0']
     for p in range(1, totalPages + 1):
         start = (p - 1) * pageSize
         end = start + pageSize # not subtracting 1 b/c python slicing is not end inclusize
@@ -26,11 +27,6 @@ else:
         print(start, end)
         trackIndex = next((index for index, counts in enumerate(cumSum) if counts >= start))
         cursors.append(f'{tracks[trackIndex]}_{end}')
-
-# idea is that a page would fetch from currentCursor - 1 to currentCursor; 
-# so page 1: range['A_0', 'A_25']
-# page 2: range['A_25', 'A_50']
-print(cursors)
 ```
 
 ```log
@@ -94,7 +90,7 @@ print(cursors)
 * rate limits
 * server for live deployment (can it stay on webserver?)
 * cron job for log clean up
-* help@niagads.org
+* contact us email *resolved*
 * robots.txt
 
 ## route roots
