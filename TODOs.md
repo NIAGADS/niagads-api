@@ -95,6 +95,10 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 * `page` should be a positive number or None
 
+## IGV
+
+* `session` endpoint
+
 ## FILER API
 
 * pagination: how to handle one track returning > pageSize; 
