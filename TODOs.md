@@ -95,6 +95,15 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 * `page` should be a positive number or None
 
+## IGV
+
+* `session` endpoint
+
+## Collections
+
+* include assembly?
+* allow keyword/filters searches within collections?
+
 ## FILER API
 
 * pagination: how to handle one track returning > pageSize; 
