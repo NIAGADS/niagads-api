@@ -99,6 +99,11 @@ openapi-generator-cli generate -i path-to-your-openapi-spec.yaml -g javascript -
 
 * `session` endpoint
 
+## Collections
+
+* include assembly?
+* allow keyword/filters searches within collections?
+
 ## FILER API
 
 * pagination: how to handle one track returning > pageSize; 
