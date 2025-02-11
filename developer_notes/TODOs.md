@@ -8,9 +8,7 @@
 ```log
 ```
 
-* BEDFeature table labels
 
-* **URGENT**: genome browser variant & gene link outs
 * **URGENT**: hg19 genome browser
 
 * **URGENT**: custom error for zero-length responses for views - should we render a page?
@@ -34,16 +32,13 @@
 }
 ```
 
+## Swagger
+
+* sort order of tags; see <https://github.com/flasgger/flasgger/issues/487> for starters
+
 ## Pagination
 
 * use [background tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/) to prefetch and cache +/-2 pages (full result?)
-* server-side: only necessary if `view==TABLE` 
-  * use `background tasks` to fetch full result; cache in `keydb` 
-  * create `QueryCache` in Postgres, keyed on cachekey (w/out pagination?)
-    * columns: `cachekey` (VARCHAR) | `result` (JSON)
-    * see <https://stackoverflow.com/questions/53591359/postgresql-filter-in-json-array> for ideas on how to filter/sort the JSON `result`
-    * can we have one row per page and then concatenate the `result`s? and then filter or should we pre-concatentate into one large field
-      * memory considerations?
 
 ## healthchecks
 
