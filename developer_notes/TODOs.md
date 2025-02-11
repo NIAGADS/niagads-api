@@ -2,6 +2,9 @@
 
 ## current task
 
+* add root `/service` endpoints
+  * get cached originating request details for a view
+
 ```log
 ```
 
