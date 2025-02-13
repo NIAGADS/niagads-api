@@ -2,8 +2,8 @@
 
 ## current task
 
-* add root `/service` endpoints
-  * get cached originating request details for a view
+* feature scores: basic & annotated? can we generalize across the gene, dataset, and variant responses
+
 
 ```log
 ```
@@ -31,6 +31,11 @@
   "request": "/redirect/view/table/7a93f493cc5eeb03cbf0566ab9b00c46"
 }
 ```
+
+## GenomicsDB
+
+* promotion of phenotypes in responses
+* feature scores: basic & annotated? can we generalize across the gene, dataset, and variant responses
 
 ## Swagger
 
