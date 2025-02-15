@@ -32,8 +32,13 @@
 }
 ```
 
+## microservices
+
+* don't limit site feature searches but limit the record pages -> if not in collection (FeatureCollection), then don't render and point to GenomicsDB!
+
 ## GenomicsDB
 
+* create a feature_collection table
 * promotion of phenotypes in responses
 * feature scores: basic & annotated? can we generalize across the gene, dataset, and variant responses
 
