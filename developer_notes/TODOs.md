@@ -38,9 +38,11 @@
 
 ## GenomicsDB
 
-* create a feature_collection table
-* promotion of phenotypes in responses
-* feature scores: basic & annotated? can we generalize across the gene, dataset, and variant responses
+### Table Views
+
+* change `variant` and `gene` fields to `link` cells
+* change `p_value` fields to `p_value` cells
+* make sure `neg_log10_pvalue` is hidden and/or remove
 
 ## Swagger
 
