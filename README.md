@@ -23,7 +23,7 @@ Visit <https://github.com/NIAGADS/example> for additional usage examples.
 
 ### Python
 
-* python >=3.10.x
+* python >=3.12.x
 
 ### Docker
 
