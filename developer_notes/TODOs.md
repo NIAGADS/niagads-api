@@ -34,7 +34,7 @@
 
 ## microservices
 
-* don't limit site feature searches but limit the record pages -> if not in collection (FeatureCollection), then don't render and point to GenomicsDB!
+* don't limit site feature searches but limit the record pages -> if not in collection (FeatureCollection), then don't render and point to GenomicsDB
 
 ## GenomicsDB
 
@@ -43,7 +43,9 @@
 * change `variant` and `gene` fields to `link` cells
 * change `p_value` fields to `p_value` cells
 * make sure `neg_log10_pvalue` is hidden and/or remove
-
+* study groups
+* cohorts & TextListDataCells; not working; see code
+  
 ## Swagger
 
 * sort order of tags; see <https://github.com/flasgger/flasgger/issues/487> for starters
