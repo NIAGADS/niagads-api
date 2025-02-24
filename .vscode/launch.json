@@ -9,7 +9,14 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [
+                "--metadataTemplate", "/home/allenem/projects/api/files/FunGen_xQTL_v0.2.0_metadata_DRAFT_2-20.significant.template",
+                "--connectionString", "postgresql://postgres:postgres123@localhost:5432/apistaticdb", "--logFilePath", 
+                "/home/allenem/projects/api/logs",
+                "--skipLiveValidation"
+            ],
+            "justMyCode": false
         },
         {
             "name": "FAST-API - dev",
