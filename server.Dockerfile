@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.10.15-slim-bookworm AS builder
+FROM python:3.12.9-slim-bookworm AS builder
 
 ARG BUILD
 
@@ -26,7 +26,7 @@ WORKDIR /init
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt 
 
-FROM python:3.10.15-slim-bookworm AS python-runner
+FROM python:3.12.9-slim-bookworm AS python-runner
 
 ARG BUILD
 
@@ -42,6 +42,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV BUILD_ENV=${BUILD}
 
 EXPOSE 8000
+# CMD ["fastapi", "run", "api/main.py", "--port", "8000"]
 CMD ["./init.sh"]
 
 # # FROM nginx:bookworm-slim
