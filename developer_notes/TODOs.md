@@ -2,12 +2,11 @@
 
 ## current task
 
+* collection data search endpoint (i.e., only search w/in a collection)
 * feature scores: basic & annotated? can we generalize across the gene, dataset, and variant responses
-
 
 ```log
 ```
-
 
 * **URGENT**: hg19 genome browser
 
