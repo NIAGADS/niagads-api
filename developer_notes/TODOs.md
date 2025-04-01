@@ -2,6 +2,10 @@
 
 ## current task
 
+* QTL Gene: num_qtls_targeting_gene
+* gene links need correct sharded track
+* QTLBedResult <-> some sort of an internal, allowable parameter not in the documentation for formatting QTL data in a visualization? 
+
 ### GenericFeatureParameter
 
 * have a function that returns the right kind? --> see ResponseContent
