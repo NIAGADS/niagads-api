@@ -2,6 +2,47 @@
 
 ## current task
 
+### GenericFeatureParameter
+
+* have a function that returns the right kind? --> see ResponseContent
+
+```python
+class FeatureParameter():
+    def __init__(self, feature: Feature = None):
+        # if features is None, set to all allowable features
+        self.__feature: Feature = feature
+
+    @classmethod
+    def set_description(cls, featureType):
+        match featureType:
+            case None:
+                return """genomic region to query, may be one of the following:
+                Official Gene Symbol, Ensembl ID, Entrez ID, refSNP ID, variant positional ID (chr:pos:ref:alt),
+                or genomic span. Please specific genomic spans as chrN:start-end or N:start-end"""
+                
+            case Feature.GENE:
+                return """gene to query, may be one of the following:
+                Official Gene Symbol, Ensembl ID, Entrez ID"""
+                
+            case Feature.VARIANT:
+                return """variant to query, may be one of the following: 
+                refSNP ID, variant positional ID (chr:pos:ref:alt)"""
+            case Feature.SPAN:
+                return """genomic region to query; please specify as chrN:start-end or N:start-end"""
+            case _:
+                raise NotImplementedError(f'Validation for feature type {featureType} not yet implemented.')
+        
+    def __call__(self, location):
+        try:
+            return location
+        
+        except Exception as e:
+            raise e
+                
+
+```
+
+
 * genomicsdb metadata
 * FILER validate tracks <-> filter for data_store?
 * collection data search endpoint (i.e., only search w/in a collection)
