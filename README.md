@@ -1,3 +1,5 @@
+> NOTE: ARCHIVED **in progress migration to niagads-pylib monorepo**
+> 
 # NIAGADS Open Access API - Server Side
 
 Python backend (FAST-API) for the NIAGADS Open Access API
