@@ -1,4 +1,4 @@
-> NOTE: ARCHIVED **in progress migration to niagads-pylib monorepo**
+> NOTE: **in progress migration to niagads-pylib monorepo**
 > 
 # NIAGADS Open Access API - Server Side
 
