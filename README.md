@@ -13,10 +13,10 @@ Usage examples are provided in this repository in the [examples](/examples) fold
 
 ## For Developers
 
-API code is integrated with NIAGADS monorepos:
+The Open Access API codebase is maintained within NIAGADS monorepo projects:
 
-* Backend service: [NIAGADS-PyLib Monorepo: Open Access API](https://github.com/NIAGADS/niagads-pylib/tree/160eeab66ba56cb8911e5eef0d0115aa893f8a33/projects/open-access-api).
-* Client: [NIAGADS-Viz Monorepo](https://github.com/NIAGADS/niagads-viz-monorepo/tree/81ef0a3f424bc9c6210325a793cb70b0724c2e98/apps/open-access-api-client).
+* Backend service: [NIAGADS-PyLib](https://github.com/NIAGADS/niagads-pylib/tree/160eeab66ba56cb8911e5eef0d0115aa893f8a33/projects/open-access-api).
+* Front-end client: [NIAGADS-Viz](https://github.com/NIAGADS/niagads-viz-monorepo/tree/81ef0a3f424bc9c6210325a793cb70b0724c2e98/apps/open-access-api-client).
 
 
 
