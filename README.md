@@ -1,8 +1,6 @@
 
 # NIAGADS Open Access API: Issue Tracker
 
-> This repository is for **ISSUE TRACKING** only.
-
 The National Institute on Aging Genetics of Alzheimer's Disease Data Storage Site ([NIAGADS](https://www.niagads.org/)) stores and distributes genetics and genomics data from studies on Alzheimer’s disease, related dementias, and aging to qualified researchers globally.
 
 [NIAGADS Open Access](https://www.niagads.org/open-access/) is a collection of files and web-based knowledgebases made available to the public with no data access restrictions.
@@ -12,6 +10,13 @@ The [NIAGADS Open Access API](https://api.niagads.org) provides programmatic acc
 Usage examples are provided in this repository in the [examples](/examples) folder.
 
 ## For Developers
+
+> This repository is for **COMMUNITY ENGAGEMENT ONLY**
+
+* Discussions
+* Issue Tracking
+* Usage Examples
+* (Coming Soor): R- / Python-wrappers
 
 The Open Access API codebase is maintained within NIAGADS monorepo projects:
 
