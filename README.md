@@ -1,5 +1,5 @@
 
-# NIAGADS Open Access API: Issue Tracker
+# NIAGADS Open Access API
 
 The National Institute on Aging Genetics of Alzheimer's Disease Data Storage Site ([NIAGADS](https://www.niagads.org/)) stores and distributes genetics and genomics data from studies on Alzheimer’s disease, related dementias, and aging to qualified researchers globally.
 
