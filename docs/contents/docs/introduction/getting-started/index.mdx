@@ -94,7 +94,7 @@ Allowable values for `<operation>` are as follows:
 ### Entities
 
 Some endpoints, such as `record` are further qualified by the entity type being queried. All
-entities are assigned a unique identifier (ID). These are consistent across all NIAGADS Open Access
+entities are assigned a unique **stable** identifier (ID). These are consistent across all NIAGADS Open Access
 resources and are stored an entity's `id` property.
 
 **The HTTP URL for retrieving the record for a specific entity is:** <br/>
@@ -102,13 +102,13 @@ resources and are stored an entity's `id` property.
 
 The NIAGADS Open Access API supports queries for the following entities:
 
-| **Entity** | **Record Type**                              | **Description**                           | **Identifier**                          | **Resource**    |
-| ---------- | -------------------------------------------- | ----------------------------------------- | --------------------------------------- | --------------- |
-| gene       | annotations, genetic associations            | Ensembl genes                             | Ensembl ID\*\*                          | genomics, advp  |
-| variant    | annotations, genetic associations            | SNVs, short INDELS, structural variants\* | chr:pos:ref:alt\*\* (SNV, short INDELs) | genomics, advp  |
-| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions                 | chr:pos:start-end                       | genomics        |
-| track      | metadata                                     | data tracks                               |                                         | genomics, filer |
-| collection | metadata                                     | set of related data tracks                |                                         | genomics, filer |
+| **Entity** | **Record Type**                              | **Description**            | **Identifier**                                                                 | **Resource**    |
+| ---------- | -------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------ | --------------- |
+| gene       | annotations, genetic associations            | Ensembl genes              | [Ensembl ID](https://useast.ensembl.org/info/genome/stable_ids/index.html)\*\* | genomics, advp  |
+| variant    | annotations, genetic associations            | SNVs, short INDELS         | `chr:pos:ref:alt`\*\*                                                          | genomics, advp  |
+| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions  | `chr:pos:start-end`                                                            | genomics        |
+| track      | metadata                                     | data tracks                | `NG[unique alpha-numeric code]`                                                | genomics, filer |
+| collection | metadata                                     | set of related data tracks | human-readable string                                                          | genomics, filer |
 
 \* coming soon <br/>
 \*\* The NIAGADS-OA API will also accept industry standard alternative identifiers, such as refSNP ID for variants,
