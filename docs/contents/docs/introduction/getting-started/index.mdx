@@ -17,9 +17,7 @@ permitting large-scale programmatic access independent of any specific platform 
 
 ## Tools and Libraries
 
-Third-party tools can be used for communicating with the API and for exploring JSON responses.
-
-These include:
+Third-party tools can be used for communicating with the API and for exploring JSON responses. These include:
 
 | **Tool**                                                      | **Type**                                     |
 | ------------------------------------------------------------- | -------------------------------------------- |
@@ -48,20 +46,26 @@ As well as any programming language package that supports the HTTP protocol, suc
 
 ## API Endpoints
 
-Communicating with the NIAGADS Open Access API involves making calls to API endpoints.
+Communicating with the NIAGADS Open Access API involves making calls to API endpoints. Each endpoint
+represents both the resource being queried and specific API functionality.
 
-Each endpoint represents both the resource being queried and specific API functionality.
+### Request URL
 
-The HTTP URL that corresponds to the latest version of an API endpoint is `https://api.niagads.org/<resource>/<endpoint>`.
+**The HTTP URL that corresponds to the latest version of an API endpoint
+is:**<br/> `https://api.niagads.org/<resource>/<operation>`
+
+In the request URL, `<resource>` is the name of the NIAGADS knowledge base and `<operation>` is
+the type of request being made to the API.
 
 <Note title="Other Versions">
     The HTTP URL of an endpoint corresponding to a specific major version of the
-    API is `https://api.niagads.org/v<version>/<resource>/<endpoint>`,
+    API is `https://api.niagads.org/v<version>/<resource>/<operation>`,
     where `<version>` is the NIAGADS-OA API major version.
 </Note>
 
-In the request URL, `<resource>` is the name of the NIAGADS knowledge base and `<endpoint>` is
-the name of the endpoint. Allowable values for `<resource>` are summarized below:
+### Resources
+
+Allowable values for `<resource>` are summarized below:
 
 | **Resource** | **Knoweldge Base**                      |
 | ------------ | --------------------------------------- |
@@ -73,7 +77,10 @@ the name of the endpoint. Allowable values for `<resource>` are summarized below
 \* coming soon<br/>
 \*\* under construction
 
-Endpoints define particular functions or operations provided by the API as follows:
+### Operations
+
+Operations define particular functions or services provided by the API.  
+Allowable values for `<operation>` are as follows:
 
 | **Endpoint** | **Type**                  | **Description**                                                              |
 | ------------ | ------------------------- | ---------------------------------------------------------------------------- |
@@ -84,22 +91,26 @@ Endpoints define particular functions or operations provided by the API as follo
 | service      | Data Retrieval            | Retrieve data specially formatted for NIAGADS visualization tools            |
 | dictionary   | Search and Data Retrieval | Search or retrieve controlled vocabularies and ontologies                    |
 
-## Entities
+### Entities
 
 Some endpoints, such as `record` are further qualified by the entity type being queried. All
-entities are assigned a unique identifier (ID). The ID uniquely identifies the entity across all NIAGADS Open Access
-resources and is stored in the entity's `id` property.
+entities are assigned a unique identifier (ID). These are consistent across all NIAGADS Open Access
+resources and are stored an entity's `id` property.
 
-The HTTP URL for retrieving the record for a specific entity is `https://api.niagads.org/<resource>/record/<entity>/<id>`.
+**The HTTP URL for retrieving the record for a specific entity is:** <br/>
+`https://api.niagads.org/<resource>/record/<entity>/<id>`
 
 The NIAGADS Open Access API supports queries for the following entities:
 
-| **Entity** | **Record Type**                              | **Description**                           | **Identifier**                      | **Resource**   |
-| ---------- | -------------------------------------------- | ----------------------------------------- | ----------------------------------- | -------------- |
-| gene       | annotations, genetic associations            | Ensembl genes                             | Ensembl ID                          | genomics, advp |
-| variant    | annotations, genetic associations            | SNVs, short INDELS, structural variants\* | chr:pos:ref:alt (SNV, short INDELs) | genomics, advp |
-| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions                 | chr:pos:start-end                   | genomics       |
-| track      | metadata                                     | data tracks                               | genomics, filer                     |
-| collection | metadata                                     | set of related data tracks                | genomics, filer                     |
+| **Entity** | **Record Type**                              | **Description**                           | **Identifier**                          | **Resource**   |
+| ---------- | -------------------------------------------- | ----------------------------------------- | --------------------------------------- | -------------- |
+| gene       | annotations, genetic associations            | Ensembl genes                             | Ensembl ID\*\*                          | genomics, advp |
+| variant    | annotations, genetic associations            | SNVs, short INDELS, structural variants\* | chr:pos:ref:alt\*\* (SNV, short INDELs) | genomics, advp |
+| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions                 | chr:pos:start-end                       | genomics       |
+| track      | metadata                                     | data tracks                               | genomics, filer                         |
+| collection | metadata                                     | set of related data tracks                | genomics, filer                         |
 
-\* coming soon
+\* coming soon <br/>
+\*\* The NIAGADS-OA API will also accept industry standard alternative identifiers, such as refSNP ID for variants,
+and Official gene symbols, Entrez Gene IDs, and UniProt identifiers for genes. However, these alternatives may not
+uniquely, or unequivocally, map to NIAGADS OA entities.
