@@ -1,0 +1,50 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "api-docs: server-side",
+			"type": "node-terminal",
+			"request": "launch",
+			"command": "npm run dev",
+			"cwd": "${workspaceFolder}/docs"
+			// "command": "npm run open-access-api-client" // FIXME: lerna runs a production build on hot reload
+		},
+		{
+			"name": "api-docs: client-side (Chrome)",
+			"type": "chrome",
+			"request": "launch",
+			"url": "http://localhost:3001"
+			// note: configuration will automatically use the next available port if :3000
+			// is in use, so you can deploy multiple microservice "compound launches" in parallel
+			// without manually changing the port
+		},
+		{
+			"name": "api-docs: client-side (Firefox)",
+			"type": "firefox",
+			"request": "launch",
+			"url": "http://localhost:3001",
+			"reAttach": true,
+			"pathMappings": [
+				{
+					"url": "webpack://_N_E",
+					"path": "${workspaceFolder}"
+				}
+			],
+			// uncomment the following if you get a message that the firefox profile does not exist
+			"tmpDir": "${workspaceFolder}/tmp"
+			// note: configuration will automatically use the next available port if :3000
+			// is in use, so you can deploy multiple microservice "compounds launches" in parallel
+			// without manually changing the port
+		}
+	]
+	/* "compounds": [
+        {
+            "name": "open-access-api-client: full stack (Chrome)",
+            "configurations": ["open-access-api-client: server-side", "nextjs-app: client-side (Chrome)"]
+        },
+        {
+            "name": "open-access-api-client: full stack (Firefox)",
+            "configurations": ["open-access-api-client: server-side", "nextjs-app: client-side (Firefox)"]
+        }
+    ]*/
+}
