@@ -103,18 +103,22 @@ resources and are stored in a record's `id` property.
 
 The NIAGADS Open Access API supports queries for the following entities:
 
-| **Entity** | **Record Type**                              | **Description**            | **Identifier**                                                                 | **Resource**    |
-| ---------- | -------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------ | --------------- |
-| gene       | annotations, genetic associations            | Ensembl genes              | [Ensembl ID](https://useast.ensembl.org/info/genome/stable_ids/index.html)\*\* | genomics, advp  |
-| variant    | annotations, genetic associations            | SNVs, short INDELS         | `chr:pos:ref:alt`\*\*                                                          | genomics, advp  |
-| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions  | `chr:pos:start-end`                                                            | genomics        |
-| track      | metadata                                     | data tracks                | `NG[unique alpha-numeric code]`                                                | genomics, filer |
-| collection | metadata                                     | set of related data tracks | human-readable string                                                          | genomics, filer |
+| **Entity** | **Record Type**                              | **Description**            | **Identifier**                                                             | **Resource**    |
+| ---------- | -------------------------------------------- | -------------------------- | -------------------------------------------------------------------------- | --------------- |
+| gene       | annotations, genetic associations            | Ensembl genes              | [Ensembl ID](https://useast.ensembl.org/info/genome/stable_ids/index.html) | genomics, advp  |
+| variant    | annotations, genetic associations            | SNVs, short INDELS         | `chr:pos:ref:alt`                                                          | genomics, advp  |
+| span\*     | overlapping genomic features, data summaries | arbitrary genomic regions  | `chr:pos:start-end`                                                        | genomics        |
+| track      | metadata                                     | data tracks                | `NG[unique alpha-numeric code]`                                            | genomics, filer |
+| collection | metadata                                     | set of related data tracks | human-readable string                                                      | genomics, filer |
 
 \* coming soon <br/>
-\*\* The NIAGADS-OA API will also accept industry standard alternative identifiers, such as refSNP ID for variants,
-and Official gene symbols, Entrez Gene IDs, and UniProt identifiers for genes. However, these alternatives may not
-map uniquely to NIAGADS-OA entities.
+
+<Note title="Alternative Identifiers">
+	The NIAGADS-OA API will also accept industry standard alternative
+	identifiers, such as refSNP ID for variants, and official symbols, and
+	Entrez (NCBI Gene) IDs for genes. **However, these alternatives may not map
+	unambiguously to NIAGADS-OA entities.**
+</Note>
 
 ## Rate Limits
 
@@ -132,7 +136,7 @@ plain text results (formatted as tab-delimited TEXT, YAML, BED, VCF) by setting 
 	[GitHub](https://github.com/NIAGADS/niagads-api/discussions)!
 </Note>
 
-### Response Format
+### JSON Response Format
 
 The following fields are included in all successful, non-`service` API responses.
 
@@ -170,4 +174,4 @@ API responses include a HTTP status code indicating whether the request was succ
 | **404 Not Found**             | Client Error | record not found                                                   |
 | **422 Unprocessable Content** | Client Error | parameter validation error                                         |
 | **429 Too Many Requests**     | Client Error | too many requests in a given amount of time, exceeding rate limits |
-| **500 Internal Server Error** | Server Errpr | system or runtime error                                            |
+| **500 Internal Server Error** | Server Error | system or runtime error                                            |
