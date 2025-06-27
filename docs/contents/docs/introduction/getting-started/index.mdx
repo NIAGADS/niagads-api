@@ -174,4 +174,5 @@ API responses include a HTTP status code indicating whether the request was succ
 | **404 Not Found**             | Client Error | record not found                                                   |
 | **422 Unprocessable Content** | Client Error | parameter validation error                                         |
 | **429 Too Many Requests**     | Client Error | too many requests in a given amount of time, exceeding rate limits |
-| **500 Internal Server Error** | Server Error | system or runtime error                                            |
+| **500 Internal Server Error** | Server Error | runtime error generating a request response                        |
+| **503 Service Unavailable**   | Server Error | system or database error                                           |
