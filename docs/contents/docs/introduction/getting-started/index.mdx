@@ -85,11 +85,13 @@ Allowable values for `<operation>` are as follows:
 | **Operation** | **Type**                  | **Description**                                                              |
 | ------------- | ------------------------- | ---------------------------------------------------------------------------- |
 | status        | Status                    | Get API description and versioning information                               |
-| record        | Data Retrieval            | Retrieve entity metadata, data, or annotations by ID                         |
+| record        | Data Retrieval            | Retrieve entity nomenclature, metadata, data, or annotations by ID           |
 | search        | Search                    | Find entities matching search criteria                                       |
-| data          | Search and Data Retrieval | Retrieve data or annotations for one or more entity matching search criteria |
+| data          | Search and Data Retrieval | Retrieve data or annotations matching search criteria                        |
 | service       | Data Retrieval            | Retrieve data formatted for input to NIAGADS visualization tools or services |
 | dictionary    | Search and Data Retrieval | Search or retrieve controlled vocabularies and ontologies                    |
+
+{/* | reference     | Search and Data Retrieval | Search and retrieve from third party reference data (e.g., pathways by keyword) | - */}
 
 ### Entities
 
@@ -106,7 +108,7 @@ The NIAGADS Open Access API supports queries for the following entities:
 | **Entity** | **Record Type**                              | **Description**            | **Identifier**                                                             | **Resource**    |
 | ---------- | -------------------------------------------- | -------------------------- | -------------------------------------------------------------------------- | --------------- |
 | gene       | annotations, genetic associations            | Ensembl genes              | [Ensembl ID](https://useast.ensembl.org/info/genome/stable_ids/index.html) | genomics, advp  |
-| variant    | annotations, genetic associations            | SNVs, short INDELS         | `chr:pos:ref:alt`                                                          | genomics, advp  |
+| variant    | annotations, genetic associations            | SNVs, short INDELS, SVs    | `chr:pos:ref:alt`, structural variant ID                                   | genomics, advp  |
 | span\*     | overlapping genomic features, data summaries | arbitrary genomic regions  | `chr:pos:start-end`                                                        | genomics        |
 | track      | metadata                                     | data tracks                | `NG[unique alpha-numeric code]`                                            | genomics, filer |
 | collection | metadata                                     | set of related data tracks | human-readable string                                                      | genomics, filer |
