@@ -15,6 +15,10 @@ permitting large-scale programmatic access independent of any specific platform 
 	welcome.
 </Note>
 
+<Note type="warning" title={"The NIAGADS OA-API is under development"}>
+	Endpoints are subject to change.
+</Note>
+
 ## Tools and Libraries
 
 Third-party tools can be used for communicating with the API and for exploring JSON responses. These include:
@@ -60,7 +64,7 @@ the type of request being made to the API.
 <Note title="Other Versions">
     The HTTP URL of an endpoint corresponding to a specific major version of the
     API is `https://api.niagads.org/v<version>/<resource>/<operation>`,
-    where `<version>` is the NIAGADS-OA API major version.
+    whre `<version>` is the NIAGADS-OA API major version.
 </Note>
 
 ### Resources
@@ -74,8 +78,11 @@ Allowable values for `<resource>` are summarized below:
 | advp\*       | ADVP                                    |
 | all\*        | search across all Open Access Resources |
 
-\* coming soon<br/>
-\*\* under construction
+\* **coming soon**
+
+<Note type="warning" title={"GenomicsDB endpoints are under development"}>
+	Endpoints are subject to change.
+</Note>
 
 ### Operations
 
@@ -115,7 +122,7 @@ The NIAGADS Open Access API supports queries for the following entities:
 
 \* coming soon <br/>
 
-<Note title="Alternative Identifiers">
+<Note title="Alternative Identifiers" type="danger">
 	The NIAGADS-OA API will also accept industry standard alternative
 	identifiers, such as refSNP ID for variants, and official symbols, and
 	Entrez (NCBI Gene) IDs for genes. **However, these alternatives may not map
@@ -142,29 +149,7 @@ plain text results (formatted as tab-delimited TEXT, YAML, BED, VCF) by setting 
 
 The following fields are included in all successful, non-`service` API responses.
 
-```json
-"data": [],
-"request": {
-    "request_id": "string",
-    "endpoint": "string",
-    "parameters": {
-        "param1": "any of: string"
-    }
-},
-"pagination": {
-    "page": "integer",
-    "total_num_pages": "integer",
-    "paged_number_of_records": "integer",
-    "total_num_records": "integer"
-}
-```
-
-**`data`**: a list of one or more records or data points; format of list entries
-will vary by the resource and type of record or data being queried by the endpoint
-
-**`request`**: details about the originating request that generated the response
-
-**`pagination`**: pagination information, if results are paged (_Optional_)
+<JsonSchema schema={"RecordResponse"} />
 
 ### Status Codes
 
