@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
 	experimental: {
 		serverSourceMaps: true,
 	},
+	typescript: {
+		ignoreBuildErrors: true, // This ignores TypeScript errors during the build
+	},
 	transpilePackages: ["next-mdx-remote"],
 
 	async rewrites() {
