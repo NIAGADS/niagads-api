@@ -1,16 +1,9 @@
 services:
     client-app:
         container_name: open-access-api
-        image: open-access-api-client:${API_VERSION}
+        image: ooa-client:${API_VERSION}
         build:
             context: .
             dockerfile: ./Dockerfile
         ports:
             - "${PORT}:3000"
-
-# networks:
-#   niagads-api_default:
-#       external: true
-
-volumes:
-    ignore:
