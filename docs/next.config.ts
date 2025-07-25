@@ -9,14 +9,18 @@ const nextConfig: NextConfig = {
 	},
 	transpilePackages: ["next-mdx-remote"],
 
-	/* async rewrites() {
+	async rewrites() {
 		return [
 			{
-				source: "/:slug*",
-				destination: "https://www.niagads.org/",
+				source: "/docs",
+				destination: "/docs/introduction/niagads-open-access",
+			},
+			{
+				source: "/redoc",
+				destination: `${process.env.API_INTERNAL_URL}/redoc`,
 			},
 		];
-	}, */
+	},
 };
 
 export default nextConfig;

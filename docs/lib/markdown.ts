@@ -24,7 +24,6 @@ import Files from "@/components/markdown/files";
 // custom niagads
 import { Json } from "@/components/markdown/json";
 import { JsonSchema } from "@/components/markdown/json-schema";
-import { Alert } from "@/components/markdown/alert";
 
 import {
 	Table,
@@ -37,7 +36,6 @@ import {
 
 // add custom components
 const components = {
-	Alert,
 	Json,
 	JsonSchema,
 	Tabs,

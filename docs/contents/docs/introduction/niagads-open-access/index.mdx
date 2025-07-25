@@ -33,6 +33,10 @@ AD/ADRD GWAS summary statistics datasets and Alzheimer's Disease Sequencing Proj
 variants. Queries against the GenomicsDB can also compile these data in the context
 of functionally annotated gene, variants, and genomic region records.
 
+GenomicsDB endpoints retrieve annotations for genes, variants, or regions (single
+and in bulk) using IDs, shared features, or association significance—supporting
+AI-data-driven analyses to uncover risk factors, prioritize loci, and accelerate Alzheimer’s research.
+
 ### FILER: Functional Genomics repository
 
 The NIAGADS [FunctIonaL gEnomics Repository](https://tf.lisanwanglab.org/FILER/) (FILER)
@@ -40,7 +44,14 @@ is a comprehensive, harmonized, searchable human functional genomics data collec
 compliled across >20 data sources.
 
 NIAGADS-OA API FILER endpoints allow users to simultaneous search across >79k
-functional genomics data tracks using both metadata and range searches.
+standardized functional genomics data tracks complied from well known functional
+genomics repositories such as ENCODE, RoadMap, GTEx, and more. Use metadata searches to
+find tracks relevant to your study questions and range searches to do bulk retrieval across
+one or more tracks.
+
+FILER endpoints can be used to quickly assess the functional impact of a
+potentially causal variant or genomic locus or integrated into analysis pipelines to do robust
+fine mapping as the overhead of harmonizing across data sources is already done.
 
 ### ADVP: Alzheimer's Disease Variant Portal
 
@@ -49,3 +60,10 @@ catalog of high-quality and suggestive genetic association findings curated from
 
 NIAGADS-OA API ADVP endpoints allow users to search for reported gene- and variant-risk
 associations by AD endophenotypes and neuropathologies across >80 cohorts and 8 populations.
+
+As a curated collection of high quality, pulbished genetic associations, queries against
+ADVP endpoints can be used to validate experimental or analytical predictions of genetic association.
+
+<Note title="Coming soon!" type="warning">
+	The NIAGADS-OA API is under development! ADVP endpoints coming soon!
+</Note>
