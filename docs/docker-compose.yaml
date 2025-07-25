@@ -1,0 +1,9 @@
+services:
+    client-app:
+        container_name: open-access-api
+        image: ooa-client:${API_VERSION}
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        ports:
+            - "${PORT}:3000"
