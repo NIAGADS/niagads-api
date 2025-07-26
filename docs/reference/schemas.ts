@@ -309,7 +309,7 @@ export const API_SCHEMAS = {
 			most_severe_consequence: {
 				anyOf: [
 					{
-						$ref: "#/components/schemas/PredictedConsequence",
+						$ref: "#/components/schemas/PredictedConsequenceSummary",
 					},
 					{ type: "null" },
 				],
@@ -392,7 +392,7 @@ export const API_SCHEMAS = {
 			most_severe_consequence: {
 				anyOf: [
 					{
-						$ref: "#/components/schemas/PredictedConsequence",
+						$ref: "#/components/schemas/PredictedConsequenceSummary",
 					},
 					{ type: "null" },
 				],
@@ -1377,7 +1377,7 @@ export const API_SCHEMAS = {
 		required: ["num_cases"],
 		title: "PhenotypeCount",
 	},
-	PredictedConsequence: {
+	PredictedConsequenceSummary: {
 		properties: {
 			consequence_terms: {
 				items: { type: "string" },
@@ -1415,7 +1415,7 @@ export const API_SCHEMAS = {
 		},
 		type: "object",
 		required: ["consequence_terms", "impact"],
-		title: "PredictedConsequence",
+		title: "PredictedConsequenceSummary",
 	},
 	Provenance: {
 		properties: {
@@ -1631,7 +1631,7 @@ export const API_SCHEMAS = {
 			most_severe_consequence: {
 				anyOf: [
 					{
-						$ref: "#/components/schemas/PredictedConsequence",
+						$ref: "#/components/schemas/PredictedConsequenceSummary",
 					},
 					{ type: "null" },
 				],

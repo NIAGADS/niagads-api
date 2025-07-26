@@ -2412,7 +2412,7 @@ components:
           default: false
         most_severe_consequence:
           anyOf:
-          - $ref: '#/components/schemas/PredictedConsequence'
+          - $ref: '#/components/schemas/PredictedConsequenceSummary'
           - type: 'null'
           title: Predicted Consequence
           description: most severe consequence predicted by VEP
@@ -2487,7 +2487,7 @@ components:
           default: false
         most_severe_consequence:
           anyOf:
-          - $ref: '#/components/schemas/PredictedConsequence'
+          - $ref: '#/components/schemas/PredictedConsequenceSummary'
           - type: 'null'
           title: Predicted Consequence
           description: most severe consequence predicted by VEP
@@ -3392,7 +3392,7 @@ components:
       required:
       - num_cases
       title: PhenotypeCount
-    PredictedConsequence:
+    PredictedConsequenceSummary:
       properties:
         consequence_terms:
           items:
@@ -3432,7 +3432,7 @@ components:
       required:
       - consequence_terms
       - impact
-      title: PredictedConsequence
+      title: PredictedConsequenceSummary
     Provenance:
       properties:
         data_source:
@@ -3645,7 +3645,7 @@ components:
           title: Alt
         most_severe_consequence:
           anyOf:
-          - $ref: '#/components/schemas/PredictedConsequence'
+          - $ref: '#/components/schemas/PredictedConsequenceSummary'
           - type: 'null'
           title: Predicted Consequence
           description: most severe consequence predicted by VEP
