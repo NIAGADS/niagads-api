@@ -38,15 +38,17 @@ export default async function Page({ searchParams }: PageProps) {
 
 	if (!response.table) {
 		return (
-			<div className="alert padded">
-				<Alert variant="error" message="Unable to render table view">
-					<p>
-						{response?.request?.message ||
-							"Runtime Error: please report this issue to the NIAGADS Open Access API Issue Tracker at https://github.com/NIAGADS/niagads-api"}
-					</p>
-					<p>Unable to render table for: {query}</p>
-				</Alert>
-			</div>
+			<Alert
+				variant="error"
+				message="Unable to render table view"
+				style={{ marginTop: "2rem", marginBottom: "1rem" }}
+			>
+				<p>
+					{response?.request?.message ||
+						"Runtime Error: please report this issue to the NIAGADS Open Access API Issue Tracker at https://github.com/NIAGADS/niagads-api"}
+				</p>
+				<p>Unable to render table for: {query}</p>
+			</Alert>
 		);
 	}
 	return (
@@ -56,6 +58,7 @@ export default async function Page({ searchParams }: PageProps) {
 					<Alert
 						variant="info"
 						message={`Large result size (n = ${resultSize} records).`}
+						style={{ marginTop: "2rem", marginBottom: "1rem" }}
 					>
 						<div>
 							<p>
