@@ -1,7 +1,7 @@
 services:
     client-app:
-        container_name: open-access-api
-        image: ooa-client:${API_VERSION}
+        container_name: oaa-client-app
+        image: oaa-client:${API_VERSION}
         build:
             context: .
             dockerfile: ./Dockerfile
