@@ -1,5 +1,7 @@
 // /view/table/page.tsx
 
+import "@niagads/common/dist/assets/pretty-print-json.css";
+
 import { backendFetch, jsonSyntaxHighlight } from "@niagads/common";
 
 import { Alert } from "@niagads/ui";
@@ -11,32 +13,33 @@ interface PageProps {
 	searchParams: Promise<ParameterObj>;
 }
 
-const __buildQuery = (params: ParameterObj) => {
-	const { endpoint, ...queryParams } = params;
+function parseOriginatingRequest(request: string) {
+	// Ensure input starts with a slash for relative URLs
+	const url = new URL(request, "http://dummy");
+	const path = url.pathname;
+	const params: { [key: string]: string } = {};
+	url.searchParams.forEach((value, key) => {
+		params[key] = value;
+	});
 
-	const paramStrings: string[] = [];
-	for (const [key, value] of Object.entries(queryParams)) {
-		paramStrings.push(`${key}=${value}`);
-	}
-
-	return `${endpoint}?${paramStrings.join("&")}`;
-};
+	return { path, params };
+}
 
 export default async function Page({ searchParams }: PageProps) {
 	const params: ParameterObj = await searchParams;
-	const query: string = __buildQuery(params);
+	const query: string = atob(params["query"] as string);
+
 	const response = await backendFetch(query, process.env.API_INTERNAL_URL);
 
 	const page = response?.pagination?.page;
 	const totalNpages = response?.pagination?.total_num_pages;
 	const resultSize = response?.pagination?.total_num_records;
 	const showPaginationWarning = page !== null && totalNpages > 1;
-	// check for error; e.g. empty response
 
 	if (!response.table) {
 		return (
 			<div className="alert padded">
-				<Alert variant="danger" message="Unable to render table view">
+				<Alert variant="error" message="Unable to render table view">
 					<p>
 						{response?.request?.message ||
 							"Runtime Error: please report this issue to the NIAGADS Open Access API Issue Tracker at https://github.com/NIAGADS/niagads-api"}
@@ -79,19 +82,26 @@ export default async function Page({ searchParams }: PageProps) {
 					</Alert>
 				</div>
 			)}
-			<TableWrapper {...response.table} />;
-			<div className="alert">
-				<Alert variant="default" message="Originating request">
-					<pre
-						className="json"
-						dangerouslySetInnerHTML={{
-							__html: jsonSyntaxHighlight(
-								JSON.stringify(params, undefined, 4)
-							),
-						}}
-					></pre>
-				</Alert>
-			</div>
+			<TableWrapper {...response.table} />
+
+			<Alert
+				variant="info"
+				message="Originating request"
+				style={{ marginTop: "2rem", marginBottom: "2rem" }}
+			>
+				<pre
+					className="json"
+					dangerouslySetInnerHTML={{
+						__html: jsonSyntaxHighlight(
+							JSON.stringify(
+								parseOriginatingRequest(query),
+								undefined,
+								4
+							)
+						),
+					}}
+				></pre>
+			</Alert>
 		</>
 	);
 }
