@@ -2,6 +2,7 @@ services:
     client-app:
         container_name: oaa-client-app
         image: oaa-client:${API_VERSION}
+	restart: always
         build:
             context: .
             dockerfile: ./Dockerfile
