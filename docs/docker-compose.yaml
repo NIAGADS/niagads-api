@@ -1,10 +1,10 @@
 services:
-    client-app:
-        container_name: oaa-client-app
-        image: oaa-client:${API_VERSION}
-	restart: always
-        build:
-            context: .
-            dockerfile: ./Dockerfile
-        ports:
-            - "${PORT}:3000"
+  client-app:
+    container_name: oaa-client-app
+    image: oaa-client:${API_VERSION}
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "${PORT}:3000"
