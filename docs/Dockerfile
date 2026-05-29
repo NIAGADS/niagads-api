@@ -1,5 +1,5 @@
 # Use the official Node.js 18 image as the base image for building
-FROM node:18 AS builder
+FROM node:24 AS builder
 
 # Set the working directory in the container
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY .env.local .env.local
 RUN npm run build
 
 # Use a lightweight Node.js image for the production environment
-# FROM node:18-alpine AS runner
+# FROM # FROM # FROM node:18-alpine AS runner
 
 # Set the working directory in the container
 #WORKDIR /app
