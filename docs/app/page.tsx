@@ -45,10 +45,12 @@ export default function Home() {
 					We’re building a natural-language planner to help AD
 					researchers explore genetic evidence across NIAGADS Open
 					Access resources—starting from a question, not a query form.
-					<br/><br/>
-                    Check back in mid-June as we introduce new query enpoints
-					and interfaces.
-                    <br/><br/>
+					<br />
+					<br />
+					Check back in over the summer as we introduce new query
+					enpoints and interfaces.
+					<br />
+					<br />
 					<a href="https://forms.gle/fbBY6wngCmJrNKdC7">
 						Register as a beta tester
 					</a>{" "}
@@ -57,9 +59,9 @@ export default function Home() {
 			</div>{" "}
 			<div className="w-full max-w-[800px] px-4 sm:px-8 text-left [&>div]:my-0 [&>div]:rounded-lg [&>div]:px-6 [&>div]:py-5 sm:[&>div]:px-10 sm:[&>div]:py-8 [&>div]:text-sm sm:[&>div]:text-base [&>div]:leading-relaxed [&>div>p]:mb-4 [&>div>div]:mt-0 [&_a]:underline [&_a]:underline-offset-2 mb-8">
 				<Note title="Under Development" type="warning">
-					During this preview period, the API and backend database are actively evolving;
-					some endpoints may change, be unstable, or temporarily
-					break.
+					During this preview period, the API and backend database are
+					actively evolving; some endpoints may change, be unstable,
+					or temporarily break.
 				</Note>
 			</div>
 		</div>
